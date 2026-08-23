@@ -1,9 +1,12 @@
+using System.Text;
 using EduSphere.API.Extensions;
 using EduSphere.API.Middleware;
 using EduSphere.Application;
 using EduSphere.Infrastructure;
 using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,22 +25,43 @@ builder.Host.UseSerilog();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
-// 3. Add API Services & Controllers
+// 3. Configure JWT Authentication & Authorization
+var jwtSecret = builder.Configuration["Jwt:Secret"] ?? "EduSphereSuperSecureSecretKeyForSigningJwtTokens2026!";
+var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "https://api.edusphere.io";
+var jwtAudience = builder.Configuration["Jwt:Audience"] ?? "https://edusphere.io";
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidIssuer = jwtIssuer,
+        ValidateAudience = true,
+        ValidAudience = jwtAudience,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
+builder.Services.AddAuthorization();
+
+// 4. Add API Services & Controllers
 builder.Services.AddControllers();
 builder.Services.AddSwaggerDocumentation();
 
-// 4. Configure Health Checks
-builder.Services.AddHealthChecks()
-    .AddSqlServer(
-        connectionString: builder.Configuration.GetConnectionString("DefaultConnection") ?? "Server=localhost;Database=EduSphere;Integrated Security=true;TrustServerCertificate=True;",
-        name: "sqlserver",
-        tags: new[] { "db", "sql" })
-    .AddRedis(
-        redisConnectionString: builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379",
-        name: "redis",
-        tags: new[] { "cache", "redis" });
+// 5. Configure Health Checks
+builder.Services.AddHealthChecks();
 
-// 5. Configure CORS
+// 6. Configure CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -50,25 +74,24 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// 6. Configure HTTP Request Pipeline
+// 7. Configure HTTP Request Pipeline
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "EduSphere API v1"));
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "EduSphere API v1");
+    c.RoutePrefix = "swagger";
+});
 
 app.UseSerilogRequestLogging();
-
-app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-// 7. Map Endpoints & Health Checks
+// 8. Map Endpoints & Health Checks
 app.MapControllers();
 
 app.MapHealthChecks("/health", new HealthCheckOptions
