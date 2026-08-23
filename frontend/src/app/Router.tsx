@@ -3,6 +3,9 @@ import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { LoginPage } from '@/features/auth/pages/LoginPage'
 import { RegisterPage } from '@/features/auth/pages/RegisterPage'
 import { DashboardPage } from '@/features/dashboard/pages/DashboardPage'
+import { ReadingListPage } from '@/features/reading/pages/ReadingListPage'
+import { ReadingExamPage } from '@/features/reading/pages/ReadingExamPage'
+import { ReadingResultPage } from '@/features/reading/pages/ReadingResultPage'
 import { Layout } from '@/shared/components/Layout'
 import { ProtectedRoute } from '@/shared/components/ProtectedRoute'
 
@@ -17,10 +20,17 @@ export const router = createBrowserRouter([
     element: <RegisterPage />
   },
 
-  // Protected App Shell Routes
+  // Protected Routes
   {
     element: <ProtectedRoute />,
     children: [
+      // Standalone Fullscreen Exam View
+      {
+        path: '/reading/exam/:id',
+        element: <ReadingExamPage />
+      },
+
+      // App Shell with Sidebar & Header
       {
         element: <Layout />,
         children: [
@@ -30,12 +40,11 @@ export const router = createBrowserRouter([
           },
           {
             path: '/reading',
-            element: (
-              <div className="p-8 text-center bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
-                <h2 className="text-xl font-bold">IELTS Reading Module</h2>
-                <p className="text-sm text-slate-500 mt-2">Coming in Sprint 2 (Passage Split-view & Dynamic Quiz Engine)</p>
-              </div>
-            )
+            element: <ReadingListPage />
+          },
+          {
+            path: '/reading/result/:id',
+            element: <ReadingResultPage />
           },
           {
             path: '/listening',
