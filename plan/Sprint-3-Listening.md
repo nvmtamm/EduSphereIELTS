@@ -1,55 +1,56 @@
-# Sprint 3: Listening Examination Engine
+# Sprint 3: Listening Module & Audio Synchronized Transcript Engine
 
-- **Duration:** 1 week
-- **Objective:** Develop the IELTS Listening module supporting audio streaming, section-based question progression, playback controls, real-time response persistence, and automated scoring.
+- **Duration:** 1 tuần
+- **Objective:** Xây dựng module luyện thi **IELTS Listening** với giao diện phát âm thanh dạng sóng (Audio Waveform), đồng bộ hóa Transcript theo mốc thời gian (Timestamp Sync), hỗ trợ 4 Parts chuẩn Cambridge IELTS.
 
 ---
 
-## 1. Scope & Deliverables
+## 1. Công Nghệ & Thư Viện Chuyên Biệt Áp Dụng (Specialized Tech Stack)
 
-### Backend
+| Thư Viện | Mục Đích Sử Dụng Trong Sprint 3 |
+| :--- | :--- |
+| **`wavesurfer.js`** | **Audio Waveform Player & Controls:** Hiển thị dạng sóng âm thanh chuyên nghiệp, điều khiển tốc độ phát (0.8x, 1.0x, 1.2x), tua 5s/10s, và hiển thị vùng timeline phát rõ ràng. |
+| **`@tanstack/react-table`** *(từ `shadcn-admin`)* | **Listening Test Explorer:** Bảng danh sách bài thi Listening 4 Parts (Section 1 -> 4), lọc theo chất giọng (British, American, Australian accent) và chủ đề. |
+| **`framer-motion`** | Đồng bộ dòng chữ trong Transcript: highlight phát sáng dòng audio đang chạy theo thời gian thực (Real-time Transcript Highlighting). |
+
+---
+
+## 2. Scope & Deliverables
+
+### Backend (.NET 8 Clean Architecture)
 - [ ] **Domain Layer:**
-  - `ListeningTest` (Id, Title, AudioUrl, Transcript, Difficulty, SectionCount, DurationMinutes).
-  - `ListeningQuestion` (Id, TestId, SectionIndex [1–4], QuestionType, Prompt, OptionsJson, CorrectAnswer, AudioTimestampSeconds).
-  - `ListeningAttempt` (Id, UserId, TestId, AnswersJson, Score, TotalQuestions, BandScore, CompletedAt).
-- [ ] **Application Layer (CQRS):**
-  - `GetListeningTestsQuery` + Handler (Pagination, search, Redis caching).
-  - `GetListeningTestDetailQuery` + Handler (Includes question metadata and audio streaming URL).
-  - `SubmitListeningAttemptCommand` + Handler (Auto-grades answers, maps to 9-band scale, logs attempt).
-  - `GetListeningHistoryQuery` + Handler.
+  - `ListeningTest` entity (Id, Title, SectionNumber, AudioUrl, DurationSeconds).
+  - `ListeningQuestion` entity (TestId, QuestionNumber, QuestionType, Prompt, CorrectAnswer, TimestampSeconds).
+  - `ListeningTranscript` entity (TestId, StartTimeSeconds, EndTimeSeconds, Speaker, TextContent).
+  - `ListeningSubmission` entity.
 - [ ] **Infrastructure Layer:**
-  - EF Core configurations & migrations.
-  - Audio file storage handler (Local storage / cloud CDN compatibility).
-  - `ListeningSeeder`: Seed 5–8 complete IELTS Listening tests with audio links, questions, transcripts, and timestamp markers across all 4 Sections.
+  - `ListeningTestConfiguration`, `ListeningQuestionConfiguration`, `ListeningTranscriptConfiguration`.
+  - Migration EF Core `Add_Listening_Entities`.
+  - Redis Cache-Aside cho audio metadata và transcripts.
+- [ ] **Application Layer (CQRS):**
+  - `GetListeningTestsQuery` + Redis Cache.
+  - `GetListeningTestDetailQuery` (kèm audio url, transcript timestamps và câu hỏi).
+  - `SubmitListeningExamCommand` + Handler (Chấm điểm tự động và quy đổi Band Score).
 - [ ] **API Layer:**
   - `ListeningController`:
     - `GET /api/listening/tests`
     - `GET /api/listening/tests/{id}`
-    - `POST /api/listening/tests/{id}/submit` [Authorize]
-    - `GET /api/listening/history` [Authorize]
+    - `POST /api/listening/submissions`
 
-### Frontend
-- [ ] **Listening Catalog Page:**
-  - Test cards with duration, sections list, difficulty indicators.
-- [ ] **Test Simulation Interface:**
-  - Custom Sticky Audio Player Component:
-    - Play / Pause, Progress bar, Elapsed / Remaining time.
-    - Playback speed switcher (0.75x, 1.0x, 1.25x).
-    - Strict mode option (single-play enforcement replicating exam rules).
-  - Section-based Question View:
-    - Form filling & Table completion renderers.
-    - Map / Diagram labeling renderers.
-    - Multiple choice renderers.
-  - Interactive Scratchpad / Notes panel for taking quick notes while listening.
-- [ ] **Review & Analysis View:**
-  - Band score and section accuracy breakdown.
-  - Full transcript modal with interactive timestamps linked to playback.
+### Frontend (React 18 + TypeScript + wavesurfer.js)
+- [ ] **Waveform Audio Player Component (`AudioWaveformPlayer.tsx`):**
+  - Khởi tạo Wavesurfer.js với visual waveform hiện đại, thanh volume, speed switcher và progress timeline.
+- [ ] **Synchronized Interactive Transcript:**
+  - Transcript cuộn tự động theo audio đang phát; cho phép click vào câu bất kỳ để audio tua đến đúng thời điểm đó.
+- [ ] **Listening Question Renderers:**
+  - Form điền từ vào chỗ trống (Form/Note Completion, Table Completion).
+  - Map Labelling & Diagram Marking.
+- [ ] **Instant Band Score Diagnostic:**
+  - Hiển thị kết quả điểm Listening, phân tích số câu đúng theo từng Part (Part 1 -> Part 4).
 
 ---
 
-## 2. Acceptance Criteria
-
-- [ ] Audio plays smoothly across major browsers without latency or stutter.
-- [ ] Answers persist automatically to local state during playback to prevent accidental data loss.
-- [ ] Submitting evaluates answers according to IELTS Listening scoring table.
-- [ ] Review screen allows jumping to exact audio timestamps where answers are mentioned in the transcript.
+## 3. Acceptance Criteria
+- [ ] `wavesurfer.js` tải và phát audio mượt mà không bị delay; hiển thị sóng âm đẹp mắt trên Dark/Light mode.
+- [ ] Transcript tự động highlight đúng câu đang đọc theo sai số dưới 200ms.
+- [ ] Chấm điểm chính xác câu trả lời (xử lý không phân biệt hoa thường, khoảng trắng thừa và số nhiều/số ít hợp lệ).

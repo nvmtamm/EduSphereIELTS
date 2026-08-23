@@ -1,66 +1,49 @@
-# Sprint 6: AI Tutor (RAG), Dashboard Analytics & Mock Test
+# Sprint 6: 24/7 IELTS AI Tutor, Mock Test Simulation & Analytics Dashboard
 
-- **Duration:** 1.5 weeks
-- **Objective:** Deploy the full-context RAG AI Tutor chatbot, assemble comprehensive progress analytics (Radar charts, longitudinal trends, study streak), and integrate the timed Mock Test examination flow.
-
----
-
-## 1. Scope & Deliverables
-
-### AI Tutor (Retrieval-Augmented Generation)
-- [ ] **Infrastructure & Knowledge Base:**
-  - Ingest and index official IELTS reference documents into Qdrant collection `ielts-knowledge-base`:
-    - Band descriptors & scoring rubrics.
-    - Common grammatical & lexical pitfalls by band level.
-    - Task 1 report structuring techniques & Task 2 essay templates.
-    - Speaking strategies & Idiomatic expressions bank.
-- [ ] **Application & API Layer:**
-  - `AskAiTutorCommand` + Handler:
-    - Generates semantic embeddings for student inquiry.
-    - Performs similarity search in Qdrant (top-k = 5 chunks).
-    - Streams response tokens back to client via Server-Sent Events (SSE) / SignalR.
-  - `GetAiChatHistoryQuery` + Handler.
-- [ ] **Frontend:**
-  - Real-time streaming Chat Interface with typing simulation.
-  - Markdown renderer with syntax highlighting for academic structures.
-  - Suggested contextual prompts (e.g., *"How do I structure a Task 1 process diagram?"*, *"Give me 5 synonyms for 'increase' with band 7+ collocations"*).
+- **Duration:** 1 tuần
+- **Objective:** Tích hợp phòng **24/7 IELTS AI Tutor** hoàn chỉnh với `@assistant-ui/react` (kết nối SSE Streaming + Qdrant RAG), hệ thống thi thử mô phỏng toàn diện **180 phút Mock Test**, và bảng phân tích dữ liệu học tập **Dashboard Analytics** với `recharts` và `cmdk` từ `shadcn-admin`.
 
 ---
 
-### Dashboard Analytics & Gamification
-- [ ] **Domain & Backend:**
-  - `UserProgress` entity aggregating current band estimates across all 4 modules.
-  - `StudyStreak` entity tracking consecutive days active.
-  - `GetDashboardAnalyticsQuery` + Handler (Redis cached with 2-minute TTL):
-    - Computes overall rounded IELTS Band Score (e.g., average of 6.5, 7.0, 6.0, 6.5 -> 6.5).
-    - Longitudinal score progression history over past 30 days.
-    - Skill distribution data for Radar Chart.
-- [ ] **Frontend:**
-  - Hero Metrics Strip: Target Band Score vs Current Estimated Band Score, Total Practice Sessions, Study Hours, Active Streak (🔥).
-  - **Skill Radar Chart (Recharts):** Multi-axis balance across Listening, Reading, Writing, Speaking.
-  - **Progression Line Chart:** Historical trend lines per skill module.
-  - Recent Activity Stream & Actionable Recommended Next Steps.
+## 1. Công Nghệ & Thư Viện Chuyên Biệt Áp Dụng (Specialized Tech Stack)
+
+| Thư Viện | Mục Đích Sử Dụng Trong Sprint 6 |
+| :--- | :--- |
+| **`@assistant-ui/react`** *(từ `assistant-ui`)* | **24/7 IELTS AI Tutor Interface (`AiTutorPage.tsx`):** Giao diện AI Chatbot chuẩn ChatGPT/Claude với SSE streaming token, markdown syntax highlighting, citations thẻ trích dẫn tài liệu IELTS, và rẽ nhánh câu hỏi (Branching). |
+| **`recharts`** *(từ `shadcn-admin`)* | **Advanced Learning Analytics (`AnalyticsDashboard.tsx`):** Biểu đồ Radar 4 kỹ năng IELTS, biểu đồ đường tiến trình Band Score theo thời gian, và biểu đồ cột tần suất học tập. |
+| **`cmdk`** *(từ `shadcn-admin`)* | **Global Command Palette (`CommandMenu.tsx`):** Phím tắt `Cmd + K` tìm kiếm và điều hướng nhanh trong toàn bộ hệ thống. |
+| **`canvas-confetti`** | Bắn pháo hoa chúc mừng khi học viên hoàn thành bài Mock Test Full 4 kỹ năng vượt Band Score mục tiêu. |
 
 ---
 
-### Mock Test Simulation Engine
-- [ ] **Backend:**
-  - `MockTest` entity combining paired Reading & Writing tests.
-  - `MockTestAttempt` entity storing cumulative performance metrics.
-  - `StartMockTestCommand` & `SubmitMockTestCommand`.
-- [ ] **Frontend:**
-  - Unified strict-mode exam cockpit:
-    - 60-minute Reading session -> 5-minute break -> 60-minute Writing session.
-    - Auto-save state every 30 seconds.
-    - Comprehensive final Diagnostic Score Report card.
+## 2. Scope & Deliverables
+
+### Backend (.NET 8 + Microsoft Semantic Kernel + Qdrant Vector DB)
+- [ ] **24/7 IELTS AI Tutor Streaming Endpoint:**
+  - Controller `AiTutorController` endpoint `POST /api/aitutor/chat-stream` trả về `text/event-stream` (Server-Sent Events).
+  - Semantic Kernel RAG Kernel Plugin truy vấn Qdrant Vector Search tìm tài liệu đề thi và thang điểm IELTS chính thức để đưa vào context.
+- [ ] **Full Mock Test Engine (180 Minutes):**
+  - Điều phối liên tục 4 kỹ năng: Listening (30p + 10p transfer) $\rightarrow$ Reading (60p) $\rightarrow$ Writing (60p) $\rightarrow$ Speaking (15p).
+  - Tự động khóa bài và chuyển phần khi hết thời gian của từng kỹ năng.
+  - Tính điểm Overall Band Score tổng hợp 4 kỹ năng.
+- [ ] **Learning Analytics Aggregator:**
+  - `GetStudentAnalyticsQuery` (thống kê lịch sử làm bài, phân tích điểm mạnh/điểm yếu theo từng dạng câu hỏi).
+
+### Frontend (React 18 + assistant-ui + Recharts + cmdk)
+- [ ] **24/7 AI Tutor Room (`AiTutorPage.tsx`):**
+  - Tích hợp `@assistant-ui/react` với custom adapter `useEduSphereRuntime` kết nối SSE endpoint.
+  - Hỗ trợ các mẫu câu hỏi gợi ý nhanh (Quick Prompts: *"Chiến thuật làm dạng Heading Matching", "Nâng cấp từ vựng C1 chủ đề Environment"*).
+- [ ] **Full Mock Test Simulation Mode:**
+  - Giao diện full-screen không xao nhãng (Distraction-free mode) có thanh đếm ngược tổng thể.
+- [ ] **Executive Analytics Dashboard:**
+  - Radar Chart 4 kỹ năng (Listening, Reading, Writing, Speaking).
+  - Trajectory Chart dự đoán ngày chạm mốc Target Band Score dựa trên tốc độ học hiện tại.
+- [ ] **Global Command Menu (`Cmd + K`):**
+  - Tích hợp `CommandMenu.tsx` mở nhanh bất cứ kỹ năng hoặc đề thi nào.
 
 ---
 
-## 2. Acceptance Criteria
-
-- [ ] AI Tutor responds within < 2 seconds with grounded context retrieved from Qdrant vector database.
-- [ ] Dashboard accurately calculates overall band score using official IELTS rounding convention:
-  - If average ends in `.25`, round up to `.5`.
-  - If average ends in `.75`, round up to whole band.
-- [ ] Study streak increments for daily active logins and resets appropriately upon missed days.
-- [ ] Mock test executes uninterrupted through sequential timed sections.
+## 3. Acceptance Criteria
+- [ ] AI Tutor stream câu trả lời tức thì (First Token dưới 1.2s), hiển thị trích dẫn tài liệu IELTS rõ ràng.
+- [ ] Mock Test chuyển giao 4 kỹ năng mượt mà, lưu tạm thời bài làm để không mất dữ liệu nếu reload.
+- [ ] Biểu đồ Recharts hiển thị trực quan, tương thích hoàn hảo trên cả Dark Mode và Light Mode.

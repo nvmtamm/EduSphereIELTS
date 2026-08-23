@@ -7,8 +7,8 @@ on:
     branches: [ main, develop ]
 
 jobs:
-  build-and-test:
-    name: Build & Run Automated Tests
+  backend-ci:
+    name: Backend Build & Test (.NET 8)
     runs-on: ubuntu-latest
 
     steps:
@@ -34,3 +34,26 @@ jobs:
 
       - name: Validate Docker Compose Configuration
         run: docker compose config
+
+  frontend-ci:
+    name: Frontend Build & Typecheck (React + TypeScript)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Frontend Dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Type Check & Build Bundle
+        working-directory: frontend
+        run: npm run build

@@ -143,14 +143,20 @@ where:
 
 | Tier | Technology | Purpose |
 | :--- | :--- | :--- |
-| **Presentation (Web)** | React 18, TypeScript, Vite, Tailwind CSS v4, shadcn/ui | Modern, responsive, type-safe user interface |
-| **API Framework** | ASP.NET Core 8 Web API | High-throughput, asynchronous REST endpoints |
+| **Presentation (Web)** | React 18, TypeScript (Strict), Vite, Tailwind CSS v4, shadcn/ui | Modern, responsive, type-safe user interface |
+| **AI Assistant UI** | `@assistant-ui/react` *(assistant-ui)* | Streaming Chat, Generative UI, 24/7 AI Tutor & Interactive Writing Grader |
+| **Data Tables & Admin** | `@tanstack/react-table`, `cmdk` *(shadcn-admin)* | Server-side paginated exam tables, faceted filters, Global Command Menu (`Cmd+K`) |
+| **Exam Shell & Split-screen** | `react-resizable-panels` | Computer-delivered IELTS Split-view (Passage pane vs Question pane) |
+| **Rich Text Editor** | `@tiptap/react`, `@tiptap/starter-kit` | IELTS Writing Task 1/2 editor with real-time character & word counting |
+| **Audio Waveform** | `wavesurfer.js` | Interactive Audio waveform player (Listening) & voice recording (Speaking) |
+| **Animations & Confetti** | `framer-motion`, `canvas-confetti` | 3D Flashcard flip transitions for SM-2 & celebration animations |
+| **API Framework** | ASP.NET Core 8 Web API | High-throughput, asynchronous REST & SSE streaming endpoints |
 | **Architecture / Mediator** | MediatR 12 | In-process messaging for CQRS decoupling |
 | **Validation** | FluentValidation 11 | Strongly typed declarative validation rules |
-| **ORM** | Entity Framework Core 8 | Object-relational mapping, migrations, LINQ |
+| **ORM** | Entity Framework Core 8 | Object-relational mapping, Code-First migrations, LINQ |
 | **Relational Database** | Microsoft SQL Server 2022 | ACID-compliant persistent relational storage |
 | **Distributed Cache** | Redis 7 (StackExchange.Redis) | Sub-millisecond distributed in-memory cache |
 | **Vector Database** | Qdrant | Dense vector index for semantic similarity search |
 | **AI Orchestration** | Microsoft Semantic Kernel | AI prompt management, connectors, function calling |
 | **Logging & Diagnostics** | Serilog, OpenTelemetry Health Checks | Structured logging and real-time health monitoring |
-| **Testing** | xUnit, Moq, FluentAssertions, Respawn | Unit and integration test automation suites |
+| **Testing** | xUnit, Moq, FluentAssertions, InMemory DB | Unit and integration test automation suites |

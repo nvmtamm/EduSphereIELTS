@@ -56,19 +56,22 @@ mindmap
 
 ### Frontend (React + TypeScript)
 
-| Công nghệ | Package | Vai trò |
+| Công nghệ | Package | Vai trò & Ứng dụng |
 |---|---|---|
-| **React 18+** (Vite) | `react`, `vite` | UI Framework |
-| **TypeScript** (strict) | `typescript` | Type safety |
-| **Tailwind CSS v4** | `tailwindcss`, `@tailwindcss/vite` | Styling |
-| **shadcn/ui** | `npx shadcn@latest` | Component library |
-| **TanStack Query** | `@tanstack/react-query` | Server state |
-| **React Router v6** | `react-router-dom` | Routing |
-| **Recharts** | `recharts` | Charts (band score, progress) |
-| **SignalR Client** | `@microsoft/signalr` | Real-time |
-| **React Markdown** | `react-markdown` | Render AI feedback |
-| **Lucide React** | `lucide-react` | Icons |
-| **React Timer Hook** | `react-timer-hook` | Countdown timer |
+| **React 18+** (Vite) | `react`, `vite` | UI Framework nền tảng |
+| **TypeScript** (strict) | `typescript` | Type safety toàn diện |
+| **Tailwind CSS v4** | `tailwindcss`, `@tailwindcss/vite` | Styling hiện đại |
+| **shadcn/ui** | `@radix-ui/*`, `clsx`, `tailwind-merge` | UI component primitives |
+| **AI Assistant UI** | `@assistant-ui/react` *(từ assistant-ui)* | Streaming Chat, Generative UI, 24/7 AI Tutor & Interactive Grader |
+| **Admin & Data Table** | `@tanstack/react-table`, `cmdk` *(từ shadcn-admin)* | Ngân hàng đề thi phân trang, lọc nâng cao, Command Menu (Cmd+K) |
+| **Split-screen Engine** | `react-resizable-panels` | Giao diện chia đôi màn hình thi thử (Passage vs Questions) |
+| **Rich Text Editor** | `@tiptap/react`, `@tiptap/starter-kit` | Trình soạn thảo Writing Task 1/Task 2 với Live Word Count |
+| **Audio Waveform** | `wavesurfer.js` | Hiển thị sóng âm Listening player & ghi âm bài thi Speaking |
+| **3D Animations & Confetti** | `framer-motion`, `canvas-confetti` | Lật thẻ 3D Flashcard SM-2 & pháo hoa chúc mừng streak |
+| **TanStack Query** | `@tanstack/react-query` | Server state & cache management |
+| **React Router v6** | `react-router-dom` | Client routing & Route guards |
+| **Charts & Analytics** | `recharts` | Biểu đồ Radar 4 kỹ năng & Trajectory Band Score |
+| **Icons** | `lucide-react` | Bộ icon giao diện |
 
 ### Infrastructure
 

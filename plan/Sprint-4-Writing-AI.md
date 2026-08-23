@@ -1,103 +1,53 @@
-# Sprint 4: Writing Practice & AI Evaluation Engine (Star Feature)
+# Sprint 4: Writing AI Evaluator & Semantic Kernel RAG Engine
 
-- **Duration:** 1.5 weeks
-- **Objective:** Engineer the core showcase feature of the platform: an automated IELTS Writing evaluation system using Microsoft Semantic Kernel, OpenAI GPT-4o, and Retrieval-Augmented Generation (RAG) mapped against official IELTS Band Descriptors.
-
----
-
-## 1. Scope & Deliverables
-
-### Backend
-- [ ] **Domain Layer:**
-  - `WritingPrompt` (Id, TaskType [Task1/Task2], Category, PromptText, ImageUrl, Instructions, ModelEssay, ModelBandScore).
-  - `WritingSubmission` (Id, UserId, PromptId, Content, WordCount, TimeSpentSeconds, SubmittedAt).
-  - `WritingFeedback` (Id, SubmissionId, OverallBand, TaskAchievementBand, CoherenceBand, LexicalBand, GrammarBand, TaskAchievementFeedback, CoherenceFeedback, LexicalFeedback, GrammarFeedback, KeyImprovementsJson, SuggestedVocabularyJson).
-- [ ] **Infrastructure Layer (AI & RAG Engine):**
-  - Integrate `Microsoft.SemanticKernel` and OpenAI connector.
-  - Setup Qdrant collection `ielts-writing-rubrics` containing indexed official British Council / IDP Band Descriptors for Task 1 and Task 2.
-  - Implement `AiGradingService`:
-    - RAG retrieval of relevant band criteria descriptors based on task type.
-    - System prompt enforcing strict, objective examiner evaluation.
-    - JSON Schema enforcement guaranteeing strongly typed structured feedback.
-- [ ] **Application Layer (CQRS):**
-  - `GetWritingPromptsQuery` + Handler.
-  - `SubmitWritingEssayCommand` + Handler:
-    - Verifies word count (Task 1 >= 150 words, Task 2 >= 250 words).
-    - Persists submission.
-    - Triggers asynchronous `AiGradingService`.
-    - Saves parsed `WritingFeedback` and updates overall user writing statistics.
-  - `GetWritingSubmissionFeedbackQuery` + Handler.
-  - `GetWritingHistoryQuery` + Handler.
-- [ ] **Infrastructure Layer (Seeding):**
-  - `WritingPromptSeeder`: 20+ authentic prompts (Task 1 charts/maps/diagrams + Task 2 opinion/discussion/problem-solution essays) with model answers.
-- [ ] **API Layer:**
-  - `WritingController`:
-    - `GET /api/writing/prompts`
-    - `POST /api/writing/submit` [Authorize]
-    - `GET /api/writing/submissions/{id}/feedback` [Authorize]
-    - `GET /api/writing/history` [Authorize]
-
-### Frontend
-- [ ] **Writing Prompt Catalog:** Filter by Task 1 / Task 2, topic tags, difficulty.
-- [ ] **Interactive Essay Editor:**
-  - Split view: Prompt & Chart image (left) | Rich essay text editor (right).
-  - Real-time word counter with color warning if below minimum threshold (150 / 250 words).
-  - Practice timer (20 mins for Task 1, 40 mins for Task 2).
-  - Full-screen distraction-free mode.
-- [ ] **Comprehensive AI Feedback Dashboard:**
-  - Animated Band Score Hero Card (Overall Band + 4 Criteria breakdown with visual progress bars).
-  - Criteria Tabs:
-    - **Task Achievement / Response:** Evaluation against prompt requirements.
-    - **Coherence & Cohesion:** Paragraph structure, discourse markers, logical progression.
-    - **Lexical Resource:** Word choice analysis + Interactive vocabulary replacement cards (Original word -> Higher band academic collocations).
-    - **Grammatical Range & Accuracy:** Syntactic variety analysis + Inline error highlights and suggested corrections.
-  - Actionable "Top 3 Priorities for Improvement" summary.
-  - Side-by-side comparison with the Seeded Model Essay (Band 8.0+).
+- **Duration:** 1 tuần
+- **Objective:** Xây dựng module luyện viết **IELTS Writing (Task 1 & Task 2)** với trình soạn thảo Rich-text đếm từ thời gian thực, tích hợp bộ chấm điểm AI chuẩn **4 Tiêu chí IELTS Band Descriptors** sử dụng **Microsoft Semantic Kernel + Qdrant Vector Search (RAG)** và luồng hội thoại phân tích tương tác qua **`assistant-ui`**.
 
 ---
 
-## 2. Structured AI Feedback Contract
+## 1. Công Nghệ & Thư Viện Chuyên Biệt Áp Dụng (Specialized Tech Stack)
 
-```json
-{
-  "overallBand": 6.5,
-  "criteria": {
-    "taskResponse": {
-      "band": 6.5,
-      "feedback": "Addresses all parts of the prompt, though some main ideas could be more fully developed."
-    },
-    "coherenceCohesion": {
-      "band": 7.0,
-      "feedback": "Clear paragraphing and logical progression throughout. Effective use of cohesive devices."
-    },
-    "lexicalResource": {
-      "band": 6.0,
-      "feedback": "Adequate range of vocabulary with some minor inaccuracies in word choice and collocation.",
-      "suggestions": [
-        { "original": "a big problem", "suggestion": "a pressing issue / significant challenge", "context": "Paragraph 1" },
-        { "original": "people think", "suggestion": "it is widely contended that", "context": "Paragraph 2" }
-      ]
-    },
-    "grammaticalRange": {
-      "band": 6.5,
-      "feedback": "Mix of simple and complex sentence forms. Good grammatical control with occasional errors.",
-      "corrections": [
-        { "original": "If governments will invest", "corrected": "If governments invest", "rule": "First conditional subordinate clause" }
-      ]
-    }
-  },
-  "keyImprovements": [
-    "Develop body paragraph 2 with more concrete real-world evidence.",
-    "Eliminate repetitive basic conjunctions in favor of varied adverbial linkers."
-  ]
-}
-```
+| Thư Viện | Mục Đích Sử Dụng Trong Sprint 4 |
+| :--- | :--- |
+| **`@tiptap/react`** | **IELTS Writing Rich Editor:** Trình soạn thảo văn bản chuyên nghiệp với Live Word Count (đếm số từ thời gian thực; thanh tiến độ đạt 150 từ cho Task 1 và 250 từ cho Task 2), spellchecker, inline highlight câu lỗi. |
+| **`@assistant-ui/react`** *(từ `assistant-ui`)* | **Interactive AI Writing Grader Chat:** Luồng hội thoại tương tác sâu sau khi chấm bài (học viên hỏi: *"Tại sao câu này bị trừ điểm Lexical Resource?", "Viết lại đoạn Body 2 thành Band 8.0"* -> AI trả lời dạng streaming kèm Generative UI Diff Card). |
+| **`react-resizable-panels`** | **Split-Screen Writing Layout:** Bên trái hiển thị đề bài, biểu đồ Task 1 / câu hỏi Task 2; Bên phải là trình soạn thảo Tiptap. |
+
+---
+
+## 2. Scope & Deliverables
+
+### Backend (.NET 8 + Microsoft Semantic Kernel + Qdrant Vector DB)
+- [ ] **Vector Database & RAG Pipeline:**
+  - Nạp và nhúng (Embeddings) toàn bộ **IELTS Band Descriptors chính thức** (Task 1 & Task 2) vào **Qdrant Vector DB**.
+  - Xây dựng Semantic Kernel Plugin tìm kiếm và trích xuất đúng tiêu chuẩn đánh giá cho từng bài nộp.
+- [ ] **AI Scoring Engine:**
+  - Chấm điểm chi tiết theo 4 tiêu chí cốt lõi:
+    1. **Task Achievement / Task Response** (0.0 - 9.0)
+    2. **Coherence and Cohesion** (0.0 - 9.0)
+    3. **Lexical Resource** (0.0 - 9.0)
+    4. **Grammatical Range and Accuracy** (0.0 - 9.0)
+  - Tính Overall Band Score trung bình theo quy tắc làm tròn 0.25 / 0.75 của IELTS.
+  - Phân tích câu sai ngữ pháp + Đề xuất phiên bản viết lại (Paraphrase) nâng cao Band 8.0.
+- [ ] **Domain & CQRS Handlers:**
+  - `WritingPrompt` entity (TaskType: Task1/Task2, Topic, PromptText, ImageUrl).
+  - `WritingSubmission` entity (Content, WordCount, OverallBand, CriteriaScoresJson, FeedbackJson).
+  - `SubmitWritingForAiEvaluationCommand` + Handler.
+  - `ChatWithWritingAiTutorCommand` (Hỗ trợ SSE streaming câu hỏi tương tác).
+
+### Frontend (React 18 + Tiptap + assistant-ui + Resizable Panels)
+- [ ] **Split-Screen Exam Layout (`WritingWorkspace.tsx`):**
+  - Sử dụng `react-resizable-panels` co giãn mượt mà.
+- [ ] **Tiptap Rich-Text Editor:**
+  - Đếm từ thời gian thực (`@tiptap/extension-character-count`) hiển thị màu sắc cảnh báo (Đỏ: chưa đủ 150/250 từ, Xanh: đã đủ tiêu chuẩn nộp).
+- [ ] **AI Comprehensive Scorecard & Radar Chart:**
+  - Bảng điểm 4 tiêu chí với thanh điểm chi tiết và nhận xét điểm mạnh/điểm yếu.
+- [ ] **Interactive Assistant-UI Chat Thread:**
+  - Hộp thoại hỏi đáp trực tiếp với AI Examiner về bài viết, hỗ trợ xem phiên bản viết lại (Diff View Before/After).
 
 ---
 
 ## 3. Acceptance Criteria
-
-- [ ] Essay submission executes Semantic Kernel prompt with RAG band descriptors and returns valid JSON matching the contract schema.
-- [ ] Word counter updates in real time without lag during continuous typing.
-- [ ] Feedback UI renders all 4 criterion band scores, explanations, grammar corrections, and lexical upgrade suggestions.
-- [ ] Historical submissions are stored and accessible via user profile.
+- [ ] Tiptap editor phản hồi gõ chữ tức thì, đếm số từ chuẩn xác 100%.
+- [ ] AI trả về kết quả chấm điểm đầy đủ 4 tiêu chí trong thời gian dưới 5 giây.
+- [ ] Tích hợp `@assistant-ui/react` hỗ trợ học viên chat hỏi sâu về bài viết với hiệu ứng streaming mượt mà.
