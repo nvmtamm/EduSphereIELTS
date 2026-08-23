@@ -3,9 +3,12 @@ using EduSphere.API.Extensions;
 using EduSphere.API.Middleware;
 using EduSphere.Application;
 using EduSphere.Infrastructure;
+using EduSphere.Infrastructure.Data;
+using EduSphere.Infrastructure.Data.Seeders;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
@@ -73,6 +76,21 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Auto-migrate database & seed initial IELTS Reading datasets
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await db.Database.MigrateAsync();
+        await ReadingDataSeeder.SeedAsync(db);
+    }
+    catch (Exception ex)
+    {
+        Log.Warning(ex, "Could not auto-migrate or seed database on startup. Ensure SQL Server is accessible.");
+    }
+}
 
 // 7. Configure HTTP Request Pipeline
 app.UseMiddleware<ExceptionHandlingMiddleware>();

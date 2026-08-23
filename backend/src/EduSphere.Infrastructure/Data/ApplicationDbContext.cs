@@ -8,6 +8,10 @@ namespace EduSphere.Infrastructure.Data;
 public class ApplicationDbContext : DbContext, IApplicationDbContext
 {
     public DbSet<User> Users => Set<User>();
+    public DbSet<ReadingPassage> ReadingPassages => Set<ReadingPassage>();
+    public DbSet<ReadingQuestion> ReadingQuestions => Set<ReadingQuestion>();
+    public DbSet<ReadingSubmission> ReadingSubmissions => Set<ReadingSubmission>();
+    public DbSet<ReadingSubmissionAnswer> ReadingSubmissionAnswers => Set<ReadingSubmissionAnswer>();
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
