@@ -1,0 +1,29 @@
+import { apiClient } from '@/shared/lib/axios'
+import { AuthResponse, LoginRequest, RegisterRequest, User } from '@/shared/types/auth.types'
+
+export const authApi = {
+  login: async (data: LoginRequest): Promise<AuthResponse> => {
+    const response = await apiClient.post<AuthResponse>('/auth/login', data)
+    return response.data
+  },
+
+  register: async (data: RegisterRequest): Promise<AuthResponse> => {
+    const response = await apiClient.post<AuthResponse>('/auth/register', data)
+    return response.data
+  },
+
+  refreshToken: async (refreshToken: string): Promise<AuthResponse> => {
+    const response = await apiClient.post<AuthResponse>('/auth/refresh-token', { refreshToken })
+    return response.data
+  },
+
+  getProfile: async (): Promise<User> => {
+    const response = await apiClient.get<User>('/auth/me')
+    return response.data
+  },
+
+  updateTargetScore: async (targetBandScore: number): Promise<number> => {
+    const response = await apiClient.put<number>('/auth/target-score', { targetBandScore })
+    return response.data
+  }
+}
