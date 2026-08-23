@@ -1,0 +1,36 @@
+name: Continuous Integration (CI)
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build-and-test:
+    name: Build & Run Automated Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore NuGet Dependencies
+        working-directory: backend
+        run: dotnet restore EduSphere.sln
+
+      - name: Build Solution
+        working-directory: backend
+        run: dotnet build EduSphere.sln --no-restore --configuration Release
+
+      - name: Run Unit Tests
+        working-directory: backend
+        run: dotnet test tests/EduSphere.UnitTests/EduSphere.UnitTests.csproj --no-build --configuration Release --verbosity normal
+
+      - name: Validate Docker Compose Configuration
+        run: docker compose config
