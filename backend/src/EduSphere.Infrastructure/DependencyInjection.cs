@@ -35,6 +35,9 @@ public static class DependencyInjection
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IJwtService, JwtService>();
 
+        // 4. Domain & Scoring Services
+        services.AddScoped<IReadingScoringService, ReadingScoringService>();
+
         return services;
     }
 }
