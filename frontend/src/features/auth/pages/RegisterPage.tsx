@@ -1,84 +1,56 @@
 import React from 'react'
 import { RegisterForm } from '../components/RegisterForm'
 import { ThemeToggle } from '@/shared/components/ThemeToggle'
-import { GraduationCap, Sparkles, Target, Zap, ShieldCheck } from 'lucide-react'
+import { GraduationCap, Sparkles } from 'lucide-react'
 
 export const RegisterPage: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-white dark:bg-black">
+    <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 bg-slate-50 dark:bg-zinc-950 relative overflow-hidden transition-colors selection:bg-red-500 selection:text-white py-12">
       {/* Top right theme toggle */}
       <div className="absolute top-5 right-5 z-20">
         <ThemeToggle />
       </div>
 
-      {/* Left branding & features column - Jet Black & Pure Red */}
-      <div className="hidden md:flex md:w-1/2 p-12 bg-black text-white flex-col justify-between relative overflow-hidden border-r border-zinc-800">
-        {/* Background red glow */}
-        <div className="absolute -top-24 -left-24 w-96 h-96 bg-red-600/15 rounded-full blur-3xl pointer-events-none" />
+      {/* Decorative ambient gradients */}
+      <div className="absolute -top-32 -left-32 w-96 h-96 bg-red-600/10 dark:bg-red-600/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-rose-600/10 dark:bg-rose-600/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-500/5 rounded-full blur-3xl pointer-events-none" />
 
-        {/* Brand */}
-        <div className="flex items-center gap-3 relative z-10">
-          <div className="w-11 h-11 rounded-2xl bg-red-600 flex items-center justify-center text-white shadow-lg shadow-red-600/30">
+      <div className="w-full max-w-md space-y-6 relative z-10 my-auto">
+        {/* Brand Header */}
+        <div className="text-center space-y-2.5">
+          <div className="inline-flex items-center justify-center w-13 h-13 rounded-2xl bg-gradient-to-tr from-red-600 to-rose-600 text-white shadow-xl shadow-red-600/30 mb-1">
             <GraduationCap className="w-7 h-7" />
           </div>
           <div>
-            <h2 className="text-xl font-black tracking-tight">Edu<span className="text-red-600">Sphere</span></h2>
-            <p className="text-xs text-zinc-400 font-bold">IELTS OFFICIAL PREP</p>
-          </div>
-        </div>
-
-        {/* Hero Copy */}
-        <div className="space-y-6 relative z-10 max-w-md">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-bold text-white">
-            <Sparkles className="w-3.5 h-3.5 text-red-500" />
-            <span>Personalized IELTS Roadmap</span>
-          </div>
-
-          <h1 className="text-3xl font-black tracking-tight leading-tight">
-            Start your journey towards IELTS Band 7.5+ today.
-          </h1>
-
-          <p className="text-sm text-zinc-300 leading-relaxed font-normal">
-            Create an account to access custom study paths, simulated computer-delivered test environments, and comprehensive AI analytics.
-          </p>
-
-          <div className="grid grid-cols-2 gap-4 pt-2">
-            <div className="p-3.5 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-1">
-              <Target className="w-5 h-5 text-red-500" />
-              <h4 className="text-xs font-bold text-white">Targeted Band</h4>
-              <p className="text-[11px] text-zinc-400">Set precise targets from 6.0 to 8.5+</p>
-            </div>
-            <div className="p-3.5 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-1">
-              <Zap className="w-5 h-5 text-red-500" />
-              <h4 className="text-xs font-bold text-white">Fast Evaluation</h4>
-              <p className="text-[11px] text-zinc-400">Realtime grading in under 5 seconds</p>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-950 dark:text-white">
+              Edu<span className="text-red-600">Sphere</span>
+            </h1>
+            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 mt-1.5 rounded-full bg-red-50 dark:bg-red-950/40 border border-red-200/60 dark:border-red-900/40 text-[11px] font-bold text-red-600 dark:text-red-400">
+              <Sparkles className="w-3 h-3 text-red-500" />
+              <span>Personalized IELTS Roadmap</span>
             </div>
           </div>
         </div>
 
-        {/* Footer info */}
-        <div className="flex items-center gap-2 text-xs text-zinc-500 relative z-10 font-bold">
-          <ShieldCheck className="w-4 h-4 text-red-600" />
-          <span>Enterprise Grade Security & Token Rotation</span>
-        </div>
-      </div>
-
-      {/* Right form column */}
-      <div className="flex-1 flex items-center justify-center p-6 md:p-12 relative z-10">
-        <div className="w-full max-w-md space-y-6">
-          <div className="text-center md:text-left space-y-1">
-            <h2 className="text-2xl font-black tracking-tight text-zinc-950 dark:text-white">
-              Create your account
+        {/* Centered Main Form Card */}
+        <div className="p-7 sm:p-8 rounded-3xl bg-white/95 dark:bg-zinc-900/90 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800 shadow-2xl shadow-zinc-200/60 dark:shadow-black/60">
+          <div className="mb-5 space-y-1 text-center">
+            <h2 className="text-xl font-black tracking-tight text-zinc-950 dark:text-white">
+              Create an Account
             </h2>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
               Join EduSphere and unlock AI-powered IELTS preparation.
             </p>
           </div>
 
-          <div className="p-8 rounded-3xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-none">
-            <RegisterForm />
-          </div>
+          <RegisterForm />
         </div>
+
+        {/* Footer Note */}
+        <p className="text-center text-[11px] font-medium text-zinc-400 dark:text-zinc-600">
+          IELTS Official Prep Platform • Academic & General Training
+        </p>
       </div>
     </div>
   )

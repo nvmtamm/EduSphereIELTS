@@ -25,3 +25,17 @@ export interface RegisterRequest {
   password: string
   targetBandScore?: number
 }
+
+export interface GoogleLoginRequest {
+  idToken: string
+}
+
+export interface ForgotPasswordRequest {
+  email: string
+}
+
+export interface ResetPasswordRequest {
+  email: string
+  token: string
+  newPassword: string
+}

@@ -8,6 +8,7 @@ interface AuthContextType {
   isLoading: boolean
   login: (credentials: LoginRequest) => Promise<void>
   register: (data: RegisterRequest) => Promise<void>
+  loginWithGoogle: (idToken: string) => Promise<void>
   logout: () => void
   updateTargetScore: (score: number) => Promise<void>
 }
@@ -81,6 +82,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }
 
+  const loginWithGoogle = async (idToken: string) => {
+    setIsLoading(true)
+    try {
+      const response = await authApi.googleLogin(idToken)
+      localStorage.setItem('edusphere_access_token', response.accessToken)
+      localStorage.setItem('edusphere_refresh_token', response.refreshToken)
+      localStorage.setItem('edusphere_user', JSON.stringify(response.user))
+      setUser(response.user)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const updateTargetScore = async (score: number) => {
     await authApi.updateTargetScore(score)
     if (user) {
@@ -98,6 +112,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading,
         login,
         register,
+        loginWithGoogle,
         logout,
         updateTargetScore
       }}

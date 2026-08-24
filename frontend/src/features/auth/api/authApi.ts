@@ -25,5 +25,20 @@ export const authApi = {
   updateTargetScore: async (targetBandScore: number): Promise<number> => {
     const response = await apiClient.put<number>('/auth/target-score', { targetBandScore })
     return response.data
+  },
+
+  googleLogin: async (idToken: string): Promise<AuthResponse> => {
+    const response = await apiClient.post<AuthResponse>('/auth/google', { idToken })
+    return response.data
+  },
+
+  forgotPassword: async (email: string): Promise<string> => {
+    const response = await apiClient.post<string>('/auth/forgot-password', { email })
+    return response.data
+  },
+
+  resetPassword: async (data: { email: string; token: string; newPassword: string }): Promise<string> => {
+    const response = await apiClient.post<string>('/auth/reset-password', data)
+    return response.data
   }
 }

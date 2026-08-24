@@ -21,19 +21,23 @@ export const ExamTimer: React.FC<ExamTimerProps> = ({ initialSeconds, onTimeUp, 
 
     const interval = setInterval(() => {
       setSecondsLeft((prev) => {
-        const next = prev - 1
-        onTick?.(next)
-        if (next <= 0) {
+        if (prev <= 1) {
           clearInterval(interval)
-          onTimeUp()
           return 0
         }
-        return next
+        return prev - 1
       })
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [secondsLeft, isPaused, onTimeUp, onTick])
+  }, [isPaused, secondsLeft, onTimeUp])
+
+  useEffect(() => {
+    if (secondsLeft === 0) {
+      onTimeUp()
+    }
+    onTick?.(secondsLeft)
+  }, [secondsLeft, onTick, onTimeUp])
 
   const minutes = Math.floor(secondsLeft / 60)
   const seconds = secondsLeft % 60
