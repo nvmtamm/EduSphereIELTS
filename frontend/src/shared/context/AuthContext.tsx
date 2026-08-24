@@ -11,6 +11,7 @@ interface AuthContextType {
   loginWithGoogle: (idToken: string) => Promise<void>
   logout: () => void
   updateTargetScore: (score: number) => Promise<void>
+  updateUser: (updatedUser: User) => void
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -104,6 +105,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }
 
+  const updateUser = (updatedUser: User) => {
+    setUser(updatedUser)
+    localStorage.setItem('edusphere_user', JSON.stringify(updatedUser))
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -114,7 +120,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         register,
         loginWithGoogle,
         logout,
-        updateTargetScore
+        updateTargetScore,
+        updateUser
       }}
     >
       {children}

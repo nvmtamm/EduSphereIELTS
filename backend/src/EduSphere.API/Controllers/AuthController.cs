@@ -1,9 +1,11 @@
+using EduSphere.Application.Features.Auth.Commands.ChangePassword;
 using EduSphere.Application.Features.Auth.Commands.ForgotPassword;
 using EduSphere.Application.Features.Auth.Commands.GoogleLogin;
 using EduSphere.Application.Features.Auth.Commands.Login;
 using EduSphere.Application.Features.Auth.Commands.RefreshToken;
 using EduSphere.Application.Features.Auth.Commands.Register;
 using EduSphere.Application.Features.Auth.Commands.ResetPassword;
+using EduSphere.Application.Features.Auth.Commands.UpdateProfile;
 using EduSphere.Application.Features.Auth.Commands.UpdateTargetScore;
 using EduSphere.Application.Features.Auth.Models;
 using EduSphere.Application.Features.Auth.Queries.GetProfile;
@@ -84,6 +86,28 @@ public class AuthController : ApiControllerBase
     }
 
     [Authorize]
+    [HttpPut("profile")]
+    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDto dto, CancellationToken ct)
+    {
+        var result = await Mediator.Send(new UpdateProfileCommand(CurrentUserId, dto.FullName, dto.TargetBandScore), ct);
+        return HandleResult(result);
+    }
+
+    [Authorize]
+    [HttpPost("change-password")]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto, CancellationToken ct)
+    {
+        var result = await Mediator.Send(new ChangePasswordCommand(CurrentUserId, dto.CurrentPassword, dto.NewPassword), ct);
+        return HandleResult(result);
+    }
+
+    [Authorize]
     [HttpPut("target-score")]
     [ProducesResponseType(typeof(float), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -95,4 +119,6 @@ public class AuthController : ApiControllerBase
     }
 }
 
+public record UpdateProfileDto(string FullName, float? TargetBandScore);
+public record ChangePasswordDto(string CurrentPassword, string NewPassword);
 public record UpdateTargetScoreDto(float TargetBandScore);

@@ -39,3 +39,13 @@ export interface ResetPasswordRequest {
   token: string
   newPassword: string
 }
+
+export interface UpdateProfileRequest {
+  fullName: string
+  targetBandScore?: number
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string
+  newPassword: string
+}
