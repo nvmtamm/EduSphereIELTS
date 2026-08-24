@@ -14,6 +14,9 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Load centralized root .env file for secrets & configuration
+EnvLoader.LoadRootEnv(builder.Configuration);
+
 // 1. Configure Serilog Structured Logging
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
