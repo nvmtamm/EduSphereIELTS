@@ -1,6 +1,9 @@
+using EduSphere.Application.Features.Auth.Commands.ForgotPassword;
+using EduSphere.Application.Features.Auth.Commands.GoogleLogin;
 using EduSphere.Application.Features.Auth.Commands.Login;
 using EduSphere.Application.Features.Auth.Commands.RefreshToken;
 using EduSphere.Application.Features.Auth.Commands.Register;
+using EduSphere.Application.Features.Auth.Commands.ResetPassword;
 using EduSphere.Application.Features.Auth.Commands.UpdateTargetScore;
 using EduSphere.Application.Features.Auth.Models;
 using EduSphere.Application.Features.Auth.Queries.GetProfile;
@@ -29,6 +32,33 @@ public class AuthController : ApiControllerBase
     [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Login([FromBody] LoginCommand command, CancellationToken ct)
+    {
+        var result = await Mediator.Send(command, ct);
+        return HandleResult(result);
+    }
+
+    [HttpPost("google")]
+    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginCommand command, CancellationToken ct)
+    {
+        var result = await Mediator.Send(command, ct);
+        return HandleResult(result);
+    }
+
+    [HttpPost("forgot-password")]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command, CancellationToken ct)
+    {
+        var result = await Mediator.Send(command, ct);
+        return HandleResult(result);
+    }
+
+    [HttpPost("reset-password")]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command, CancellationToken ct)
     {
         var result = await Mediator.Send(command, ct);
         return HandleResult(result);

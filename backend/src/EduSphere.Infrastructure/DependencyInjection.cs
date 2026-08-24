@@ -20,7 +20,7 @@ public static class DependencyInjection
 
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
-        // 2. Redis Distributed Cache Setup
+        // 2. Redis Distributed Cache Setup (with Memory Cache Fallback)
         var redisConnectionString = configuration.GetConnectionString("Redis");
         if (!string.IsNullOrWhiteSpace(redisConnectionString))
         {
@@ -30,10 +30,16 @@ public static class DependencyInjection
                 options.InstanceName = "EduSphere_";
             });
         }
+        else
+        {
+            services.AddDistributedMemoryCache();
+        }
 
         // 3. Security & Cryptography Services
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IJwtService, JwtService>();
+        services.AddScoped<IGoogleAuthService, GoogleAuthService>();
+        services.AddScoped<IEmailSender, SmtpEmailSender>();
 
         // 4. Domain & Scoring Services
         services.AddScoped<IReadingScoringService, ReadingScoringService>();
