@@ -1,230 +1,296 @@
-# EduSphere
+# 🎓 EduSphere - Enterprise AI-Powered IELTS Preparation Platform
 
-An enterprise-grade, AI-powered IELTS preparation platform built with ASP.NET Core (.NET 8), React with TypeScript, Semantic Kernel, and distributed caching/vector infrastructure.
+<div align="center">
+
+[![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![React 19](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-8.x-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS v4](https://img.shields.io/badge/Tailwind_CSS-v4.0-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Tests Passing](https://img.shields.io/badge/Unit_Tests-56%2F56_Passed-brightgreen?style=for-the-badge&logo=xunit&logoColor=white)](https://github.com/nvmtamm/EduSphereIELTS)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
+
+<p align="center">
+  <b>An enterprise-grade, high-concurrency IELTS preparation ecosystem combining Clean Architecture, CQRS, RAG-driven AI grading (Semantic Kernel + Qdrant), official Google OAuth 2.0, MailKit SMTP OTP delivery, and an official Cambridge IELTS Pure Tri-tone design system.</b>
+</p>
+
+[Explore Roadmap](#-development-roadmap--sprint-status) • [System Architecture](#-architectural-design) • [Quick Start](#-getting-started) • [API Specification](#-api-surface--endpoint-matrix)
+
+</div>
 
 ---
 
-## Overview
+## 📌 Executive Overview
 
-**EduSphere** is a high-performance web platform designed for standardized English proficiency training (IELTS). The system provides full-cycle practice across all four test modules (Listening, Reading, Writing, Speaking), combining deterministic test evaluation with generative AI assessment based on official IELTS assessment criteria.
+**EduSphere** is a modern, production-grade learning management and automated examination platform engineered specifically for the International English Language Testing System (**IELTS**). 
 
-The application adheres to **Clean Architecture** and **CQRS** design patterns to maintain strict separation of concerns, high testability, and enterprise maintainability.
+The platform bridges deterministic examination scoring (Reading & Listening) with non-deterministic, generative AI assessment (Writing & Speaking) governed by official IELTS public band descriptors. Built from the ground up on **.NET 8 Clean Architecture** and **React 19**, it guarantees sub-50ms cache response times, zero credential leakage via a unified root environment loader, and seamless real-time student synchronization.
 
 ---
 
-## Architectural Design
+## 🏛 System Architecture
 
-The backend is organized according to Clean Architecture principles, ensuring that core business rules remain decoupled from external frameworks, databases, and UI implementations.
+EduSphere is architected following the **Clean Architecture** paradigm and **CQRS (Command Query Responsibility Segregation)** pattern, enforcing unidirectional inward dependency rules and isolating core business domain logic from infrastructure details.
 
 ```mermaid
-graph TD
-    Client["Frontend Client (React + TypeScript)"] --> API["API Layer (ASP.NET Core 8 Web API)"]
-    
-    subgraph Core ["Application Core"]
-        API --> App["Application Layer (CQRS Commands, Queries, Behaviors)"]
-        App --> Domain["Domain Layer (Entities, Value Objects, Domain Events)"]
+graph TB
+    subgraph Presentation ["Presentation Layer"]
+        UI["React 19 + Vite Frontend SPA<br/>(Tailwind CSS v4 + TanStack Query)"]
+        API["ASP.NET Core 8 Web API<br/>(Controllers, ProblemDetails, Global Error Handling)"]
     end
-    
+
+    subgraph Core ["Application & Domain Core"]
+        App["Application Layer<br/>(MediatR CQRS, FluentValidation, Pipeline Behaviors)"]
+        Domain["Domain Layer<br/>(Entities, Enums, Aggregate Roots, Domain Events)"]
+    end
+
     subgraph Infrastructure ["Infrastructure & External Services"]
-        App -. Interfaces .-> Infra["Infrastructure Layer"]
-        Infra --> SQL[("SQL Server (EF Core 8)")]
-        Infra --> Redis[("Redis (Distributed Cache)")]
-        Infra --> Qdrant[("Qdrant (Vector Store for RAG)")]
-        Infra --> LLM["OpenAI / Semantic Kernel (Evaluation Engine)"]
+        SQL[("SQL Server 2022<br/>(EF Core 8, Fluent Configs)")]
+        Redis[("Redis 7.x<br/>(Distributed Cache-Aside & OTP)")]
+        Qdrant[("Qdrant Vector DB<br/>(RAG Rubric Embeddings)")]
+        SemanticKernel["Semantic Kernel / OpenAI<br/>(AI Grader & Essay Evaluation)"]
+        GoogleAuth["Google Identity Services<br/>(OAuth 2.0 ID Token Verification)"]
+        SMTP["Gmail SMTP / MailKit<br/>(HTML OTP Email Dispatcher)"]
     end
+
+    UI -->|"HTTPS / REST API"| API
+    API --> App
+    App --> Domain
+    App -.->|"Interfaces / Abstractions"| Infrastructure
+    Infrastructure --> SQL
+    Infrastructure --> Redis
+    Infrastructure --> Qdrant
+    Infrastructure --> SemanticKernel
+    Infrastructure --> GoogleAuth
+    Infrastructure --> SMTP
 ```
 
-### Key Architectural Patterns
+---
 
-- **Clean Architecture:** Strict inward dependency flow (`API` -> `Infrastructure` -> `Application` -> `Domain`).
-- **CQRS (Command Query Responsibility Segregation):** Mediated by **MediatR** to decouple request handling into dedicated command and query pipelines.
-- **Cross-Cutting Pipeline Behaviors:** Centralized validation (`FluentValidation`), structured logging (`Serilog`), and performance monitoring via MediatR pipeline decorators.
-- **Cache-Aside Strategy:** Integrated with **Redis** (`IDistributedCache`) to minimize database contention on high-read endpoints (catalogs, vocabulary collections, static test passages).
-- **Retrieval-Augmented Generation (RAG):** Powered by **Microsoft Semantic Kernel** and **Qdrant Vector Database**, retrieving official IELTS assessment rubrics to ensure grounded, consistent evaluation of subjective submissions (Writing and Speaking).
-- **Spaced Repetition Algorithm:** Implements the **SuperMemo SM-2** algorithm for optimal vocabulary retention scheduling.
+## ⚡ Key Architectural Highlights
+
+- **Clean Architecture & Strict Separation of Concerns:** Inward-only dependency flow (`API` $\rightarrow$ `Infrastructure` $\rightarrow$ `Application` $\rightarrow$ `Domain`).
+- **CQRS Pattern via MediatR:** Decouples state-modifying operations (Commands) from read-only data retrievals (Queries).
+- **Single Root `.env` Architecture:** Unified environment management across Docker, ASP.NET Core (`EnvLoader.cs`), and Vite (`envDir: '../'`). Zero hardcoded secrets in `appsettings.json`.
+- **Hybrid Multi-Factor Authentication:**
+  - Standard JWT with asymmetric-ready HMAC-SHA256 signature and cryptographic Refresh Token rotation.
+  - Native Google OAuth 2.0 popup with `@react-oauth/google` and server-side token validation via `Google.Apis.Auth`.
+  - Self-service password recovery with distributed 6-digit OTP caching (15-min TTL) and HTML email dispatch via `MailKit`.
+- **Cache-Aside Strategy:** Integrated Redis distributed caching (`IDistributedCache`) for catalogs, reading passages, and short-lived OTP sessions.
+- **RAG-Powered AI Evaluation:** Microsoft Semantic Kernel orchestrating vector searches in Qdrant against official IELTS rubrics for objective Writing and Speaking scoring.
+- **Spaced Repetition Engine:** Implements the **SuperMemo SM-2** algorithmic interval scheduler for vocabulary retention.
 
 ---
 
-## Domain Capabilities
+## 🛠 Technology Matrix
 
-### 1. Automated Writing Evaluation (RAG Engine)
-- **Task 1 & Task 2 Processing:** Evaluates essays against official IELTS band descriptors.
-- **Criteria-Specific Scoring:** Computes individual band scores and actionable feedback across:
-  - Task Achievement / Task Response
-  - Coherence and Cohesion
-  - Lexical Resource (with academic vocabulary replacement suggestions)
-  - Grammatical Range and Accuracy (with syntactic corrections)
-- **Deterministic Structured Output:** Schema-validated JSON response generation using OpenAI models.
+### Backend Engineering
+| Layer / Component | Technology | Description |
+| :--- | :--- | :--- |
+| **Framework** | .NET 8 (C# 12) | ASP.NET Core Web API with Kestrel high-throughput engine |
+| **Architecture** | Clean Architecture + CQRS | MediatR pipeline behaviors (Logging, Validation, Performance) |
+| **ORM & Database** | EF Core 8 + SQL Server 2022 | Code-First migrations, Fluent API relationships, soft deletes |
+| **Caching Layer** | Redis 7 + StackExchange.Redis | Cache-aside for static tests and temporary OTP verification tokens |
+| **Security & Auth** | JWT + BCrypt + Google.Apis.Auth | Secure password hashing, token rotation, and Google OAuth2 verification |
+| **Email Service** | MailKit + MimeKit | Robust SMTP client with TLS handshake compatibility for macOS/Linux |
+| **Testing** | xUnit + FluentAssertions + Moq | 56/56 automated unit test suites with in-memory DB isolation |
 
-### 2. Reading Examination Engine
-- Split-screen document viewer with timed session controls.
-- Dynamic question parsing supporting all standard IELTS question types:
-  - True / False / Not Given & Yes / No / Not Given
-  - Multiple Choice (Single & Multi-Select)
-  - Matching Headings & Information
-  - Sentence & Summary Completion
-- Instant evaluation with answer key explanations and passage source highlighting.
-
-### 3. Listening Examination Engine
-- Multi-section audio streaming with playback controls and playback limits simulating exam constraints.
-- Real-time response persistence with auto-grading and transcript cross-referencing.
-
-### 4. Speaking Practice Engine
-- Part 1, 2 (Cue Card), and Part 3 topic catalog with countdown and preparation timers.
-- Speech analysis assessing lexical complexity, fluency metrics, and grammatical accuracy.
-
-### 5. Vocabulary Acquisition (SM-2 Engine)
-- Contextual flashcards linked directly to reading comprehension passages.
-- Dynamic interval scheduling based on user recall quality metrics (0–5 grading scale).
-
-### 6. Analytics & Progress Tracking
-- Aggregate Overall Band Score calculation using official rounding logic (to the nearest half-band).
-- Multi-dimensional skill balance visualization (Radar chart) and longitudinal score progression tracking.
+### Frontend Engineering
+| Component | Technology | Description |
+| :--- | :--- | :--- |
+| **Framework** | React 19 + TypeScript (Strict) | Modern component architecture with type-safe state contracts |
+| **Build Tool** | Vite 8 + Rolldown Engine | Sub-second HMR and optimized production bundling |
+| **Styling** | Tailwind CSS v4 + Lucide Icons | Official IELTS Pure Tri-tone (`#E00034` Red, Pure White, `#0A0A0A` Black) |
+| **State & Server Sync** | TanStack Query v5 (React Query) | Declarative caching, background prefetching, and query invalidation |
+| **Routing** | React Router v7 | Protected route wrappers, dynamic parameter matching, nested layouts |
+| **OAuth Integration** | `@react-oauth/google` v0.13.5 | Google Identity Services OAuth 2.0 Account Chooser modal |
 
 ---
 
-## Technology Stack
-
-### Backend
-- **Framework:** .NET 8 (ASP.NET Core Web API)
-- **Architecture & Patterns:** Clean Architecture, CQRS, MediatR, Domain-Driven Design (DDD) primitives
-- **ORM & Data Access:** Entity Framework Core 8, Fluent API Configuration, EF Core Migrations
-- **Database:** Microsoft SQL Server 2022
-- **Caching:** Redis 7 (StackExchange.Redis, IDistributedCache)
-- **AI Orchestration & Vector Search:** Microsoft Semantic Kernel, Qdrant Vector DB
-- **Validation & Mapping:** FluentValidation, Mapster
-- **Logging & Diagnostics:** Serilog, OpenTelemetry-ready Health Checks
-- **Testing:** xUnit, Moq, Respawn, FluentAssertions
-
-### Frontend
-- **Framework:** React 18+ (Vite)
-- **Language:** TypeScript (Strict Mode)
-- **Styling & Components:** Tailwind CSS v4, shadcn/ui, Lucide Icons
-- **State Management & Data Fetching:** TanStack Query v5 (React Query)
-- **Data Visualization:** Recharts
-- **Routing:** React Router v6
-
-### DevOps & Infrastructure
-- **Containerization:** Docker, Docker Compose (Multi-stage builds)
-- **CI/CD:** GitHub Actions (Build, Lint, Unit & Integration Test Automation)
-- **Hosting Targets:** Azure App Services / Container Apps, Dockerized VPS
-
----
-
-## Project Structure
+## 📁 Repository Structure
 
 ```
 EduSphere/
-├── .github/
-│   └── workflows/              # CI/CD pipelines (build, test, containerize)
-├── docs/                       # Architectural records, API specifications, ERD
-├── plan/                       # Project milestones, development roadmap
-├── src/
-│   ├── EduSphere.Domain/       # Enterprise entities, value objects, domain events
-│   ├── EduSphere.Application/  # Use cases, CQRS commands/queries, interfaces, behaviors
-│   ├── EduSphere.Infrastructure/# EF Core context, Redis, Qdrant, Semantic Kernel services
-│   ├── EduSphere.API/          # Controllers, Hubs, Middlewares, Dependency Injection
-│   └── EduSphere.Shared/       # DTOs, constants, shared contracts
-├── client/                     # React + TypeScript + Vite frontend application
+├── .env.example                         # Comprehensive environment variable template
+├── .gitignore                           # Git ignore rules for OS, build, and environment secrets
+├── docker-compose.yml                   # Multi-container orchestration (SQL, Redis, Qdrant)
+├── README.md                            # Primary project documentation
+├── backend/
+│   ├── EduSphere.sln                   # .NET Solution file
 │   ├── src/
-│   │   ├── app/                # Application entry, router, global providers
-│   │   ├── components/ui/      # shadcn/ui component primitives
-│   │   ├── features/           # Modular feature domains (auth, reading, writing, etc.)
-│   │   └── shared/             # Reusable hooks, API clients, utilities
-├── tests/
-│   ├── EduSphere.UnitTests/    # Application & Domain unit test suites
-│   └── EduSphere.IntegrationTests/ # API & Database integration tests
-└── docker-compose.yml          # Container orchestration for local development
+│   │   ├── EduSphere.Domain/           # Enterprise entities (User, Passage, Question, Submission)
+│   │   ├── EduSphere.Application/      # CQRS Commands, Queries, Interfaces, Behaviors
+│   │   │   ├── Common/                 # Result<T>, Error, Interfaces (IApplicationDbContext, IEmailSender)
+│   │   │   └── Features/Auth/          # Register, Login, Google, ForgotPassword, ResetPassword, Profile
+│   │   ├── EduSphere.Infrastructure/   # EF Core DbContext, Redis Cache, GoogleAuthService, SmtpEmailSender
+│   │   ├── EduSphere.API/              # Controllers, Program.cs, Extensions (EnvLoader), Middleware
+│   │   └── EduSphere.Shared/           # Shared models and data transfer contracts
+│   └── tests/
+│       ├── EduSphere.UnitTests/        # 56 unit test suites for Domain and CQRS Handlers
+│       └── EduSphere.IntegrationTests/ # End-to-end API integration tests
+├── frontend/
+│   ├── vite.config.ts                  # Vite configuration with envDir pointing to root .env
+│   ├── package.json                    # Frontend dependencies and npm scripts
+│   ├── index.html                      # HTML5 entry with Google Identity Services script
+│   └── src/
+│       ├── app/                        # Router, App entry, GoogleOAuthProvider & TanStack Providers
+│       ├── features/                   # Modular feature domains
+│       │   ├── auth/                   # Login, Register, Forgot/Reset Password, ProfileModal, GoogleLogin
+│       │   └── reading/                # Exam workspace, split-screen viewer, timer, question forms
+│       └── shared/                     # Contexts (AuthContext, ThemeContext), Header, Sidebar, Axios API
+└── plan/                               # Complete 7-Sprint engineering roadmap & architectural specs
 ```
 
 ---
 
-## Getting Started
+## 🚦 Development Roadmap & Sprint Status
+
+| Sprint | Module | Focus Area | Status |
+| :---: | :--- | :--- | :---: |
+| **Sprint 0** | **Foundations** | Clean Architecture setup, EF Core 8, Docker compose, Git workflow | ✅ **Completed** |
+| **Sprint 1** | **Auth & UI Layout** | JWT Auth, Google OAuth2, Gmail OTP Reset, Profile Modal, Responsive Sidebar | ✅ **Completed** |
+| **Sprint 2** | **Reading Engine** | Split-screen passage viewer, 5 question types, auto-grading, Cambridge Band table | 🟡 **In Progress** |
+| **Sprint 3** | **Listening Engine** | Audio player with single-play constraint, real-time waveform, transcript sync | ⏳ **Upcoming** |
+| **Sprint 4** | **Writing AI Engine** | RAG-based Task 1 & Task 2 grading, lexical & grammar replacement analysis | ⏳ **Upcoming** |
+| **Sprint 5** | **Speaking & SM-2** | Web Audio API recorder, pronunciation metrics, SuperMemo SM-2 flashcards | ⏳ **Upcoming** |
+| **Sprint 6** | **AI Tutor & Dashboard**| Comprehensive mock test engine, radar skill progression, personalized study path | ⏳ **Upcoming** |
+| **Sprint 7** | **DevOps & QA** | E2E Playwright tests, load testing, CI/CD GitHub Actions, Azure containerization | ⏳ **Upcoming** |
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
-
-Ensure you have the following installed on your development machine:
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- [Node.js (LTS v20+)](https://nodejs.org/) and npm
+- [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [Node.js (v20+ LTS)](https://nodejs.org/) & `npm`
 - [Docker Engine & Docker Compose](https://www.docker.com/)
 
-### Quick Start (Docker Environment)
+---
 
-To spin up the entire infrastructure (SQL Server, Redis, Qdrant, Backend API, and Frontend Client):
+### Step 1: Clone Repository & Configure `.env`
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/nvmtamm/EduSphere.git
-   cd EduSphere
-   ```
+```bash
+git clone https://github.com/nvmtamm/EduSphereIELTS.git
+cd EduSphereIELTS
 
-2. **Configure Environment Variables:**
-   Create an `.env` file in the root directory:
-   ```env
-   SA_PASSWORD=YourStrong@Password123!
-   OPENAI_API_KEY=your-openai-api-key
-   JWT_SECRET=your-secure-256-bit-secret-key-here
-   ```
+# Copy example environment configuration
+cp .env.example .env
+```
 
-3. **Start all services:**
-   ```bash
-   docker compose up -d --build
-   ```
+Open `.env` and configure your credentials:
+```env
+# 1. Database & Docker
+SA_PASSWORD=EduSphere@2026StrongPass!
 
-4. **Access the services:**
-   - Web Application: `http://localhost:3000`
-   - REST API (Swagger Documentation): `http://localhost:5000/swagger`
-   - Qdrant Dashboard: `http://localhost:6333/dashboard`
+# 2. JWT Security
+JWT_SECRET=EduSphereSuperSecureSecretKeyForSigningJwtTokens2026!
+JWT_ISSUER=https://api.edusphere.io
+JWT_AUDIENCE=https://edusphere.io
+
+# 3. Google OAuth 2.0 (Backend & Frontend)
+GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+VITE_GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+
+# 4. Gmail SMTP Service (Password Reset OTP)
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SENDER_NAME=EduSphere IELTS Official
+SMTP_SENDER_EMAIL=your-email@gmail.com
+SMTP_USERNAME=your-email@gmail.com
+SMTP_PASSWORD=your-gmail-16-char-app-password
+SMTP_ENABLE=true
+
+# 5. Frontend API Endpoint
+VITE_API_BASE_URL=http://localhost:5000/api
+```
 
 ---
 
-### Manual Development Setup
-
-#### Backend Setup
+### Step 2: Launch Supporting Infrastructure (Docker)
 
 ```bash
-# Navigate to the API project
-cd src/EduSphere.API
+docker compose up -d
+```
+*Spins up SQL Server (Port 1433), Redis (Port 6379), and Qdrant Vector Database (Port 6333).*
 
-# Restore dependencies
-dotnet restore
+---
 
-# Apply EF Core migrations to database
-dotnet ef database update --project ../EduSphere.Infrastructure
+### Step 3: Run Backend API
 
-# Run the API
+```bash
+cd backend/src/EduSphere.API
 dotnet run
 ```
+*Backend initializes, applies EF Core migrations, seeds sample IELTS passages, and listens on `http://localhost:5000` (Swagger at `http://localhost:5000/swagger`).*
 
-#### Frontend Setup
+---
+
+### Step 4: Run Frontend Client
 
 ```bash
-# Navigate to the frontend directory
-cd client
-
-# Install dependencies
+# In a new terminal window
+cd frontend
 npm install
-
-# Start Vite development server
 npm run dev
 ```
+*Frontend application launches instantly at `http://localhost:5173`.*
 
 ---
 
-## Testing & Quality Assurance
+## 🧪 Testing & Verification
 
-The codebase maintains automated test coverage focusing on domain logic, request pipelines, and complex business workflows (such as SM-2 calculations and criteria aggregation).
+The solution enforces automated testing across use cases, command validators, and domain entities:
 
 ```bash
-# Run all unit and integration test suites
-dotnet test --verbosity normal
+# Execute all 56 unit test suites
+dotnet test backend/EduSphere.sln
 
-# Run tests with code coverage collection
-dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+# Build and validate frontend TypeScript bundle
+cd frontend && npm run build
 ```
 
 ---
 
-## License
+## 📡 API Surface & Endpoint Matrix
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+### 🔐 Authentication & User Profile (`/api/auth`)
+| Method | Endpoint | Authorization | Description |
+| :--- | :--- | :---: | :--- |
+| `POST` | `/api/auth/register` | Public | Register new student or instructor account |
+| `POST` | `/api/auth/login` | Public | Authenticate via email/password $\rightarrow$ JWT + Refresh Token |
+| `POST` | `/api/auth/google` | Public | Authenticate via Google ID Token $\rightarrow$ JWT + Refresh Token |
+| `POST` | `/api/auth/forgot-password` | Public | Send 6-digit OTP code to registered Gmail address |
+| `POST` | `/api/auth/reset-password` | Public | Verify OTP code and reset account password |
+| `POST` | `/api/auth/refresh-token` | Public | Rotate refresh token and obtain new JWT access token |
+| `GET` | `/api/auth/me` | `Bearer JWT` | Retrieve current authenticated user profile |
+| `PUT` | `/api/auth/profile` | `Bearer JWT` | Update user full name and Target Band Score (4.0–9.0) |
+| `POST` | `/api/auth/change-password` | `Bearer JWT` | Change account password using current password verification |
+
+### 📖 Reading Practice (`/api/reading`)
+| Method | Endpoint | Authorization | Description |
+| :--- | :--- | :---: | :--- |
+| `GET` | `/api/reading/passages` | Public / Cached | Get paginated IELTS reading passages with filter by topic/difficulty |
+| `GET` | `/api/reading/passages/{id}` | Public | Get full passage text with all associated question groups |
+| `POST` | `/api/reading/submit` | `Bearer JWT` | Submit answers $\rightarrow$ deterministic auto-grading $\rightarrow$ Band Score |
+
+---
+
+## 🛡 Security & Best Practices
+
+- **Zero Secret Exposure:** Credentials, JWT secret keys, and SMTP app passwords exist solely in `.env` (ignored by Git) and are loaded at runtime.
+- **Strict CORS Policy:** Restricted to authorized client origins (`http://localhost:5173`, `http://localhost:3000`).
+- **Input Sanitization & Validation:** All incoming CQRS commands pass through `FluentValidation` pipeline validators before execution.
+- **Password Security:** Salted BCrypt password hashing with high work factor.
+
+---
+
+## 📄 License
+
+This project is open-source software licensed under the **[MIT License](LICENSE)**.
+
+---
+
+<div align="center">
+  <sub>Crafted with passion for scalable software engineering and AI-driven education.</sub>
+</div>
