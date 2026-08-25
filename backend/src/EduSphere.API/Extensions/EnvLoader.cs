@@ -76,8 +76,26 @@ public static class EnvLoader
                 case "GEMINI_API_KEY":
                     inMemoryConfig["Gemini:ApiKey"] = val;
                     break;
-                case "GEMINI_API_KEYS_POOL":
-                    inMemoryConfig["Gemini:ApiKeysPool"] = val;
+                case "GEMINI_API_KEY_INGESTION":
+                    inMemoryConfig["Gemini:IngestionKey"] = val;
+                    break;
+                case "GEMINI_API_KEY_STRUCTURING":
+                    inMemoryConfig["Gemini:StructuringKey"] = val;
+                    break;
+                case "GEMINI_API_KEY_PARSER":
+                    inMemoryConfig["Gemini:ParserKey"] = val;
+                    break;
+                case "GEMINI_API_KEY_VERIFIER":
+                    inMemoryConfig["Gemini:VerifierKey"] = val;
+                    break;
+                case "GEMINI_API_KEY_RAG_TUTOR":
+                    inMemoryConfig["Gemini:RAGTutorKey"] = val;
+                    break;
+                case "GEMINI_API_KEY_EMBEDDING":
+                    inMemoryConfig["Gemini:EmbeddingKey"] = val;
+                    break;
+                case "GEMINI_API_KEY_GENERATOR":
+                    inMemoryConfig["Gemini:GeneratorKey"] = val;
                     break;
                 case "GEMINI_CHAT_MODEL":
                     inMemoryConfig["Gemini:ChatModel"] = val;
