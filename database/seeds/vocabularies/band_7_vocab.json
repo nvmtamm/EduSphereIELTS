@@ -1,0 +1,46 @@
+[
+  {
+    "bandTier": "Band7_0_7_5",
+    "word": "Ubiquitous",
+    "phonetic": "/juːˈbɪk.wɪ.təs/",
+    "meaning": "Có mặt ở khắp mọi nơi cùng một lúc (Present, appearing, or found everywhere).",
+    "partOfSpeech": "Adjective",
+    "academicLevel": "C1",
+    "exampleSentence": "Smartphones have become ubiquitous across modern urban society, revolutionizing daily communication.",
+    "collocations": ["ubiquitous presence", "ubiquitous phenomenon", "increasingly ubiquitous"],
+    "synonyms": ["omnipresent", "pervasive", "universal"]
+  },
+  {
+    "bandTier": "Band7_0_7_5",
+    "word": "Empirical",
+    "phonetic": "/ɪmˈpɪr.ɪ.kəl/",
+    "meaning": "Dựa trên thực nghiệm và quan sát thực tế thay vì lý thuyết thuần túy.",
+    "partOfSpeech": "Adjective",
+    "academicLevel": "C1",
+    "exampleSentence": "The researchers gathered extensive empirical evidence to substantiate their hypothesis on climate change.",
+    "collocations": ["empirical evidence", "empirical study", "empirical data"],
+    "synonyms": ["observational", "experimental", "verifiable"]
+  },
+  {
+    "bandTier": "Band7_0_7_5",
+    "word": "Exacerbate",
+    "phonetic": "/ɪɡˈzæs.ə.beɪt/",
+    "meaning": "Làm trầm trọng thêm, làm xấu đi một tình trạng hoặc vấn đề đã tồi tệ.",
+    "partOfSpeech": "Verb",
+    "academicLevel": "C1",
+    "exampleSentence": "Rapid deforestation and soil degradation exacerbate global warming by reducing carbon absorption.",
+    "collocations": ["exacerbate the problem", "exacerbate tensions", "further exacerbate"],
+    "synonyms": ["worsen", "aggravate", "intensify"]
+  },
+  {
+    "bandTier": "Band7_0_7_5",
+    "word": "Paradigm",
+    "phonetic": "/ˈpær.ə.daɪm/",
+    "meaning": "Mô hình, kiểu mẫu tư duy hoặc hệ thống chuẩn mực khoa học.",
+    "partOfSpeech": "Noun",
+    "academicLevel": "C1",
+    "exampleSentence": "The advent of quantum computing represents a fundamental paradigm shift in computational physics.",
+    "collocations": ["paradigm shift", "dominant paradigm", "new paradigm"],
+    "synonyms": ["model", "framework", "archetype"]
+  }
+]

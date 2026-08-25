@@ -1,0 +1,45 @@
+{
+  "bandTier": "Band7_0_7_5",
+  "title": "Band 7.0 – 7.5: Academic Nuances & Speed Mastery",
+  "description": "Master multi-clause complex sentences, grammatical inversions, subtle negative traps, and author attitude identification with an optimal reading speed of 250-300 wpm.",
+  "targetSkillsSummary": "Complex Inversions, Author Tone (Critical/Sceptical), Implicit Nuances, Advanced Paraphrasing",
+  "totalMilestones": 5,
+  "vocabularyCount": 1200,
+  "milestones": [
+    {
+      "stepNumber": 1,
+      "title": "Stage 1: Scientific Discourse & Negative Traps",
+      "targetSkill": "Overcoming implicit negative modifiers (rarely, seldom, fail to, overlook)",
+      "passageTitle": "Urban Agriculture and the Future of Food Supply",
+      "minAccuracyToUnlockNext": 75.0
+    },
+    {
+      "stepNumber": 2,
+      "title": "Stage 2: Technological Archaeology & Features Matching",
+      "targetSkill": "Matching Features across multi-researcher historical texts",
+      "passageTitle": "The Secret History of the Antikythera Mechanism",
+      "minAccuracyToUnlockNext": 80.0
+    },
+    {
+      "stepNumber": 3,
+      "title": "Stage 3: Advanced Yes/No/Not Given Claims",
+      "targetSkill": "Differentiating author opinion vs. external empirical evidence",
+      "passageTitle": "Cognitive Neuroscience of Bilingualism",
+      "minAccuracyToUnlockNext": 80.0
+    },
+    {
+      "stepNumber": 4,
+      "title": "Stage 4: Matching Headings under 16 Minutes",
+      "targetSkill": "Time pressure optimization & paragraph thesis synthesis",
+      "passageTitle": "Climate Archeology in the Melting Permafrost",
+      "minAccuracyToUnlockNext": 85.0
+    },
+    {
+      "stepNumber": 5,
+      "title": "Stage 5: Full Cambridge Academic Challenge",
+      "targetSkill": "Simulated exam conditions (3 passages, 40 questions, Band 7.5+ benchmark)",
+      "passageTitle": "Cambridge IELTS 19 Academic Test 1 Reading",
+      "minAccuracyToUnlockNext": 85.0
+    }
+  ]
+}
