@@ -73,6 +73,21 @@ public static class EnvLoader
                 case "JWT_AUDIENCE":
                     inMemoryConfig["Jwt:Audience"] = val;
                     break;
+                case "GEMINI_API_KEY":
+                    inMemoryConfig["Gemini:ApiKey"] = val;
+                    break;
+                case "GEMINI_API_KEYS_POOL":
+                    inMemoryConfig["Gemini:ApiKeysPool"] = val;
+                    break;
+                case "GEMINI_CHAT_MODEL":
+                    inMemoryConfig["Gemini:ChatModel"] = val;
+                    break;
+                case "GEMINI_EMBEDDING_MODEL":
+                    inMemoryConfig["Gemini:EmbeddingModel"] = val;
+                    break;
+                case "QDRANT_URL":
+                    inMemoryConfig["Qdrant:Url"] = val;
+                    break;
             }
         }
 
