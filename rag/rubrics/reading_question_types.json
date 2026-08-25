@@ -1,0 +1,32 @@
+{
+  "questionTypes": [
+    {
+      "type": "TrueFalseNotGiven",
+      "definition": "Assess whether statements agree with factual information in the passage.",
+      "evaluationRules": {
+        "TRUE": "The statement agrees with the information in the passage (identical meaning via paraphrasing).",
+        "FALSE": "The statement directly contradicts or opposes the information in the passage.",
+        "NOT_GIVEN": "There is no information on this statement, or it is impossible to know whether the statement is true or false based solely on the text."
+      },
+      "socraticCoachingGuide": "Prompt the student to find the specific keywords in the text. Ask: 'Does the text directly contradict this claim, or is the text simply silent about this specific detail?'"
+    },
+    {
+      "type": "MatchingHeadings",
+      "definition": "Match numbered headings to paragraphs (A, B, C...) based on the main idea.",
+      "evaluationRules": {
+        "CORRECT": "The heading encapsulates the central theme of the entire paragraph, not just a minor detail or example.",
+        "DISTRACTOR_TRAP": "Headings that contain exact words from the paragraph but represent only an isolated detail or secondary example."
+      },
+      "socraticCoachingGuide": "Ask the student: 'What is the topic sentence and general message of this paragraph? Watch out for headings that mention an exact keyword but only describe one supporting example.'"
+    },
+    {
+      "type": "MultipleChoice",
+      "definition": "Choose the correct answer(s) from options A, B, C, D.",
+      "evaluationRules": {
+        "CORRECT": "Fully supported by the passage context.",
+        "DISTRACTOR": "Presents partial truth, reversed cause-and-effect, or extreme qualifiers (always, never, only) not in the text."
+      },
+      "socraticCoachingGuide": "Guide the student to eliminate distractors with absolute qualifiers (always, completely, only) unless explicitly mentioned in the text."
+    }
+  ]
+}
