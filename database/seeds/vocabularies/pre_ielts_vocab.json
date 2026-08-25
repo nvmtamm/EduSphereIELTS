@@ -1,0 +1,46 @@
+[
+  {
+    "bandTier": "PreIelts",
+    "word": "Routine",
+    "phonetic": "/ruːˈtiːn/",
+    "meaning": "Thói quen hàng ngày, trình tự công việc cố định.",
+    "partOfSpeech": "Noun",
+    "academicLevel": "A1",
+    "exampleSentence": "My daily morning routine includes exercising and reading.",
+    "collocations": ["daily routine", "follow a routine", "routine task"],
+    "synonyms": ["habit", "schedule", "pattern"]
+  },
+  {
+    "bandTier": "PreIelts",
+    "word": "Discover",
+    "phonetic": "/dɪˈskʌv.ər/",
+    "meaning": "Khám phá ra, tìm thấy lần đầu tiên.",
+    "partOfSpeech": "Verb",
+    "academicLevel": "A2",
+    "exampleSentence": "Scientists discovered a new species in the rainforest.",
+    "collocations": ["discover new facts", "discover the truth"],
+    "synonyms": ["find", "uncover", "reveal"]
+  },
+  {
+    "bandTier": "PreIelts",
+    "word": "Pollution",
+    "phonetic": "/pəˈluː.ʃən/",
+    "meaning": "Sự ô nhiễm môi trường đất, nước hoặc không khí.",
+    "partOfSpeech": "Noun",
+    "academicLevel": "A2",
+    "exampleSentence": "Air pollution is a serious problem in modern big cities.",
+    "collocations": ["air pollution", "water pollution", "reduce pollution"],
+    "synonyms": ["contamination", "dirt", "smog"]
+  },
+  {
+    "bandTier": "PreIelts",
+    "word": "Community",
+    "phonetic": "/kəˈmjuː.nə.ti/",
+    "meaning": "Cộng đồng dân cư sống chung một khu vực.",
+    "partOfSpeech": "Noun",
+    "academicLevel": "A2",
+    "exampleSentence": "The local community organized a sports event for charity.",
+    "collocations": ["local community", "community center", "international community"],
+    "synonyms": ["society", "neighborhood", "collective"]
+  }
+]

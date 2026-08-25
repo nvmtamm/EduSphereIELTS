@@ -1,0 +1,46 @@
+[
+  {
+    "bandTier": "Band5_0_5_5",
+    "word": "Conservation",
+    "phonetic": "/ˌkɒn.səˈveɪ.ʃən/",
+    "meaning": "Sự bảo tồn, giữ gìn tài nguyên thiên nhiên hoặc di sản.",
+    "partOfSpeech": "Noun",
+    "academicLevel": "B1",
+    "exampleSentence": "Wildlife conservation projects have successfully protected endangered sea turtles.",
+    "collocations": ["wildlife conservation", "energy conservation", "conservation effort"],
+    "synonyms": ["preservation", "protection", "safeguarding"]
+  },
+  {
+    "bandTier": "Band5_0_5_5",
+    "word": "Crucial",
+    "phonetic": "/ˈkruː.ʃəl/",
+    "meaning": "Vô cùng quan trọng, mang tính quyết định thành bại.",
+    "partOfSpeech": "Adjective",
+    "academicLevel": "B1",
+    "exampleSentence": "Mangrove roots play a crucial role in preventing coastal soil erosion.",
+    "collocations": ["crucial factor", "crucial role", "crucial decision"],
+    "synonyms": ["vital", "essential", "critical"]
+  },
+  {
+    "bandTier": "Band5_0_5_5",
+    "word": "Contradict",
+    "phonetic": "/ˌkɒn.trəˈdɪkt/",
+    "meaning": "Mâu thuẫn, trái ngược trực tiếp với một thông tin khác (chìa khóa bẫy FALSE trong TFNG).",
+    "partOfSpeech": "Verb",
+    "academicLevel": "B1",
+    "exampleSentence": "The latest laboratory findings contradict earlier scientific assumptions.",
+    "collocations": ["directly contradict", "contradict previous findings"],
+    "synonyms": ["oppose", "conflict with", "negate"]
+  },
+  {
+    "bandTier": "Band5_0_5_5",
+    "word": "Invention",
+    "phonetic": "/ɪnˈven.ʃən/",
+    "meaning": "Phát minh, sáng chế kỹ thuật mới.",
+    "partOfSpeech": "Noun",
+    "academicLevel": "B1",
+    "exampleSentence": "The invention of the steam engine initiated the Industrial Revolution.",
+    "collocations": ["revolutionary invention", "patented invention", "scientific invention"],
+    "synonyms": ["creation", "innovation", "discovery"]
+  }
+]

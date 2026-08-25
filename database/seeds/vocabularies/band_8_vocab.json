@@ -1,0 +1,46 @@
+[
+  {
+    "bandTier": "Band8_0_Plus",
+    "word": "Epistemological",
+    "phonetic": "/ɪˌpɪs.tə.məˈlɒdʒ.ɪ.kəl/",
+    "meaning": "Thuộc về nhận thức luận (Nhánh triết học nghiên cứu về nguồn gốc và bản chất của tri thức).",
+    "partOfSpeech": "Adjective",
+    "academicLevel": "C2",
+    "exampleSentence": "The emergence of generative AI raises profound epistemological questions regarding the nature of human creativity.",
+    "collocations": ["epistemological framework", "epistemological premise", "epistemological debate"],
+    "synonyms": ["philosophical", "cognitive", "theoretical"]
+  },
+  {
+    "bandTier": "Band8_0_Plus",
+    "word": "Dichotomy",
+    "phonetic": "/daɪˈkɒt.ə.mi/",
+    "meaning": "Sự phân đôi, phép đối lập lưỡng phân hoàn toàn giữa hai thái cực.",
+    "partOfSpeech": "Noun",
+    "academicLevel": "C2",
+    "exampleSentence": "The author challenges the traditional false dichotomy between economic expansion and environmental stewardship.",
+    "collocations": ["false dichotomy", "sharp dichotomy", "dichotomy between"],
+    "synonyms": ["division", "split", "polarization"]
+  },
+  {
+    "bandTier": "Band8_0_Plus",
+    "word": "Serendipitous",
+    "phonetic": "/ˌser.ənˈdɪp.ɪ.təs/",
+    "meaning": "Tình cờ may mắn phát hiện ra điều tuyệt vời mà không định trước.",
+    "partOfSpeech": "Adjective",
+    "academicLevel": "C2",
+    "exampleSentence": "Alexander Fleming's discovery of penicillin was a famously serendipitous breakthrough in microbiology.",
+    "collocations": ["serendipitous discovery", "serendipitous encounter", "serendipitous event"],
+    "synonyms": ["fortuitous", "chance", "accidental"]
+  },
+  {
+    "bandTier": "Band8_0_Plus",
+    "word": "Commensurate",
+    "phonetic": "/kəˈmen.sjər.ət/",
+    "meaning": "Tương xứng, phù hợp với quy mô, tỷ lệ hoặc mức độ của một yếu tố khác.",
+    "partOfSpeech": "Adjective",
+    "academicLevel": "C2",
+    "exampleSentence": "Researchers must ensure their conclusions are strictly commensurate with the empirical data obtained.",
+    "collocations": ["commensurate with", "commensurate reward", "commensurate experience"],
+    "synonyms": ["proportionate", "equivalent", "corresponding"]
+  }
+]

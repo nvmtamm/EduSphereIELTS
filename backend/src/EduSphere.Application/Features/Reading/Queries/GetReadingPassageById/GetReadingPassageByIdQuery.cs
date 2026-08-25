@@ -92,6 +92,11 @@ public class GetReadingPassageByIdQueryHandler : IRequestHandler<GetReadingPassa
             passage.Difficulty.ToString(),
             passage.EstimatedTimeMinutes,
             passage.Content,
+            passage.SourceType.ToString(),
+            passage.CollectionName,
+            passage.TargetBandTier.ToString(),
+            passage.UploadedByUserId,
+            passage.IsCommunityShared,
             questionsDto);
 
         try

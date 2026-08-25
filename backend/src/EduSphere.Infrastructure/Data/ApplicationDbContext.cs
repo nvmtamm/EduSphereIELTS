@@ -13,6 +13,11 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<ReadingSubmission> ReadingSubmissions => Set<ReadingSubmission>();
     public DbSet<ReadingSubmissionAnswer> ReadingSubmissionAnswers => Set<ReadingSubmissionAnswer>();
 
+    public DbSet<BandRoadmap> BandRoadmaps => Set<BandRoadmap>();
+    public DbSet<BandMilestone> BandMilestones => Set<BandMilestone>();
+    public DbSet<BandVocabulary> BandVocabularies => Set<BandVocabulary>();
+    public DbSet<UserRoadmapProgress> UserRoadmapProgresses => Set<UserRoadmapProgress>();
+
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {

@@ -1,0 +1,45 @@
+{
+  "bandTier": "Band8_0_Plus",
+  "title": "Band 8.0 – 8.5+: Philosophical Subtexts & 9.0 Perfectionist",
+  "description": "Decode highly abstract philosophical and scientific treatises, catch subtle irony and implicit inferences, and achieve 38-40/40 under 50 minutes.",
+  "targetSkillsSummary": "Implicit Inference, Philosophical Abstractions, High-speed Scholarly Analysis, 9.0 Perfection",
+  "totalMilestones": 5,
+  "vocabularyCount": 1500,
+  "milestones": [
+    {
+      "stepNumber": 1,
+      "title": "Stage 1: Epistemological & Philosophical Inferences",
+      "targetSkill": "Inferring unstated author beliefs from academic rhetoric",
+      "passageTitle": "The Epistemology of Artificial Intelligence Consciousness",
+      "minAccuracyToUnlockNext": 85.0
+    },
+    {
+      "stepNumber": 2,
+      "title": "Stage 2: Scientific Complexity in Passage 3",
+      "targetSkill": "Navigating quantum computing and relativistic mechanics texts",
+      "passageTitle": "Quantum Entanglement and Modern Encryption Protocols",
+      "minAccuracyToUnlockNext": 85.0
+    },
+    {
+      "stepNumber": 3,
+      "title": "Stage 3: Multiple Choice Multi-Select Multi-Distractors",
+      "targetSkill": "Dissecting 5-option questions with 2 nuanced correct choices",
+      "passageTitle": "The Societal Ramifications of Longevity Biotechnology",
+      "minAccuracyToUnlockNext": 90.0
+    },
+    {
+      "stepNumber": 4,
+      "title": "Stage 4: Past Actual Test Hard Passages (2025/2026)",
+      "targetSkill": "Official IDP/British Council hard examination passages",
+      "passageTitle": "IELTS Past Actual Test 2025: Linguistic Evolution in Isolation",
+      "minAccuracyToUnlockNext": 90.0
+    },
+    {
+      "stepNumber": 5,
+      "title": "Stage 5: The Grand Band 9.0 Perfectionist Challenge",
+      "targetSkill": "Complete full 3-passage 40-question exam with 39-40 correct",
+      "passageTitle": "Cambridge IELTS 19 Academic Test 4 Full Reading Simulation",
+      "minAccuracyToUnlockNext": 95.0
+    }
+  ]
+}

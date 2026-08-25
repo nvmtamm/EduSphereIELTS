@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Loader2, BookOpen } from 'lucide-react'
+import { ArrowLeft, Loader2, BookOpen, Bot, Sparkles } from 'lucide-react'
 import { readingApi } from '../api/readingApi'
 import type { ReadingPassageDetail, UserAnswerInput } from '../types/reading.types'
 import { ExamTimer } from '../components/ExamTimer'
 import { ReadingWorkspace } from '../components/ReadingWorkspace'
+import { ReadingAITutorSidebar } from '../components/ReadingAITutorSidebar'
 
 export const ReadingExamPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
@@ -15,6 +16,7 @@ export const ReadingExamPage: React.FC = () => {
   const [submitting, setSubmitting] = useState(false)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [secondsSpent, setSecondsSpent] = useState(0)
+  const [isAITutorOpen, setIsAITutorOpen] = useState(false)
 
   const initialTimeSeconds = (passage?.estimatedTimeMinutes ?? 20) * 60
 
@@ -120,15 +122,36 @@ export const ReadingExamPage: React.FC = () => {
             <span className="font-extrabold text-xs sm:text-sm truncate max-w-xs sm:max-w-md text-white">
               {passage.title}
             </span>
+            <span className="hidden md:inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300 border border-zinc-700">
+              {passage.collectionName}
+            </span>
           </div>
         </div>
 
-        {/* Timer */}
-        <ExamTimer
-          initialSeconds={initialTimeSeconds}
-          onTimeUp={handleSubmitExam}
-          onTick={(left) => setSecondsSpent(initialTimeSeconds - left)}
-        />
+        {/* Header Right Actions */}
+        <div className="flex items-center gap-3">
+          {/* AI Tutor Toggle Button */}
+          <button
+            type="button"
+            onClick={() => setIsAITutorOpen(!isAITutorOpen)}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border ${
+              isAITutorOpen
+                ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/30'
+                : 'bg-zinc-900 hover:bg-zinc-800 text-indigo-300 border-zinc-800'
+            }`}
+          >
+            <Bot className="w-4 h-4 text-indigo-400" />
+            <span>AI Tutor</span>
+            <Sparkles className="w-3 h-3 text-amber-400" />
+          </button>
+
+          {/* Timer */}
+          <ExamTimer
+            initialSeconds={initialTimeSeconds}
+            onTimeUp={handleSubmitExam}
+            onTick={(left) => setSecondsSpent(initialTimeSeconds - left)}
+          />
+        </div>
       </header>
 
       {/* Split-Screen Resizable Workspace */}
@@ -138,6 +161,15 @@ export const ReadingExamPage: React.FC = () => {
         onAnswerChange={handleAnswerChange}
         onSubmitExam={handleSubmitExam}
         isSubmitting={submitting}
+      />
+
+      {/* Slide-over RAG AI Tutor */}
+      <ReadingAITutorSidebar
+        isOpen={isAITutorOpen}
+        onClose={() => setIsAITutorOpen(false)}
+        passageId={passage.id}
+        passageTitle={passage.title}
+        isPostExamReview={false}
       />
     </div>
   )

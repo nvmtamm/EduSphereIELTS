@@ -1,0 +1,46 @@
+[
+  {
+    "bandTier": "Band6_0_6_5",
+    "word": "Phenomenon",
+    "phonetic": "/fəˈnɒm.ɪ.nən/",
+    "meaning": "Hiện tượng tự nhiên hoặc xã hội đáng chú ý (Số nhiều: phenomena).",
+    "partOfSpeech": "Noun",
+    "academicLevel": "B2",
+    "exampleSentence": "Urban heat islands represent a well-documented meteorological phenomenon.",
+    "collocations": ["natural phenomenon", "social phenomenon", "widespread phenomenon"],
+    "synonyms": ["occurrence", "event", "manifestation"]
+  },
+  {
+    "bandTier": "Band6_0_6_5",
+    "word": "Correlation",
+    "phonetic": "/ˌkɒr.əˈleɪ.ʃən/",
+    "meaning": "Mối tương quan qua lại giữa hai biến số hoặc yếu tố.",
+    "partOfSpeech": "Noun",
+    "academicLevel": "B2",
+    "exampleSentence": "Studies show a positive correlation between access to green parks and reduced stress levels.",
+    "collocations": ["direct correlation", "strong correlation", "correlate with"],
+    "synonyms": ["relationship", "connection", "association"]
+  },
+  {
+    "bandTier": "Band6_0_6_5",
+    "word": "Biomimetic",
+    "phonetic": "/ˌbaɪ.əʊ.mɪˈmet.ɪk/",
+    "meaning": "Phỏng sinh học (Mô phỏng cơ chế tự nhiên của sinh vật vào kỹ thuật/robot).",
+    "partOfSpeech": "Adjective",
+    "academicLevel": "B2",
+    "exampleSentence": "Engineers developed biomimetic drones inspired by the wing morphology of dragonflies.",
+    "collocations": ["biomimetic design", "biomimetic robotics", "biomimetic materials"],
+    "synonyms": ["nature-inspired", "bionic", "bio-inspired"]
+  },
+  {
+    "bandTier": "Band6_0_6_5",
+    "word": "Albeit",
+    "phonetic": "/ɔːlˈbiː.ɪt/",
+    "meaning": "Mặc dù, dẫu rằng (Liên từ học thuật chỉ sự tương phản dùng trong Passage 2/3).",
+    "partOfSpeech": "Conjunction",
+    "academicLevel": "B2",
+    "exampleSentence": "The technology achieved remarkable energy efficiency, albeit at a significantly higher production cost.",
+    "collocations": ["albeit slowly", "albeit with difficulty", "albeit temporarily"],
+    "synonyms": ["although", "even though", "notwithstanding"]
+  }
+]

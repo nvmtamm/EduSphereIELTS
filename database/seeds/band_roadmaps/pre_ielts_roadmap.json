@@ -1,0 +1,38 @@
+{
+  "bandTier": "PreIelts",
+  "title": "Pre-IELTS (Band 0 – 3.5): Essential Foundation",
+  "description": "Build sentence comprehension fundamentals, master basic verb tenses, and learn to locate key nouns and verbs in short everyday texts.",
+  "targetSkillsSummary": "Basic S+V+O Syntax, Noun/Verb Keyword Location, Everyday Life Vocabulary (A1-A2)",
+  "totalMilestones": 4,
+  "vocabularyCount": 500,
+  "milestones": [
+    {
+      "stepNumber": 1,
+      "title": "Stage 1: Everyday Life & Simple Notices",
+      "targetSkill": "Locating numbers and proper nouns in short paragraphs",
+      "passageTitle": "Community Center Activities Schedule",
+      "minAccuracyToUnlockNext": 65.0
+    },
+    {
+      "stepNumber": 2,
+      "title": "Stage 2: Basic Chronology & Sequencing",
+      "targetSkill": "Understanding time words (first, next, then, finally)",
+      "passageTitle": "A Brief History of the Bicycle",
+      "minAccuracyToUnlockNext": 70.0
+    },
+    {
+      "stepNumber": 3,
+      "title": "Stage 3: Multiple Choice Fundamentals",
+      "targetSkill": "Eliminating obviously wrong single options",
+      "passageTitle": "Animals in the Australian Outback",
+      "minAccuracyToUnlockNext": 70.0
+    },
+    {
+      "stepNumber": 4,
+      "title": "Stage 4: Foundation Level Assessment",
+      "targetSkill": "Comprehensive review test before stepping into Band 4.0",
+      "passageTitle": "The Story of Coffee and Global Trade",
+      "minAccuracyToUnlockNext": 75.0
+    }
+  ]
+}

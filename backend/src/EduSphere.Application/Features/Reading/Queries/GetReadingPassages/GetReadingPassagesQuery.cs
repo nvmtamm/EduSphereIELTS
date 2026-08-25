@@ -12,10 +12,15 @@ namespace EduSphere.Application.Features.Reading.Queries.GetReadingPassages;
 
 public record GetReadingPassagesQuery(
     int Page = 1,
-    int PageSize = 10,
+    int PageSize = 12,
     string? Topic = null,
     string? Difficulty = null,
-    string? Search = null) : IRequest<Result<PagedList<ReadingPassageDto>>>;
+    string? SourceType = null,
+    string? TargetBandTier = null,
+    string? CollectionName = null,
+    string? Search = null,
+    Guid? UserId = null,
+    bool? IsPersonalOnly = null) : IRequest<Result<PagedList<ReadingPassageDto>>>;
 
 public class GetReadingPassagesQueryHandler : IRequestHandler<GetReadingPassagesQuery, Result<PagedList<ReadingPassageDto>>>
 {
@@ -35,45 +40,56 @@ public class GetReadingPassagesQueryHandler : IRequestHandler<GetReadingPassages
 
     public async Task<Result<PagedList<ReadingPassageDto>>> Handle(GetReadingPassagesQuery request, CancellationToken cancellationToken)
     {
-        var cacheKey = $"reading:passages:p_{request.Page}_s_{request.PageSize}_t_{request.Topic}_d_{request.Difficulty}_q_{request.Search}";
-
-        try
-        {
-            var cachedData = await _cache.GetStringAsync(cacheKey, cancellationToken);
-            if (!string.IsNullOrEmpty(cachedData))
-            {
-                var cachedResult = JsonSerializer.Deserialize<PagedList<ReadingPassageDto>>(cachedData);
-                if (cachedResult != null)
-                {
-                    _logger.LogInformation("Redis cache hit for reading passages with key {CacheKey}", cacheKey);
-                    return Result.Success(cachedResult);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "Failed to read reading passages from Redis cache.");
-        }
-
         var query = _context.ReadingPassages
             .AsNoTracking()
             .Include(p => p.Questions)
             .AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(request.Topic))
+        // 1. Filter by Personal Vault vs System Vault
+        if (request.IsPersonalOnly == true && request.UserId.HasValue)
+        {
+            query = query.Where(p => p.UploadedByUserId == request.UserId.Value);
+        }
+        else if (request.IsPersonalOnly == false)
+        {
+            query = query.Where(p => p.UploadedByUserId == null || p.IsCommunityShared);
+        }
+
+        // 2. Filter by Topic
+        if (!string.IsNullOrWhiteSpace(request.Topic) && request.Topic.ToLower() != "all")
         {
             query = query.Where(p => p.Topic.ToLower() == request.Topic.Trim().ToLower());
         }
 
-        if (!string.IsNullOrWhiteSpace(request.Difficulty) && Enum.TryParse<DifficultyLevel>(request.Difficulty, true, out var diff))
+        // 3. Filter by Difficulty
+        if (!string.IsNullOrWhiteSpace(request.Difficulty) && request.Difficulty.ToLower() != "all" && Enum.TryParse<DifficultyLevel>(request.Difficulty, true, out var diff))
         {
             query = query.Where(p => p.Difficulty == diff);
         }
 
+        // 4. Filter by SourceType
+        if (!string.IsNullOrWhiteSpace(request.SourceType) && request.SourceType.ToLower() != "all" && Enum.TryParse<PassageSourceType>(request.SourceType, true, out var source))
+        {
+            query = query.Where(p => p.SourceType == source);
+        }
+
+        // 5. Filter by TargetBandTier
+        if (!string.IsNullOrWhiteSpace(request.TargetBandTier) && request.TargetBandTier.ToLower() != "all" && Enum.TryParse<TargetBandTier>(request.TargetBandTier, true, out var band))
+        {
+            query = query.Where(p => p.TargetBandTier == band);
+        }
+
+        // 6. Filter by CollectionName
+        if (!string.IsNullOrWhiteSpace(request.CollectionName) && request.CollectionName.ToLower() != "all")
+        {
+            query = query.Where(p => p.CollectionName.ToLower().Contains(request.CollectionName.Trim().ToLower()));
+        }
+
+        // 7. Search text
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
             var searchLower = request.Search.Trim().ToLower();
-            query = query.Where(p => p.Title.ToLower().Contains(searchLower) || p.Topic.ToLower().Contains(searchLower));
+            query = query.Where(p => p.Title.ToLower().Contains(searchLower) || p.Topic.ToLower().Contains(searchLower) || p.CollectionName.ToLower().Contains(searchLower));
         }
 
         var totalCount = await query.CountAsync(cancellationToken);
@@ -90,24 +106,15 @@ public class GetReadingPassagesQueryHandler : IRequestHandler<GetReadingPassages
                 p.EstimatedTimeMinutes,
                 p.Questions.Count,
                 p.Questions.Select(q => q.QuestionType.ToString()).Distinct().ToList(),
+                p.SourceType.ToString(),
+                p.CollectionName,
+                p.TargetBandTier.ToString(),
+                p.UploadedByUserId,
+                p.IsCommunityShared,
                 p.CreatedAt))
             .ToListAsync(cancellationToken);
 
         var pagedList = new PagedList<ReadingPassageDto>(items, totalCount, request.Page, request.PageSize);
-
-        try
-        {
-            var cacheOptions = new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
-            };
-            await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(pagedList), cacheOptions, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "Failed to write reading passages to Redis cache.");
-        }
-
         return Result.Success(pagedList);
     }
 }

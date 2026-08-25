@@ -1,0 +1,38 @@
+{
+  "bandTier": "Band4_0_4_5",
+  "title": "Band 4.0 – 4.5: Scanning & Skimming Bootcamp",
+  "description": "Master fast skimming for main ideas within 45 seconds and precision scanning for dates, metrics, and names across short academic passages.",
+  "targetSkillsSummary": "Skimming 45s, Scanning Metrics & Dates, Topic Sentence Identification, Basic Synonyms",
+  "totalMilestones": 4,
+  "vocabularyCount": 600,
+  "milestones": [
+    {
+      "stepNumber": 1,
+      "title": "Stage 1: Skimming Topic Sentences",
+      "targetSkill": "Finding the primary thesis in Paragraph 1 and concluding remarks",
+      "passageTitle": "The Origins of Public Libraries",
+      "minAccuracyToUnlockNext": 70.0
+    },
+    {
+      "stepNumber": 2,
+      "title": "Stage 2: Scanning Numbers and Geographical Terms",
+      "targetSkill": "Precision eye-tracking for measurement units and country names",
+      "passageTitle": "Renewable Energy Developments in Northern Europe",
+      "minAccuracyToUnlockNext": 75.0
+    },
+    {
+      "stepNumber": 3,
+      "title": "Stage 3: Short Answer Word Limits",
+      "targetSkill": "Adhering to 'NO MORE THAN TWO WORDS' constraints",
+      "passageTitle": "Traditional Navigation by the Polynesian Voyagers",
+      "minAccuracyToUnlockNext": 75.0
+    },
+    {
+      "stepNumber": 4,
+      "title": "Stage 4: Band 4.5 Milestone Benchmark",
+      "targetSkill": "Timed 15-minute challenge on a 500-word passage",
+      "passageTitle": "The Architecture of Ancient Roman Aqueducts",
+      "minAccuracyToUnlockNext": 80.0
+    }
+  ]
+}

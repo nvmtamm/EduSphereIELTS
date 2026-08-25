@@ -14,4 +14,9 @@ public record ReadingPassageDetailDto(
     string Difficulty,
     int EstimatedTimeMinutes,
     string Content,
+    string SourceType,
+    string CollectionName,
+    string TargetBandTier,
+    Guid? UploadedByUserId,
+    bool IsCommunityShared,
     List<ReadingQuestionDto> Questions);

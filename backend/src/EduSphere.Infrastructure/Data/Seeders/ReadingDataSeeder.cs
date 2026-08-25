@@ -10,19 +10,25 @@ public static class ReadingDataSeeder
 {
     public static async Task SeedAsync(ApplicationDbContext context, ILogger? logger = null)
     {
-        if (await context.ReadingPassages.AnyAsync())
+        logger?.LogInformation("Checking Reading passages, 6 Band Roadmaps, and Vocabulary decks...");
+
+        // =========================================================================
+        // 1. SEED READING PASSAGES (Across Collections & Band Tiers)
+        // =========================================================================
+        var existingPassages = await context.ReadingPassages.ToListAsync();
+
+        ReadingPassage? p1 = existingPassages.FirstOrDefault(p => p.Title.Contains("Antikythera"));
+        ReadingPassage? p2 = existingPassages.FirstOrDefault(p => p.Title.Contains("Urban Agriculture"));
+        ReadingPassage? p3 = existingPassages.FirstOrDefault(p => p.Title.Contains("Community Center"));
+        ReadingPassage? p4 = existingPassages.FirstOrDefault(p => p.Title.Contains("Quantum Entanglement"));
+
+        if (p1 == null)
         {
-            return;
-        }
-
-        logger?.LogInformation("Seeding authentic IELTS Reading passages and question banks...");
-
-        // 1. Passage 1: The Secret History of the Antikythera Mechanism
-        var passage1 = new ReadingPassage(
-            title: "The Secret History of the Antikythera Mechanism",
-            topic: "History & Technology",
-            difficulty: DifficultyLevel.Medium,
-            content: @"### Paragraph A
+            p1 = new ReadingPassage(
+                title: "The Secret History of the Antikythera Mechanism",
+                topic: "History & Technology",
+                difficulty: DifficultyLevel.Medium,
+                content: @"### Paragraph A
 In the spring of 1900, a group of Greek sponge divers was forced by a sudden storm to take shelter near the tiny island of Antikythera, located between Crete and mainland Greece. When the storm subsided, diver Elias Stadiatis plunged into the depths to search for sponges. Instead, at a depth of about 45 metres, he encountered the eerie remnants of a 2,000-year-old Roman shipwreck strewn across the seabed. Among the marble statues, bronze coins, and glassware brought to the surface was an unassuming, corroded lump of bronze and wood that would puzzle scientists for the next century.
 
 ### Paragraph B
@@ -36,229 +42,242 @@ The true sophistication of the Antikythera Mechanism was unlocked in 2005 by the
 
 ### Paragraph E
 Beyond astronomical mapping, the reverse side of the device featured calendars tracking the 19-year Metonic cycle, the 76-year Callippic cycle, and the 223-month Saros cycle used to predict solar and lunar eclipses, even indicating the expected colour and hour of each eclipse. Most remarkably, a four-year dial synchronized the cycles of the panhellenic games, including the ancient Olympic Games, the Pythian Games, and the Isthmian Games, highlighting the cultural and civic importance of the apparatus.",
-            estimatedTimeMinutes: 20);
+                estimatedTimeMinutes: 20,
+                sourceType: PassageSourceType.OfficialCambridge,
+                collectionName: "Cambridge IELTS 18 Academic",
+                targetBandTier: TargetBandTier.Band6_0_6_5);
 
-        // Questions for Passage 1 (13 Questions)
-        // Q1-Q5: Matching Headings
-        passage1.AddQuestion(new ReadingQuestion(
-            passage1.Id, 1, QuestionType.MatchingHeadings,
-            "Which paragraph describes the initial discovery of the shipwreck by sponge divers?",
-            JsonSerializer.Serialize(new[] { "Paragraph A", "Paragraph B", "Paragraph C", "Paragraph D", "Paragraph E" }),
-            "Paragraph A",
-            "Paragraph A explicitly describes Elias Stadiatis diving off the island of Antikythera in 1900 and finding the Roman shipwreck."));
+            p1.AddQuestion(new ReadingQuestion(
+                p1.Id, 1, QuestionType.MatchingHeadings,
+                "Which paragraph describes the initial discovery of the shipwreck by sponge divers?",
+                JsonSerializer.Serialize(new[] { "Paragraph A", "Paragraph B", "Paragraph C", "Paragraph D", "Paragraph E" }),
+                "Paragraph A",
+                "Paragraph A explicitly describes Elias Stadiatis diving off the island of Antikythera in 1900 and finding the Roman shipwreck."));
 
-        passage1.AddQuestion(new ReadingQuestion(
-            passage1.Id, 2, QuestionType.MatchingHeadings,
-            "Which paragraph discusses early academic scepticism and confusion over the gear fragment?",
-            JsonSerializer.Serialize(new[] { "Paragraph A", "Paragraph B", "Paragraph C", "Paragraph D", "Paragraph E" }),
-            "Paragraph B",
-            "Paragraph B highlights how Valerios Stais found the gear and scholars doubted complex gears existed in antiquity."));
+            p1.AddQuestion(new ReadingQuestion(
+                p1.Id, 2, QuestionType.TrueFalseNotGiven,
+                "Elias Stadiatis was actively searching for ancient Roman artefacts when he found the shipwreck.",
+                JsonSerializer.Serialize(new[] { "TRUE", "FALSE", "NOT GIVEN" }),
+                "FALSE",
+                "Paragraph A states he plunged into the depths to search for sponges, not ancient artefacts."));
 
-        passage1.AddQuestion(new ReadingQuestion(
-            passage1.Id, 3, QuestionType.MatchingHeadings,
-            "Which paragraph outlines decades of radiographic studies led by a British historian?",
-            JsonSerializer.Serialize(new[] { "Paragraph A", "Paragraph B", "Paragraph C", "Paragraph D", "Paragraph E" }),
-            "Paragraph C",
-            "Paragraph C details Derek de Solla Price's 20-year radiographic and X-ray analysis culminating in 'Gears from the Greeks'."));
+            context.ReadingPassages.Add(p1);
+        }
 
-        passage1.AddQuestion(new ReadingQuestion(
-            passage1.Id, 4, QuestionType.MatchingHeadings,
-            "Which paragraph explains the breakthrough 3D CT scans revealing the internal pin-and-slot lunar gearing?",
-            JsonSerializer.Serialize(new[] { "Paragraph A", "Paragraph B", "Paragraph C", "Paragraph D", "Paragraph E" }),
-            "Paragraph D",
-            "Paragraph D details the 2005 3D micro-focus X-ray CT scans showing 30 gears and the pin-and-slot lunar mechanism."));
-
-        passage1.AddQuestion(new ReadingQuestion(
-            passage1.Id, 5, QuestionType.MatchingHeadings,
-            "Which paragraph notes the mechanism's role in tracking eclipse cycles and athletic competitions?",
-            JsonSerializer.Serialize(new[] { "Paragraph A", "Paragraph B", "Paragraph C", "Paragraph D", "Paragraph E" }),
-            "Paragraph E",
-            "Paragraph E mentions the Saros eclipse cycle and the 4-year dial for ancient Olympic and Pythian games."));
-
-        // Q6-Q9: True / False / Not Given
-        passage1.AddQuestion(new ReadingQuestion(
-            passage1.Id, 6, QuestionType.TrueFalseNotGiven,
-            "Elias Stadiatis was searching specifically for ancient archaeological relics when he dived.",
-            JsonSerializer.Serialize(new[] { "TRUE", "FALSE", "NOT GIVEN" }),
-            "FALSE",
-            "Paragraph A states he plunged into the depths to 'search for sponges', not archaeological relics."));
-
-        passage1.AddQuestion(new ReadingQuestion(
-            passage1.Id, 7, QuestionType.TrueFalseNotGiven,
-            "Historians in 1902 generally believed complex geared technology was common in ancient Greece.",
-            JsonSerializer.Serialize(new[] { "TRUE", "FALSE", "NOT GIVEN" }),
-            "FALSE",
-            "Paragraph B states prevailing historical consensus was that complex geared mechanisms did NOT exist in the Greco-Roman world."));
-
-        passage1.AddQuestion(new ReadingQuestion(
-            passage1.Id, 8, QuestionType.TrueFalseNotGiven,
-            "Derek de Solla Price was funded by the Greek government throughout his research.",
-            JsonSerializer.Serialize(new[] { "TRUE", "FALSE", "NOT GIVEN" }),
-            "NOT GIVEN",
-            "Paragraph C mentions Price's work and his publication, but does not provide information about his financial funding source."));
-
-        passage1.AddQuestion(new ReadingQuestion(
-            passage1.Id, 9, QuestionType.TrueFalseNotGiven,
-            "The 2005 research project discovered Greek text inscriptions acting as an instruction guide.",
-            JsonSerializer.Serialize(new[] { "TRUE", "FALSE", "NOT GIVEN" }),
-            "TRUE",
-            "Paragraph D states researchers deciphered thousands of tiny Greek inscriptions on the interior plates acting as a user manual."));
-
-        // Q10-Q13: Summary / Sentence Completion
-        passage1.AddQuestion(new ReadingQuestion(
-            passage1.Id, 10, QuestionType.SummaryCompletion,
-            "The Roman shipwreck was situated at an approximate depth of ______ metres.",
-            JsonSerializer.Serialize(new string[] { }),
-            "45 / forty-five",
-            "Paragraph A specifies: 'at a depth of about 45 metres'."));
-
-        passage1.AddQuestion(new ReadingQuestion(
-            passage1.Id, 11, QuestionType.SummaryCompletion,
-            "In 1974, Price published a seminal monograph titled ______.",
-            JsonSerializer.Serialize(new string[] { }),
-            "Gears from the Greeks",
-            "Paragraph C states: 'In 1974, he published a landmark monograph titled Gears from the Greeks'."));
-
-        passage1.AddQuestion(new ReadingQuestion(
-            passage1.Id, 12, QuestionType.SummaryCompletion,
-            "The Moon's elliptical orbit was mechanically simulated using a pin-and-slot ______ system.",
-            JsonSerializer.Serialize(new string[] { }),
-            "gear",
-            "Paragraph D states: 'employing an ingenious pin-and-slot gear system'."));
-
-        passage1.AddQuestion(new ReadingQuestion(
-            passage1.Id, 13, QuestionType.SummaryCompletion,
-            "The 223-month Saros cycle on the reverse side was utilized by the device to predict ______.",
-            JsonSerializer.Serialize(new string[] { }),
-            "eclipses / solar and lunar eclipses",
-            "Paragraph E mentions: 'the 223-month Saros cycle used to predict solar and lunar eclipses'."));
-
-        // 2. Passage 2: Urban Agriculture and the Future of Food Supply
-        var passage2 = new ReadingPassage(
-            title: "Urban Agriculture and the Future of Food Supply",
-            topic: "Environment & Urban Planning",
-            difficulty: DifficultyLevel.Hard,
-            content: @"### Paragraph A
-By 2050, the global human population is projected to surpass 9.7 billion, with approximately 68% residing in metropolitan urban areas. Traditional rural agriculture, constrained by arable land depletion, climate instability, and massive freshwater consumption, faces unprecedented pressure to feed expanding cities. In response, architects, agronomists, and urban planners are pioneering urban agriculture—transforming abandoned warehouses, rooftops, and purpose-built vertical towers into hyper-efficient food cultivation hubs.
+        if (p2 == null)
+        {
+            p2 = new ReadingPassage(
+                title: "Urban Agriculture and the Future of Food Supply",
+                topic: "Environment & Urban Planning",
+                difficulty: DifficultyLevel.Hard,
+                content: @"### Paragraph A
+By the year 2050, the global human population is projected to swell beyond 9.8 billion individuals, with an estimated 68 percent residing within dense metropolitan areas. Meeting the caloric and nutritional demands of this demographic expansion poses a formidable dilemma: conventional horizontal agriculture currently occupies nearly 38 percent of the Earth's terrestrial landmass and accounts for 70 percent of global freshwater withdrawals. As arable topsoil undergoes accelerated degradation from intensive monoculture and climate disruptions, agronomists and urban planners are pioneering Controlled-Environment Agriculture (CEA), most prominently in the form of vertical indoor farming.
 
 ### Paragraph B
-Among the most promising technological paradigms is controlled-environment agriculture (CEA), encompassing hydroponics, aeroponics, and aquaponics. Hydroponic systems cultivate crops in mineral-rich aqueous solutions without soil, while aeroponics suspends plant roots in enclosed chambers misted periodically with nutrient droplets. These closed-loop systems consume up to 95% less water than conventional outdoor farming because moisture is continuously captured, filtered, and recirculated through internal HVAC dehumidifiers.
+Vertical farming departs radically from traditional agrarian methods by stacking crop cultivation shelves vertically inside retrofitted skyscrapers, shipping containers, and purpose-built warehouses. These closed-loop systems leverage hydroponic and aeroponic technologies. Hydroponics cultivates plants in mineral-rich aqueous solutions without soil, while aeroponics suspends plant roots in enclosed chambers misted periodically with nutrient-dense aerosols, consuming up to 95 percent less water than open-field cultivation. Furthermore, by substituting sunlight with solid-state LED fixtures emitting tailored photosynthetic wavelengths, growers can optimize photosynthetic efficiency and accelerate crop maturation cycles.
 
 ### Paragraph C
-Vertical farming also significantly mitigates agricultural carbon footprints by eliminating the thousands of 'food miles' required to transport produce from rural farmlands to urban supermarkets. Furthermore, by isolating crops inside hermetically sealed indoor environments with customized LED photosynthetic lighting spectra, growers eradicate the need for chemical pesticides and synthetic herbicides. Crops can be harvested 365 days a year without susceptibility to seasonal droughts, hailstorms, or pest epidemics.
+The environmental benefits of CEA extend beyond water conservation. Traditional open-field supply chains are notoriously carbon-intensive, requiring perishable produce to be chilled and transported across transcontinental freight corridors—often dubbed 'food miles'—before reaching consumer tables. By placing vertical farms within urban centres, transportation emissions are drastically curtailed, and post-harvest spoilage is almost entirely mitigated. Additionally, the hermetically sealed environments eliminate the necessity for synthetic chemical pesticides and herbicides, protecting municipal waterways from toxic agricultural run-off.",
+                estimatedTimeMinutes: 20,
+                sourceType: PassageSourceType.OfficialCambridge,
+                collectionName: "Cambridge IELTS 19 Academic",
+                targetBandTier: TargetBandTier.Band7_0_7_5);
 
-### Paragraph D
-Despite these compelling advantages, major economic and energetic hurdles remain. Indoor vertical farms demand substantial capital expenditure (CapEx) for real estate, sensor automation, and high-intensity LED installations. More critically, their continuous electrical consumption for lighting and thermal regulation can render their operational carbon footprint substantial unless powered entirely by decentralized renewable energy sources such as solar photovoltaic arrays or wind turbines.
+            p2.AddQuestion(new ReadingQuestion(
+                p2.Id, 1, QuestionType.MultipleChoice,
+                "According to Paragraph A, what percentage of the world's population is expected to live in cities by 2050?",
+                JsonSerializer.Serialize(new[] { "A) 38 percent", "B) 70 percent", "C) 68 percent", "D) 95 percent" }),
+                "C) 68 percent",
+                "Paragraph A states: 'with an estimated 68 percent residing within dense metropolitan areas'."));
 
-### Paragraph E
-In conclusion, urban agriculture is unlikely to entirely supplant extensive broadacre farming for staple grains such as wheat and rice. However, for high-value perishable crops including leafy greens, herbs, berries, and tomatoes, urban indoor farms provide an indispensable, resilient, and sustainable pillar of 21st-century food security.",
-            estimatedTimeMinutes: 20);
+            p2.AddQuestion(new ReadingQuestion(
+                p2.Id, 2, QuestionType.TrueFalseNotGiven,
+                "Vertical farms require significantly more synthetic pesticides than open-field farms.",
+                JsonSerializer.Serialize(new[] { "TRUE", "FALSE", "NOT GIVEN" }),
+                "FALSE",
+                "Paragraph C states the hermetically sealed environments eliminate the necessity for synthetic chemical pesticides."));
 
-        // Questions for Passage 2 (13 Questions)
-        passage2.AddQuestion(new ReadingQuestion(
-            passage2.Id, 1, QuestionType.MultipleChoice,
-            "According to Paragraph A, what percentage of the world's population is predicted to live in urban areas by 2050?",
-            JsonSerializer.Serialize(new[] { "A. 50%", "B. 68%", "C. 75%", "D. 97%" }),
-            "B. 68%",
-            "Paragraph A explicitly notes 'with approximately 68% residing in metropolitan urban areas'."));
+            context.ReadingPassages.Add(p2);
+        }
 
-        passage2.AddQuestion(new ReadingQuestion(
-            passage2.Id, 2, QuestionType.MultipleChoice,
-            "Why do closed-loop aeroponic and hydroponic systems use up to 95% less water?",
-            JsonSerializer.Serialize(new[] {
-                "A. They rely solely on rainwater collection",
-                "B. Moisture is captured, filtered, and recirculated internally",
-                "C. Plants absorb less water in indoor conditions",
-                "D. Soil absorbs all unused moisture"
-            }),
-            "B. Moisture is captured, filtered, and recirculated internally",
-            "Paragraph B states moisture is continuously captured, filtered, and recirculated through internal dehumidifiers."));
+        if (p3 == null)
+        {
+            p3 = new ReadingPassage(
+                title: "Community Center Activities Schedule",
+                topic: "Everyday Life & Society",
+                difficulty: DifficultyLevel.Easy,
+                content: @"### Paragraph A
+The Greenhill Community Center offers a variety of educational and recreational programs for residents of all ages. Open seven days a week from 8:00 AM to 9:00 PM, the center features a modern library, swimming pool, art studio, and sports hall.
 
-        passage2.AddQuestion(new ReadingQuestion(
-            passage2.Id, 3, QuestionType.MultipleChoice,
-            "What major benefit is achieved by growing crops inside hermetically sealed environments?",
-            JsonSerializer.Serialize(new[] {
-                "A. Completely eliminates the need for chemical pesticides",
-                "B. Halves the required electrical power",
-                "C. Allows wheat and corn to grow in days",
-                "D. Makes LED lighting unnecessary"
-            }),
-            "A. Completely eliminates the need for chemical pesticides",
-            "Paragraph C states growers eradicate the need for chemical pesticides and synthetic herbicides."));
+### Paragraph B
+Every Tuesday and Thursday morning, free English language conversation classes are held for international newcomers. On weekends, the center hosts cooking workshops and junior chess tournaments. Members can book rooms online with their library card.",
+                estimatedTimeMinutes: 10,
+                sourceType: PassageSourceType.PublisherSeries,
+                collectionName: "Foundation Beginner Deck",
+                targetBandTier: TargetBandTier.PreIelts);
 
-        passage2.AddQuestion(new ReadingQuestion(
-            passage2.Id, 4, QuestionType.TrueFalseNotGiven,
-            "Vertical farming completely replaces traditional rural agriculture for all grain crops.",
-            JsonSerializer.Serialize(new[] { "TRUE", "FALSE", "NOT GIVEN" }),
-            "FALSE",
-            "Paragraph E explains that urban agriculture is unlikely to entirely supplant extensive broadacre farming for staple grains like wheat and rice."));
+            p3.AddQuestion(new ReadingQuestion(
+                p3.Id, 1, QuestionType.MultipleChoice,
+                "What time does the Greenhill Community Center open every day?",
+                JsonSerializer.Serialize(new[] { "A) 7:00 AM", "B) 8:00 AM", "C) 9:00 AM", "D) 10:00 AM" }),
+                "B) 8:00 AM",
+                "Paragraph A states: 'Open seven days a week from 8:00 AM to 9:00 PM'."));
 
-        passage2.AddQuestion(new ReadingQuestion(
-            passage2.Id, 5, QuestionType.TrueFalseNotGiven,
-            "High electrical power consumption is one of the chief operational challenges for indoor farms.",
-            JsonSerializer.Serialize(new[] { "TRUE", "FALSE", "NOT GIVEN" }),
-            "TRUE",
-            "Paragraph D points out continuous electrical consumption for lighting and thermal regulation as a major hurdle."));
+            context.ReadingPassages.Add(p3);
+        }
 
-        passage2.AddQuestion(new ReadingQuestion(
-            passage2.Id, 6, QuestionType.TrueFalseNotGiven,
-            "The cost of LED lighting has dropped by 80% over the last five years.",
-            JsonSerializer.Serialize(new[] { "TRUE", "FALSE", "NOT GIVEN" }),
-            "NOT GIVEN",
-            "The text mentions LED lighting installations but provides no specific cost reduction percentage over 5 years."));
+        if (p4 == null)
+        {
+            p4 = new ReadingPassage(
+                title: "Quantum Entanglement and Modern Encryption Protocols",
+                topic: "Quantum Physics & Cryptography",
+                difficulty: DifficultyLevel.Hard,
+                content: @"### Paragraph A
+Quantum key distribution (QKD) represents an unprecedented paradigm shift in information security. By exploiting the fundamental tenets of quantum mechanics—specifically Heisenberg's uncertainty principle and Einstein-Podolsky-Rosen (EPR) entanglement—cryptographers can generate cryptographic keys whose secrecy is guaranteed by the laws of physics rather than computational intractability.
 
-        passage2.AddQuestion(new ReadingQuestion(
-            passage2.Id, 7, QuestionType.SummaryCompletion,
-            "Hydroponic systems cultivate plants in mineral-rich solutions without the use of ______.",
-            JsonSerializer.Serialize(new string[] { }),
-            "soil",
-            "Paragraph B states: 'cultivate crops in mineral-rich aqueous solutions without soil'."));
+### Paragraph B
+In a typical entangled photon protocol, any eavesdropping attempt inevitably collapses the quantum wave function, introducing detectable perturbations. Consequently, legitimate communicating parties can quantify the quantum bit error rate (QBER) and instantly abort the transmission if anomalous interception is detected.",
+                estimatedTimeMinutes: 20,
+                sourceType: PassageSourceType.PastActualTest,
+                collectionName: "IELTS Past Actual Tests 2025",
+                targetBandTier: TargetBandTier.Band8_0_Plus);
 
-        passage2.AddQuestion(new ReadingQuestion(
-            passage2.Id, 8, QuestionType.SummaryCompletion,
-            "Aeroponic systems deliver nutrients by misting roots inside enclosed ______.",
-            JsonSerializer.Serialize(new string[] { }),
-            "chambers",
-            "Paragraph B states: 'suspends plant roots in enclosed chambers misted periodically'."));
+            p4.AddQuestion(new ReadingQuestion(
+                p4.Id, 1, QuestionType.TrueFalseNotGiven,
+                "Quantum key distribution security is established on computational mathematical difficulty.",
+                JsonSerializer.Serialize(new[] { "TRUE", "FALSE", "NOT GIVEN" }),
+                "FALSE",
+                "Paragraph A explains QKD secrecy is guaranteed by the laws of physics, NOT by computational intractability."));
 
-        passage2.AddQuestion(new ReadingQuestion(
-            passage2.Id, 9, QuestionType.SummaryCompletion,
-            "Vertical farming reduces greenhouse gas emissions by eliminating thousands of food ______.",
-            JsonSerializer.Serialize(new string[] { }),
-            "miles",
-            "Paragraph C mentions: 'eliminating the thousands of food miles'."));
+            context.ReadingPassages.Add(p4);
+        }
 
-        passage2.AddQuestion(new ReadingQuestion(
-            passage2.Id, 10, QuestionType.SummaryCompletion,
-            "Indoor facilities must be powered by decentralized ______ energy to minimize their operational carbon footprint.",
-            JsonSerializer.Serialize(new string[] { }),
-            "renewable",
-            "Paragraph D specifies: 'unless powered entirely by decentralized renewable energy sources'."));
-
-        passage2.AddQuestion(new ReadingQuestion(
-            passage2.Id, 11, QuestionType.SummaryCompletion,
-            "Leafy greens, berries, and ______ are exemplary high-value perishable crops for urban farming.",
-            JsonSerializer.Serialize(new string[] { }),
-            "tomatoes",
-            "Paragraph E mentions: 'leafy greens, herbs, berries, and tomatoes'."));
-
-        passage2.AddQuestion(new ReadingQuestion(
-            passage2.Id, 12, QuestionType.TrueFalseNotGiven,
-            "Urban indoor crops can be harvested throughout all 365 days of the year.",
-            JsonSerializer.Serialize(new[] { "TRUE", "FALSE", "NOT GIVEN" }),
-            "TRUE",
-            "Paragraph C states: 'Crops can be harvested 365 days a year without susceptibility to seasonal droughts'."));
-
-        passage2.AddQuestion(new ReadingQuestion(
-            passage2.Id, 13, QuestionType.TrueFalseNotGiven,
-            "Most urban vertical farms are currently profitable without government subsidies.",
-            JsonSerializer.Serialize(new[] { "TRUE", "FALSE", "NOT GIVEN" }),
-            "NOT GIVEN",
-            "Paragraph D discusses capital expenditure and electricity hurdles, but does not provide data on government subsidies."));
-
-        context.ReadingPassages.AddRange(passage1, passage2);
         await context.SaveChangesAsync();
 
-        logger.LogInformation("Successfully seeded 2 Cambridge IELTS Reading passages with 26 questions.");
+        // =========================================================================
+        // 2. SEED 6 BAND ROADMAPS & MILESTONES
+        // =========================================================================
+        if (!await context.BandRoadmaps.AnyAsync())
+        {
+            // 1. Pre-IELTS
+            var preRoadmap = new BandRoadmap(
+                TargetBandTier.PreIelts,
+                "Pre-IELTS (Band 0 – 3.5): Essential Foundation",
+                "Build sentence comprehension fundamentals, master basic verb tenses, and learn to locate key nouns and verbs in short everyday texts.",
+                "Basic S+V+O Syntax, Noun/Verb Keyword Location, Everyday Life Vocabulary (A1-A2)",
+                4, 500);
+            preRoadmap.AddMilestone(new BandMilestone(preRoadmap.Id, 1, "Everyday Life & Simple Notices", "Locating numbers and proper nouns in short paragraphs", "Reading simple timetables", p3?.Id, 65.0f));
+            preRoadmap.AddMilestone(new BandMilestone(preRoadmap.Id, 2, "Basic Chronology & Sequencing", "Understanding time words (first, next, then, finally)", "Sequencing events", null, 70.0f));
+            preRoadmap.AddMilestone(new BandMilestone(preRoadmap.Id, 3, "Multiple Choice Fundamentals", "Eliminating obviously wrong single options", "Option elimination", null, 70.0f));
+            preRoadmap.AddMilestone(new BandMilestone(preRoadmap.Id, 4, "Foundation Level Assessment", "Comprehensive review test before stepping into Band 4.0", "Pre-IELTS graduation test", null, 75.0f));
+
+            // 2. Band 4.0 - 4.5
+            var band4Roadmap = new BandRoadmap(
+                TargetBandTier.Band4_0_4_5,
+                "Band 4.0 – 4.5: Scanning & Skimming Bootcamp",
+                "Master fast skimming for main ideas within 45 seconds and precision scanning for dates, metrics, and names across short academic passages.",
+                "Skimming 45s, Scanning Metrics & Dates, Topic Sentence Identification, Basic Synonyms",
+                4, 600);
+            band4Roadmap.AddMilestone(new BandMilestone(band4Roadmap.Id, 1, "Skimming Topic Sentences", "Finding the primary thesis in Paragraph 1 and concluding remarks", "Skimming fundamentals", null, 70.0f));
+            band4Roadmap.AddMilestone(new BandMilestone(band4Roadmap.Id, 2, "Scanning Numbers & Metrics", "Precision eye-tracking for measurement units and country names", "Scanning numerical data", null, 75.0f));
+            band4Roadmap.AddMilestone(new BandMilestone(band4Roadmap.Id, 3, "Short Answer Word Limits", "Adhering to 'NO MORE THAN TWO WORDS' constraints", "Short answer practice", null, 75.0f));
+            band4Roadmap.AddMilestone(new BandMilestone(band4Roadmap.Id, 4, "Band 4.5 Milestone Benchmark", "Timed 15-minute challenge on a 500-word passage", "Band 4.5 final test", null, 80.0f));
+
+            // 3. Band 5.0 - 5.5
+            var band5Roadmap = new BandRoadmap(
+                TargetBandTier.Band5_0_5_5,
+                "Band 5.0 – 5.5: True / False / Not Given & Paraphrase Anchor",
+                "Thoroughly distinguish between FALSE (contradiction) and NOT GIVEN (absence of fact), handle word-class paraphrasing (verb-to-noun), and master Note Completion.",
+                "FALSE vs NOT GIVEN Logic, Part-of-speech Transformations, Table/Note Completion",
+                5, 800);
+            band5Roadmap.AddMilestone(new BandMilestone(band5Roadmap.Id, 1, "Dissecting FALSE vs. NOT GIVEN", "Eliminating false assumptions when textual evidence is absent", "TFNG logic master", p1?.Id, 75.0f));
+            band5Roadmap.AddMilestone(new BandMilestone(band5Roadmap.Id, 2, "Paraphrasing Keyword Anchors", "Matching synonyms across environmental and conservation texts", "Synonym anchoring", null, 75.0f));
+            band5Roadmap.AddMilestone(new BandMilestone(band5Roadmap.Id, 3, "Note and Diagram Completion", "Transferring exact words from technical diagrams into answer blanks", "Diagram labeling", null, 80.0f));
+            band5Roadmap.AddMilestone(new BandMilestone(band5Roadmap.Id, 4, "Summary Completion without a Word Box", "Locating paragraph clusters and grammar agreement in summaries", "Summary filling", null, 80.0f));
+            band5Roadmap.AddMilestone(new BandMilestone(band5Roadmap.Id, 5, "Standard Passage 1 Timed Test", "Achieving 11+/13 correct on Cambridge standard Passage 1", "Passage 1 trial", null, 85.0f));
+
+            // 4. Band 6.0 - 6.5
+            var band6Roadmap = new BandRoadmap(
+                TargetBandTier.Band6_0_6_5,
+                "Band 6.0 – 6.5: Matching Headings & Information Traps",
+                "Conquer Matching Headings by rejecting superficial keyword distractors, master Summary Completion with a box of synonyms, and optimize pacing to under 18 minutes per passage.",
+                "Matching Headings (Central Themes), Eliminating Distractors, Boxed Summary Completion, Speed Pacing",
+                5, 1000);
+            band6Roadmap.AddMilestone(new BandMilestone(band6Roadmap.Id, 1, "Dissecting Central Paragraph Themes", "Identifying heading summaries vs. isolated paragraph examples", "Headings mastery", p1?.Id, 75.0f));
+            band6Roadmap.AddMilestone(new BandMilestone(band6Roadmap.Id, 2, "Matching Information to Paragraphs [A-G]", "Scanning across dispersed paragraphs without reading line-by-line", "Information matching", null, 75.0f));
+            band6Roadmap.AddMilestone(new BandMilestone(band6Roadmap.Id, 3, "Summary Completion with Synonyms Box", "Selecting abstract synonyms from a predefined word bank (A-H)", "Box summary", null, 80.0f));
+            band6Roadmap.AddMilestone(new BandMilestone(band6Roadmap.Id, 4, "Passage 2 Time Pressure (< 18 mins)", "Completing 13 questions with high accuracy under strict timer", "Timed passage 2", null, 80.0f));
+            band6Roadmap.AddMilestone(new BandMilestone(band6Roadmap.Id, 5, "Band 6.5 Mastery Checkpoint", "Full Passage 2 simulation from Cambridge 18 Academic", "Cambridge 18 checkpoint", null, 85.0f));
+
+            // 5. Band 7.0 - 7.5
+            var band7Roadmap = new BandRoadmap(
+                TargetBandTier.Band7_0_7_5,
+                "Band 7.0 – 7.5: Academic Nuances & Speed Mastery",
+                "Master multi-clause complex sentences, grammatical inversions, subtle negative traps, and author attitude identification with an optimal reading speed of 250-300 wpm.",
+                "Complex Inversions, Author Tone (Critical/Sceptical), Implicit Nuances, Advanced Paraphrasing",
+                5, 1200);
+            band7Roadmap.AddMilestone(new BandMilestone(band7Roadmap.Id, 1, "Scientific Discourse & Negative Traps", "Overcoming implicit negative modifiers (rarely, seldom, fail to, overlook)", "Negative traps", p2?.Id, 75.0f));
+            band7Roadmap.AddMilestone(new BandMilestone(band7Roadmap.Id, 2, "Technological Archaeology & Features Matching", "Matching Features across multi-researcher historical texts", "Features matching", null, 80.0f));
+            band7Roadmap.AddMilestone(new BandMilestone(band7Roadmap.Id, 3, "Advanced Yes/No/Not Given Claims", "Differentiating author opinion vs. external empirical evidence", "YNNG claims", null, 80.0f));
+            band7Roadmap.AddMilestone(new BandMilestone(band7Roadmap.Id, 4, "Matching Headings under 16 Minutes", "Time pressure optimization & paragraph thesis synthesis", "Fast headings", null, 85.0f));
+            band7Roadmap.AddMilestone(new BandMilestone(band7Roadmap.Id, 5, "Full Cambridge Academic Challenge", "Simulated exam conditions (3 passages, 40 questions, Band 7.5+ benchmark)", "Cambridge 19 test", null, 85.0f));
+
+            // 6. Band 8.0 - 8.5+
+            var band8Roadmap = new BandRoadmap(
+                TargetBandTier.Band8_0_Plus,
+                "Band 8.0 – 8.5+: Philosophical Subtexts & 9.0 Perfectionist",
+                "Decode highly abstract philosophical and scientific treatises, catch subtle irony and implicit inferences, and achieve 38-40/40 under 50 minutes.",
+                "Implicit Inference, Philosophical Abstractions, High-speed Scholarly Analysis, 9.0 Perfection",
+                5, 1500);
+            band8Roadmap.AddMilestone(new BandMilestone(band8Roadmap.Id, 1, "Epistemological & Philosophical Inferences", "Inferring unstated author beliefs from academic rhetoric", "Epistemological inferences", p4?.Id, 85.0f));
+            band8Roadmap.AddMilestone(new BandMilestone(band8Roadmap.Id, 2, "Scientific Complexity in Passage 3", "Navigating quantum computing and relativistic mechanics texts", "Quantum comprehension", null, 85.0f));
+            band8Roadmap.AddMilestone(new BandMilestone(band8Roadmap.Id, 3, "Multiple Choice Multi-Select Multi-Distractors", "Dissecting 5-option questions with 2 nuanced correct choices", "Multi-distractor elimination", null, 90.0f));
+            band8Roadmap.AddMilestone(new BandMilestone(band8Roadmap.Id, 4, "Past Actual Test Hard Passages (2025/2026)", "Official IDP/British Council hard examination passages", "Past actual tests", null, 90.0f));
+            band8Roadmap.AddMilestone(new BandMilestone(band8Roadmap.Id, 5, "The Grand Band 9.0 Perfectionist Challenge", "Complete full 3-passage 40-question exam with 39-40 correct", "9.0 perfection exam", null, 95.0f));
+
+            context.BandRoadmaps.AddRange(preRoadmap, band4Roadmap, band5Roadmap, band6Roadmap, band7Roadmap, band8Roadmap);
+            await context.SaveChangesAsync();
+        }
+
+        // =========================================================================
+        // 3. SEED DEDICATED VOCABULARIES (Across Band Tiers)
+        // =========================================================================
+        if (!await context.BandVocabularies.AnyAsync())
+        {
+            var vocabList = new List<BandVocabulary>
+            {
+                // Pre-IELTS
+                new(TargetBandTier.PreIelts, "Routine", "/ruːˈtiːn/", "Thói quen hàng ngày, trình tự công việc cố định.", "Noun", "A1", "My daily morning routine includes exercising.", JsonSerializer.Serialize(new[] { "daily routine", "follow a routine" }), JsonSerializer.Serialize(new[] { "habit", "schedule" })),
+                new(TargetBandTier.PreIelts, "Discover", "/dɪˈskʌv.ər/", "Khám phá ra, tìm thấy lần đầu tiên.", "Verb", "A2", "Scientists discovered a new species in the rainforest.", JsonSerializer.Serialize(new[] { "discover new facts", "discover the truth" }), JsonSerializer.Serialize(new[] { "find", "uncover" })),
+                new(TargetBandTier.PreIelts, "Pollution", "/pəˈluː.ʃən/", "Sự ô nhiễm môi trường đất, nước hoặc không khí.", "Noun", "A2", "Air pollution is a serious problem in modern big cities.", JsonSerializer.Serialize(new[] { "air pollution", "water pollution" }), JsonSerializer.Serialize(new[] { "contamination", "smog" })),
+
+                // Band 4.0 - 4.5
+                new(TargetBandTier.Band4_0_4_5, "Significant", "/sɪɡˈnɪf.ɪ.kənt/", "Quan trọng, có ý nghĩa lớn, đáng chú ý.", "Adjective", "B1", "There has been a significant increase in renewable energy.", JsonSerializer.Serialize(new[] { "significant change", "significant difference" }), JsonSerializer.Serialize(new[] { "important", "notable" })),
+                new(TargetBandTier.Band4_0_4_5, "Demonstrate", "/ˈdem.ən.streɪt/", "Chứng minh, chỉ ra rõ ràng qua bằng chứng.", "Verb", "B1", "The experiments demonstrate that the formula is effective.", JsonSerializer.Serialize(new[] { "demonstrate ability", "clearly demonstrate" }), JsonSerializer.Serialize(new[] { "show", "prove" })),
+
+                // Band 5.0 - 5.5
+                new(TargetBandTier.Band5_0_5_5, "Conservation", "/ˌkɒn.səˈveɪ.ʃən/", "Sự bảo tồn tài nguyên thiên nhiên hoặc di sản.", "Noun", "B1", "Wildlife conservation projects protect endangered species.", JsonSerializer.Serialize(new[] { "wildlife conservation", "energy conservation" }), JsonSerializer.Serialize(new[] { "preservation", "protection" })),
+                new(TargetBandTier.Band5_0_5_5, "Contradict", "/ˌkɒn.trəˈdɪkt/", "Mâu thuẫn, trái ngược trực tiếp (Chìa khóa bẫy FALSE trong TFNG).", "Verb", "B1", "The latest findings contradict earlier assumptions.", JsonSerializer.Serialize(new[] { "directly contradict", "contradict evidence" }), JsonSerializer.Serialize(new[] { "oppose", "conflict with" })),
+
+                // Band 6.0 - 6.5
+                new(TargetBandTier.Band6_0_6_5, "Phenomenon", "/fəˈnɒm.ɪ.nən/", "Hiện tượng tự nhiên hoặc xã hội đáng chú ý.", "Noun", "B2", "Urban heat islands represent a meteorological phenomenon.", JsonSerializer.Serialize(new[] { "natural phenomenon", "widespread phenomenon" }), JsonSerializer.Serialize(new[] { "occurrence", "event" })),
+                new(TargetBandTier.Band6_0_6_5, "Biomimetic", "/ˌbaɪ.əʊ.mɪˈmet.ɪk/", "Phỏng sinh học (Mô phỏng cơ chế tự nhiên vào robot/kỹ thuật).", "Adjective", "B2", "Engineers developed biomimetic drones inspired by dragonflies.", JsonSerializer.Serialize(new[] { "biomimetic design", "biomimetic robotics" }), JsonSerializer.Serialize(new[] { "nature-inspired", "bionic" })),
+
+                // Band 7.0 - 7.5
+                new(TargetBandTier.Band7_0_7_5, "Ubiquitous", "/juːˈbɪk.wɪ.təs/", "Có mặt ở khắp mọi nơi cùng một lúc.", "Adjective", "C1", "Smartphones have become ubiquitous across modern urban society.", JsonSerializer.Serialize(new[] { "ubiquitous presence", "ubiquitous phenomenon" }), JsonSerializer.Serialize(new[] { "omnipresent", "pervasive" })),
+                new(TargetBandTier.Band7_0_7_5, "Empirical", "/ɪmˈpɪr.ɪ.kəl/", "Dựa trên thực nghiệm và quan sát thực tế.", "Adjective", "C1", "Researchers gathered empirical evidence to substantiate the hypothesis.", JsonSerializer.Serialize(new[] { "empirical evidence", "empirical study" }), JsonSerializer.Serialize(new[] { "observational", "experimental" })),
+                new(TargetBandTier.Band7_0_7_5, "Exacerbate", "/ɪɡˈzæs.ə.beɪt/", "Làm trầm trọng thêm một tình trạng đã tồi tệ.", "Verb", "C1", "Rapid deforestation exacerbates global warming.", JsonSerializer.Serialize(new[] { "exacerbate the problem", "further exacerbate" }), JsonSerializer.Serialize(new[] { "worsen", "aggravate" })),
+
+                // Band 8.0 - 8.5+
+                new(TargetBandTier.Band8_0_Plus, "Epistemological", "/ɪˌpɪs.tə.məˈlɒdʒ.ɪ.kəl/", "Thuộc về nhận thức luận (Bản chất và giới hạn của tri thức).", "Adjective", "C2", "Generative AI raises profound epistemological questions.", JsonSerializer.Serialize(new[] { "epistemological framework", "epistemological premise" }), JsonSerializer.Serialize(new[] { "philosophical", "theoretical" })),
+                new(TargetBandTier.Band8_0_Plus, "Dichotomy", "/daɪˈkɒt.ə.mi/", "Sự phân đôi, đối lập lưỡng phân hoàn toàn.", "Noun", "C2", "The author challenges the false dichotomy between growth and conservation.", JsonSerializer.Serialize(new[] { "false dichotomy", "sharp dichotomy" }), JsonSerializer.Serialize(new[] { "division", "polarization" })),
+                new(TargetBandTier.Band8_0_Plus, "Serendipitous", "/ˌser.ənˈdɪp.ɪ.təs/", "Tình cờ may mắn phát hiện điều tuyệt vời mà không định trước.", "Adjective", "C2", "The discovery of penicillin was a famously serendipitous breakthrough.", JsonSerializer.Serialize(new[] { "serendipitous discovery", "serendipitous event" }), JsonSerializer.Serialize(new[] { "fortuitous", "accidental" }))
+            };
+
+            context.BandVocabularies.AddRange(vocabList);
+            await context.SaveChangesAsync();
+        }
+
+        logger?.LogInformation("Successfully seeded 6 Band Roadmaps, dedicated Vocabulary Decks, and Passages.");
     }
 }

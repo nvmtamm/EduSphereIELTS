@@ -11,5 +11,10 @@ public interface IApplicationDbContext
     DbSet<ReadingSubmission> ReadingSubmissions { get; }
     DbSet<ReadingSubmissionAnswer> ReadingSubmissionAnswers { get; }
 
+    DbSet<BandRoadmap> BandRoadmaps { get; }
+    DbSet<BandMilestone> BandMilestones { get; }
+    DbSet<BandVocabulary> BandVocabularies { get; }
+    DbSet<UserRoadmapProgress> UserRoadmapProgresses { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

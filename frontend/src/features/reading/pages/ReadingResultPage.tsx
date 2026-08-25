@@ -10,11 +10,13 @@ import {
   BookOpen,
   Loader2,
   Share2,
-  Sparkles
+  Sparkles,
+  Bot
 } from 'lucide-react'
 import { readingApi } from '../api/readingApi'
 import type { ReadingExamResult, ReadingAnswerResult } from '../types/reading.types'
 import { ExplanationModal } from '../components/ExplanationModal'
+import { ReadingAITutorSidebar } from '../components/ReadingAITutorSidebar'
 
 export const ReadingResultPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
@@ -23,6 +25,7 @@ export const ReadingResultPage: React.FC = () => {
   const [result, setResult] = useState<ReadingExamResult | null>(null)
   const [loading, setLoading] = useState(true)
   const [selectedAnswerForModal, setSelectedAnswerForModal] = useState<ReadingAnswerResult | null>(null)
+  const [isAITutorOpen, setIsAITutorOpen] = useState(false)
 
   useEffect(() => {
     if (!id) return
@@ -66,54 +69,57 @@ export const ReadingResultPage: React.FC = () => {
     )
   }
 
-  const minutesSpent = Math.floor(result.durationSeconds / 60)
-  const secondsSpent = result.durationSeconds % 60
-  const timeFormatted = `${minutesSpent}m ${secondsSpent}s`
+  const minutes = Math.floor(result.durationSeconds / 60)
+  const seconds = result.durationSeconds % 60
+  const timeFormatted = `${minutes}m ${seconds}s`
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 pb-12">
-      {/* Top Breadcrumb */}
+    <div className="space-y-8 max-w-4xl mx-auto pb-12">
+      {/* Top Back Navigation */}
       <div className="flex items-center justify-between">
-        <Link
-          to="/reading"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-500 hover:text-red-600 dark:text-zinc-400 dark:hover:text-red-500 transition-colors"
+        <button
+          type="button"
+          onClick={() => navigate('/reading')}
+          className="inline-flex items-center gap-2 text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Reading Hub</span>
-        </Link>
+        </button>
+
         <button
           type="button"
-          onClick={() => alert('Result summary copied to clipboard!')}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900 cursor-pointer transition-colors"
+          onClick={() => setIsAITutorOpen(true)}
+          className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 flex items-center gap-1.5 transition-all"
         >
-          <Share2 className="w-3.5 h-3.5" />
-          <span>Share Scorecard</span>
+          <Bot className="w-4 h-4" />
+          <span>Diagnostic AI Tutor</span>
+          <Sparkles className="w-3 h-3 text-amber-300" />
         </button>
       </div>
 
-      {/* Main Scorecard Header - Pure Jet Black */}
-      <div className="rounded-3xl bg-black text-white p-6 md:p-8 shadow-2xl border border-zinc-800 relative overflow-hidden">
-        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-2 text-center md:text-left">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-900 text-xs font-bold text-white border border-zinc-800">
-              <Sparkles className="w-3.5 h-3.5 text-red-500" />
-              <span>Official Cambridge Diagnostic</span>
+      {/* Band Score Hero Card - Luxury Black Card */}
+      <div className="relative overflow-hidden rounded-3xl bg-zinc-950 border border-zinc-800 p-8 shadow-2xl">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-600/20 text-red-500 border border-red-500/30 text-xs font-bold">
+              <Trophy className="w-3.5 h-3.5" />
+              <span>Official Band Score Estimate</span>
             </div>
-            <h1 className="text-xl md:text-2xl font-black tracking-tight">{result.passageTitle}</h1>
-            <p className="text-xs text-zinc-400">
-              Completed on {new Date(result.submittedAt).toLocaleDateString()}
+            <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">
+              {result.passageTitle}
+            </h1>
+            <p className="text-zinc-400 text-xs font-medium">
+              Submitted on {new Date(result.submittedAt).toLocaleDateString()} at {new Date(result.submittedAt).toLocaleTimeString()}
             </p>
           </div>
 
-          {/* Band Score Circular Emblem - Pure Red */}
-          <div className="w-32 h-32 md:w-36 md:h-36 rounded-3xl bg-red-600 shadow-2xl flex flex-col items-center justify-center p-4 text-center shrink-0 border-2 border-white/20">
-            <Trophy className="w-6 h-6 mb-1 text-white opacity-90" />
-            <span className="text-3xl md:text-4xl font-black tracking-tight leading-none text-white">
+          {/* Big Score Badge */}
+          <div className="flex flex-col items-center justify-center p-5 rounded-2xl bg-red-600 text-white shadow-xl shadow-red-600/30 shrink-0 min-w-[140px]">
+            <span className="text-xs uppercase font-extrabold tracking-widest text-red-100">Estimated</span>
+            <div className="text-4xl md:text-5xl font-black tracking-tight my-0.5">
               {result.bandScore.toFixed(1)}
-            </span>
-            <span className="text-[10px] font-black uppercase tracking-wider mt-1 text-white opacity-90">
-              IELTS Band
-            </span>
+            </div>
+            <span className="text-[11px] font-bold text-red-100">IELTS Academic Band</span>
           </div>
         </div>
 
@@ -230,6 +236,15 @@ export const ReadingResultPage: React.FC = () => {
       <ExplanationModal
         answer={selectedAnswerForModal}
         onClose={() => setSelectedAnswerForModal(null)}
+      />
+
+      {/* RAG AI Tutor in Deep Diagnostic Review Mode */}
+      <ReadingAITutorSidebar
+        isOpen={isAITutorOpen}
+        onClose={() => setIsAITutorOpen(false)}
+        passageId={result.passageId}
+        passageTitle={result.passageTitle}
+        isPostExamReview={true}
       />
     </div>
   )

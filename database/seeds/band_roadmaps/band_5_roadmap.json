@@ -1,0 +1,45 @@
+{
+  "bandTier": "Band5_0_5_5",
+  "title": "Band 5.0 – 5.5: True / False / Not Given & Paraphrase Anchor",
+  "description": "Thoroughly distinguish between FALSE (contradiction) and NOT GIVEN (absence of fact), handle word-class paraphrasing (verb-to-noun), and master Note Completion.",
+  "targetSkillsSummary": "FALSE vs NOT GIVEN Logic, Part-of-speech Transformations, Table/Note Completion",
+  "totalMilestones": 5,
+  "vocabularyCount": 800,
+  "milestones": [
+    {
+      "stepNumber": 1,
+      "title": "Stage 1: Dissecting FALSE vs. NOT GIVEN",
+      "targetSkill": "Eliminating false assumptions when textual evidence is absent",
+      "passageTitle": "The Secret History of the Antikythera Mechanism",
+      "minAccuracyToUnlockNext": 75.0
+    },
+    {
+      "stepNumber": 2,
+      "title": "Stage 2: Paraphrasing Keyword Anchors",
+      "targetSkill": "Matching synonyms across environmental and conservation texts",
+      "passageTitle": "Preserving Global Mangrove Forests",
+      "minAccuracyToUnlockNext": 75.0
+    },
+    {
+      "stepNumber": 3,
+      "title": "Stage 3: Note and Diagram Completion",
+      "targetSkill": "Transferring exact words from technical diagrams into answer blanks",
+      "passageTitle": "How Desalination Plants Produce Fresh Water",
+      "minAccuracyToUnlockNext": 80.0
+    },
+    {
+      "stepNumber": 4,
+      "title": "Stage 4: Summary Completion without a Word Box",
+      "targetSkill": "Locating paragraph clusters and grammar agreement in summaries",
+      "passageTitle": "The Domestication of the Horse in Central Asia",
+      "minAccuracyToUnlockNext": 80.0
+    },
+    {
+      "stepNumber": 5,
+      "title": "Stage 5: Standard Passage 1 Timed Test (20m)",
+      "targetSkill": "Achieving 11+/13 correct on Cambridge standard Passage 1",
+      "passageTitle": "Urban Agriculture and the Future of Food Supply",
+      "minAccuracyToUnlockNext": 85.0
+    }
+  ]
+}

@@ -1,5 +1,3 @@
-using EduSphere.Domain.Enums;
-
 namespace EduSphere.Application.Features.Reading.Models;
 
 public record ReadingPassageDto(
@@ -10,4 +8,9 @@ public record ReadingPassageDto(
     int EstimatedTimeMinutes,
     int TotalQuestions,
     List<string> QuestionTypes,
+    string SourceType,
+    string CollectionName,
+    string TargetBandTier,
+    Guid? UploadedByUserId,
+    bool IsCommunityShared,
     DateTime CreatedAt);

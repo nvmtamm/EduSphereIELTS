@@ -1,5 +1,6 @@
 using EduSphere.Application.Common.Interfaces;
 using EduSphere.Infrastructure.Data;
+using EduSphere.Infrastructure.HarnessPipeline;
 using EduSphere.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -43,6 +44,10 @@ public static class DependencyInjection
 
         // 4. Domain & Scoring Services
         services.AddScoped<IReadingScoringService, ReadingScoringService>();
+
+        // 5. AI Services & Multi-Agent Pipeline
+        services.AddHttpClient<IReadingAITutorService, ReadingAITutorService>();
+        services.AddHttpClient<IDocumentIngestionService, DocumentIngestionService>();
 
         return services;
     }

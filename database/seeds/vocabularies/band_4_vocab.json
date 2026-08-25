@@ -1,0 +1,46 @@
+[
+  {
+    "bandTier": "Band4_0_4_5",
+    "word": "Significant",
+    "phonetic": "/sɪɡˈnɪf.ɪ.kənt/",
+    "meaning": "Quan trọng, có ý nghĩa lớn, đáng chú ý.",
+    "partOfSpeech": "Adjective",
+    "academicLevel": "B1",
+    "exampleSentence": "There has been a significant increase in renewable energy adoption.",
+    "collocations": ["significant change", "significant difference", "statistically significant"],
+    "synonyms": ["important", "notable", "meaningful"]
+  },
+  {
+    "bandTier": "Band4_0_4_5",
+    "word": "Demonstrate",
+    "phonetic": "/ˈdem.ən.streɪt/",
+    "meaning": "Chứng minh, chỉ ra rõ ràng qua bằng chứng hoặc hành động.",
+    "partOfSpeech": "Verb",
+    "academicLevel": "B1",
+    "exampleSentence": "The experiments demonstrate that the new formula is effective.",
+    "collocations": ["demonstrate ability", "demonstrate effectiveness", "clearly demonstrate"],
+    "synonyms": ["show", "prove", "illustrate"]
+  },
+  {
+    "bandTier": "Band4_0_4_5",
+    "word": "Consume",
+    "phonetic": "/kənˈsjuːm/",
+    "meaning": "Tiêu thụ (năng lượng, thực phẩm, hàng hóa).",
+    "partOfSpeech": "Verb",
+    "academicLevel": "B1",
+    "exampleSentence": "Electric cars consume less energy compared to gasoline vehicles.",
+    "collocations": ["consume energy", "consume resources", "consume food"],
+    "synonyms": ["use up", "deplete", "absorb"]
+  },
+  {
+    "bandTier": "Band4_0_4_5",
+    "word": "Traditional",
+    "phonetic": "/trəˈdɪʃ.ən.əl/",
+    "meaning": "Theo truyền thống, phong tục từ lâu đời.",
+    "partOfSpeech": "Adjective",
+    "academicLevel": "B1",
+    "exampleSentence": "Polynesian voyagers used traditional star navigation techniques.",
+    "collocations": ["traditional method", "traditional culture", "traditional knowledge"],
+    "synonyms": ["conventional", "customary", "historical"]
+  }
+]

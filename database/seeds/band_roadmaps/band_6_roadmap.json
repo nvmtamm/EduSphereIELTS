@@ -1,0 +1,45 @@
+{
+  "bandTier": "Band6_0_6_5",
+  "title": "Band 6.0 – 6.5: Matching Headings & Information Traps",
+  "description": "Conquer Matching Headings by rejecting superficial keyword distractors, master Summary Completion with a box of synonyms, and optimize pacing to under 18 minutes per passage.",
+  "targetSkillsSummary": "Matching Headings (Central Themes), Eliminating Distractors, Boxed Summary Completion, Speed Pacing",
+  "totalMilestones": 5,
+  "vocabularyCount": 1000,
+  "milestones": [
+    {
+      "stepNumber": 1,
+      "title": "Stage 1: Dissecting Central Paragraph Themes",
+      "targetSkill": "Identifying heading summaries vs. isolated paragraph examples",
+      "passageTitle": "The Psychological Impact of Urban Green Spaces",
+      "minAccuracyToUnlockNext": 75.0
+    },
+    {
+      "stepNumber": 2,
+      "title": "Stage 2: Matching Information to Paragraphs [A-G]",
+      "targetSkill": "Scanning across dispersed paragraphs without reading line-by-line",
+      "passageTitle": "The Evolution of Biomimetic Robotics",
+      "minAccuracyToUnlockNext": 75.0
+    },
+    {
+      "stepNumber": 3,
+      "title": "Stage 3: Summary Completion with Synonyms Box",
+      "targetSkill": "Selecting abstract synonyms from a predefined word bank (A-H)",
+      "passageTitle": "Economic Theories of Wealth Distribution in Industrial Revolutions",
+      "minAccuracyToUnlockNext": 80.0
+    },
+    {
+      "stepNumber": 4,
+      "title": "Stage 4: Passage 2 Time Pressure (< 18 mins)",
+      "targetSkill": "Completing 13 questions with high accuracy under strict timer",
+      "passageTitle": "Deep-Sea Hydrothermal Vents and Extremophile Life",
+      "minAccuracyToUnlockNext": 80.0
+    },
+    {
+      "stepNumber": 5,
+      "title": "Stage 5: Band 6.5 Mastery Checkpoint",
+      "targetSkill": "Full Passage 2 simulation from Cambridge 18 Academic",
+      "passageTitle": "Cambridge IELTS 18 Academic Test 2 Reading Passage 2",
+      "minAccuracyToUnlockNext": 85.0
+    }
+  ]
+}

@@ -25,6 +25,20 @@ public class ReadingPassageConfiguration : IEntityTypeConfiguration<ReadingPassa
             .HasConversion<string>()
             .HasMaxLength(50);
 
+        builder.Property(p => p.SourceType)
+            .IsRequired()
+            .HasConversion<string>()
+            .HasMaxLength(50);
+
+        builder.Property(p => p.CollectionName)
+            .IsRequired()
+            .HasMaxLength(150);
+
+        builder.Property(p => p.TargetBandTier)
+            .IsRequired()
+            .HasConversion<string>()
+            .HasMaxLength(50);
+
         builder.Property(p => p.Content)
             .IsRequired();
 
@@ -33,6 +47,8 @@ public class ReadingPassageConfiguration : IEntityTypeConfiguration<ReadingPassa
 
         builder.HasIndex(p => p.Topic);
         builder.HasIndex(p => p.Difficulty);
+        builder.HasIndex(p => p.SourceType);
+        builder.HasIndex(p => p.TargetBandTier);
 
         builder.HasMany(p => p.Questions)
             .WithOne(q => q.Passage)
@@ -101,13 +117,7 @@ public class ReadingSubmissionConfiguration : IEntityTypeConfiguration<ReadingSu
         builder.Property(s => s.DurationSeconds)
             .IsRequired();
 
-        builder.HasIndex(s => s.UserId);
-        builder.HasIndex(s => s.PassageId);
-
-        builder.HasOne(s => s.User)
-            .WithMany()
-            .HasForeignKey(s => s.UserId)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasIndex(s => new { s.UserId, s.PassageId });
 
         builder.HasMany(s => s.Answers)
             .WithOne(a => a.Submission)
@@ -125,10 +135,13 @@ public class ReadingSubmissionAnswerConfiguration : IEntityTypeConfiguration<Rea
         builder.HasKey(a => a.Id);
 
         builder.Property(a => a.UserAnswer)
+            .IsRequired()
             .HasMaxLength(500);
 
         builder.Property(a => a.IsCorrect)
             .IsRequired();
+
+        builder.HasIndex(a => new { a.SubmissionId, a.QuestionId });
 
         builder.HasOne(a => a.Question)
             .WithMany()
