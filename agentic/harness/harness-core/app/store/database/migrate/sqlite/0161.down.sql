@@ -1,0 +1,1 @@
+ALTER TABLE upstream_proxy_configs DROP COLUMN upstream_proxy_config_firewall_mode;

@@ -1,0 +1,114 @@
+// Copyright 2023 Harness, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package protection
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/harness/gitness/types"
+)
+
+type pushRuleSet struct {
+	rules   []types.RuleInfoInternal
+	manager *Manager
+}
+
+var _ PushProtection = pushRuleSet{}
+
+func (s pushRuleSet) PushVerify(
+	ctx context.Context,
+	in PushVerifyInput,
+) (PushVerifyOutput, []types.RuleViolations, error) {
+	var violations []types.RuleViolations
+	var out PushVerifyOutput
+	out.Protections = make(map[int64]PushProtection, len(s.rules))
+
+	for _, r := range s.rules {
+		matches, err := matchesRepo(r.RepoTarget, in.RepoID, in.RepoPath, r.SpacePath)
+		if err != nil {
+			return out, violations, fmt.Errorf(
+				"error matching repo for protection definition ID=%d to repo path=%s: %w",
+				r.ID, in.RepoPath, err,
+			)
+		}
+		if !matches {
+			continue
+		}
+
+		ruleDefinition, err := s.manager.FromJSON(r.Type, r.Definition, SanitizeLoose())
+		if err != nil {
+			return out, nil, fmt.Errorf(
+				"failed to parse rule definition ID=%d Type=%s: %w",
+				r.ID, r.Type, err,
+			)
+		}
+
+		pushProtection, ok := ruleDefinition.(PushProtection)
+		if !ok { // theoretically, should never happen
+			return out, nil, fmt.Errorf(
+				"unexpected type for ruleDefinition: got %T, expected PushProtection",
+				ruleDefinition,
+			)
+		}
+
+		out.Protections[r.ID] = pushProtection
+
+		rOut, rViolations, err := pushProtection.PushVerify(ctx, in)
+		if err != nil {
+			return out, nil, fmt.Errorf("failed to process push rule in push rule set: %w", err)
+		}
+
+		violations = append(violations, rViolations...)
+
+		out.FileSizeLimits = append(out.FileSizeLimits, rOut.FileSizeLimits...)
+
+		out.PrincipalCommitterMatch = out.PrincipalCommitterMatch || rOut.PrincipalCommitterMatch
+
+		out.SecretScanningEnabled = out.SecretScanningEnabled || rOut.SecretScanningEnabled
+	}
+
+	return out, violations, nil
+}
+
+func (s pushRuleSet) Violations(ctx context.Context, in *PushViolationsInput) (PushViolationsOutput, error) {
+	output := PushViolationsOutput{}
+
+	for _, r := range s.rules {
+		protection, ok := in.Protections[r.ID]
+		if !ok { // if the rule protection did not match the repo target
+			continue
+		}
+
+		out, err := protection.Violations(ctx, in)
+		if err != nil {
+			return PushViolationsOutput{}, fmt.Errorf(
+				"failed to backfill violations: %w", err,
+			)
+		}
+
+		output.Violations = append(output.Violations, backFillRule(out.Violations, r.RuleInfo)...)
+	}
+
+	return output, nil
+}
+
+func (s pushRuleSet) UserIDs() ([]int64, error) {
+	return collectIDs(s.manager, s.rules, UserIDGetter.UserIDs)
+}
+
+func (s pushRuleSet) UserGroupIDs() ([]int64, error) {
+	return collectIDs(s.manager, s.rules, UserIDGetter.UserGroupIDs)
+}

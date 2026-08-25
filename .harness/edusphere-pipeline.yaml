@@ -1,0 +1,60 @@
+pipeline:
+  name: EduSphere_IELTS_Harness_Pipeline
+  identifier: EduSphere_IELTS_Harness_Pipeline
+  projectIdentifier: EduSphere_Enterprise
+  orgIdentifier: default
+  tags:
+    environment: production
+    module: reading-multi-agent
+  stages:
+    - stage:
+        name: Build and Quality Verification
+        identifier: build_and_quality_verification
+        type: CI
+        spec:
+          cloneCodebase: true
+          infrastructure:
+            type: Kubernetes
+            spec:
+              namespace: harness-delegate
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Run Backend .NET 8 Tests
+                  identifier: backend_tests
+                  spec:
+                    connectorRef: docker_hub
+                    image: mcr.microsoft.com/dotnet/sdk:8.0
+                    shell: Sh
+                    command: |
+                      cd backend
+                      dotnet restore EduSphere.sln
+                      dotnet build EduSphere.sln --configuration Release
+                      dotnet test tests/EduSphere.UnitTests/EduSphere.UnitTests.csproj --configuration Release --verbosity normal
+
+              - step:
+                  type: Run
+                  name: Verify Frontend Build
+                  identifier: frontend_build
+                  spec:
+                    connectorRef: docker_hub
+                    image: node:20-alpine
+                    shell: Sh
+                    command: |
+                      cd frontend
+                      npm ci
+                      npm run build
+
+              - step:
+                  type: Run
+                  name: Execute Multi-Agent Harness Quality Policy Gate
+                  identifier: agentic_policy_gate
+                  spec:
+                    connectorRef: docker_hub
+                    image: mcr.microsoft.com/dotnet/sdk:8.0
+                    shell: Sh
+                    command: |
+                      echo "Evaluating Harness Quality Policy Gate for Multi-Agent Ingestion and Socratic RAG..."
+                      cd backend
+                      dotnet test --filter "FullyQualifiedName~RoadmapAndAIQueriesTests"

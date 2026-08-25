@@ -1,0 +1,280 @@
+// Copyright 2023 Harness, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package repo
+
+import (
+	"context"
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	"strings"
+	"time"
+
+	"github.com/harness/gitness/app/api/controller/limiter"
+	"github.com/harness/gitness/app/auth"
+	repoevents "github.com/harness/gitness/app/events/repo"
+	"github.com/harness/gitness/app/paths"
+	"github.com/harness/gitness/app/services/importer"
+	"github.com/harness/gitness/app/services/instrument"
+	"github.com/harness/gitness/app/services/settings"
+	"github.com/harness/gitness/audit"
+	"github.com/harness/gitness/errors"
+	"github.com/harness/gitness/git"
+	"github.com/harness/gitness/types"
+	"github.com/harness/gitness/types/enum"
+
+	"github.com/rs/zerolog/log"
+)
+
+type CreateForkInput struct {
+	ParentRef  string `json:"parent_ref"`
+	Identifier string `json:"identifier"`
+	ForkBranch string `json:"fork_branch"`
+}
+
+func (in *CreateForkInput) sanitize() error {
+	in.ParentRef = strings.TrimSpace(in.ParentRef)
+	in.Identifier = strings.TrimSpace(in.Identifier)
+	in.ForkBranch = strings.TrimSpace(in.ForkBranch)
+
+	if in.ParentRef == "" {
+		return errors.InvalidArgument("Parent space is mandatory.")
+	}
+
+	if in.Identifier == "" {
+		return errors.InvalidArgument("Identifier is mandatory.")
+	}
+
+	return nil
+}
+
+//nolint:gocognit
+func (c *Controller) CreateFork(
+	ctx context.Context,
+	session *auth.Session,
+	repoRef string,
+	in *CreateForkInput,
+) (*RepositoryOutput, error) {
+	repoUpstreamCore, err := c.getRepoCheckAccess(ctx, session, repoRef, enum.PermissionRepoView)
+	if err != nil {
+		return nil, err
+	}
+
+	if repoUpstreamCore.Type == enum.RepoTypeLinked {
+		return nil, errors.Forbidden("A linked repository can't be forked")
+	}
+
+	if err := in.sanitize(); err != nil {
+		return nil, err
+	}
+
+	repoUpstream, err := c.repoStore.Find(ctx, repoUpstreamCore.ID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find the upstream repo: %w", err)
+	}
+
+	if repoUpstream.IsEmpty {
+		return nil, errors.InvalidArgument("Can not fork an empty repository.")
+	}
+
+	parentSpace, err := c.getSpaceCheckAuthRepoCreation(ctx, session, in.ParentRef)
+	if err != nil {
+		return nil, err
+	}
+
+	defaultBranch := repoUpstream.DefaultBranch
+
+	if in.ForkBranch != "" && repoUpstream.DefaultBranch != in.ForkBranch {
+		_, err := c.git.GetBranch(ctx, &git.GetBranchParams{
+			ReadParams: git.CreateReadParams(repoUpstream),
+			BranchName: in.ForkBranch,
+		})
+		if err != nil {
+			if errors.IsNotFound(err) {
+				return nil, errors.InvalidArgument("Fork branch not found.")
+			}
+
+			return nil, fmt.Errorf("failed to get branch: %w", err)
+		}
+
+		defaultBranch = in.ForkBranch
+	}
+
+	const isForkPublic = false
+
+	err = c.repoCheck.Create(ctx, session, &CheckInput{
+		ParentRef:         parentSpace.Path,
+		Identifier:        in.Identifier,
+		DefaultBranch:     defaultBranch,
+		Description:       repoUpstream.Description,
+		IsPublic:          isForkPublic,
+		IsFork:            true,
+		UpstreamPath:      repoUpstream.Path,
+		CreateFileOptions: CreateFileOptions{},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	gitForkRepo, _, err := c.createGitRepository(
+		ctx,
+		session,
+		in.Identifier,
+		repoUpstream.Description,
+		defaultBranch,
+		CreateFileOptions{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error creating repository on git: %w", err)
+	}
+
+	var repoFork *types.Repository
+
+	err = c.tx.WithTx(ctx, func(ctx context.Context) error {
+		if err := c.resourceLimiter.RepoCount(ctx, parentSpace.ID, 1); err != nil {
+			return fmt.Errorf("resource limit exceeded: %w", limiter.ErrMaxNumReposReached)
+		}
+
+		// lock the space for update during repo creation to prevent racing conditions with space soft delete.
+		parentSpaceFull, err := c.spaceStore.FindForUpdate(ctx, parentSpace.ID)
+		if err != nil {
+			return fmt.Errorf("failed to find the parent space: %w", err)
+		}
+
+		repoUpstream, err = c.repoStore.Find(ctx, repoUpstream.ID)
+		if err != nil {
+			return fmt.Errorf("failed to find the upstream repo: %w", err)
+		}
+
+		now := time.Now().UnixMilli()
+		repoFork = &types.Repository{
+			Version:             0,
+			ParentID:            parentSpace.ID,
+			RootSpaceID:         parentSpaceFull.RootSpaceID,
+			RootSpaceIdentifier: parentSpaceFull.RootSpaceIdentifier,
+			Identifier:          in.Identifier,
+			GitUID:              gitForkRepo.UID,
+			Description:         repoUpstream.Description,
+			CreatedBy:           session.Principal.ID,
+			Created:             now,
+			Updated:             now,
+			LastGITPush:         now,
+			ForkID:              repoUpstream.ID,
+			DefaultBranch:       defaultBranch,
+			IsEmpty:             false,
+			State:               enum.RepoStateGitImport,
+			Tags:                json.RawMessage(`{}`),
+		}
+
+		err = c.repoStore.Create(ctx, repoFork)
+		if err != nil {
+			return fmt.Errorf("failed to create fork repository: %w", err)
+		}
+
+		err = c.repoStore.UpdateNumForks(ctx, repoUpstream.ID, 1)
+		if err != nil {
+			return fmt.Errorf("failed to increment number of forks in upstream repository: %w", err)
+		}
+
+		return nil
+	}, sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		// best effort cleanup
+		if dErr := c.DeleteGitRepository(ctx, session, gitForkRepo.UID); dErr != nil {
+			log.Ctx(ctx).Warn().Err(dErr).Msg("failed to delete repo for cleanup")
+		}
+		return nil, err
+	}
+
+	// revert this when import fetches LFS objects
+	if err := c.settings.RepoSet(ctx, repoFork.ID, settings.KeyGitLFSEnabled, false); err != nil {
+		log.Warn().Err(err).Msg("failed to disable Git LFS in repository settings")
+	}
+
+	err = c.publicAccess.Set(ctx, enum.PublicResourceTypeRepo, repoFork.Path, isForkPublic)
+	if err != nil {
+		if dErr := c.publicAccess.Delete(ctx, enum.PublicResourceTypeRepo, repoFork.Path); dErr != nil {
+			return nil, fmt.Errorf("failed to set repo public access (and public access cleanup: %w): %w", dErr, err)
+		}
+
+		// only cleanup repo itself if cleanup of public access succeeded (to avoid leaking public access)
+		if dErr := c.PurgeNoAuth(ctx, session, repoFork); dErr != nil {
+			return nil, fmt.Errorf("failed to set repo public access (and repo purge: %w): %w", dErr, err)
+		}
+
+		return nil, fmt.Errorf("failed to set repo public access (successful cleanup): %w", err)
+	}
+
+	// backfil GitURL
+	repoFork.GitURL = c.urlProvider.GenerateGITCloneURL(ctx, repoFork.Path)
+	repoFork.GitSSHURL = c.urlProvider.GenerateGITCloneSSHURL(ctx, repoFork.Path)
+
+	repoOutput, err := GetRepoOutputWithAccess(ctx, c.repoFinder, isForkPublic, repoFork)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get repo output: %w", err)
+	}
+
+	err = c.auditService.Log(ctx,
+		session.Principal,
+		audit.NewResource(audit.ResourceTypeRepository, repoFork.Identifier),
+		audit.ActionCreated,
+		paths.Parent(repoFork.Path),
+		audit.WithNewObject(audit.RepositoryObject{
+			Repository: repoOutput.Repository,
+			IsPublic:   repoOutput.IsPublic,
+		}),
+	)
+	if err != nil {
+		log.Ctx(ctx).Warn().Err(err).
+			Msg("failed to insert audit log for create fork repository operation")
+	}
+
+	err = c.instrumentation.Track(ctx, instrument.Event{
+		Type:      instrument.EventTypeRepositoryCreate,
+		Principal: session.Principal.ToPrincipalInfo(),
+		Path:      repoFork.Path,
+		Properties: map[instrument.Property]any{
+			instrument.PropertyRepositoryID:           repoFork.ID,
+			instrument.PropertyRepositoryName:         repoFork.Identifier,
+			instrument.PropertyRepositoryCreationType: instrument.CreationTypeCreate,
+		},
+	})
+	if err != nil {
+		log.Ctx(ctx).Warn().Err(err).
+			Msg("failed to insert instrumentation record for create fork repository operation")
+	}
+
+	c.eventReporter.Created(ctx, &repoevents.CreatedPayload{
+		Base:     eventBase(repoFork.Core(), &session.Principal),
+		IsPublic: isForkPublic,
+	})
+
+	var refSpecType importer.RefSpecType
+	var ref string
+
+	if in.ForkBranch != "" {
+		refSpecType = importer.RefSpecTypeReference
+		ref = "refs/heads/" + in.ForkBranch
+	} else {
+		refSpecType = importer.RefSpecTypeBranchesAndTags
+	}
+
+	err = c.referenceSync.Run(ctx, repoUpstream.ID, repoFork.ID, refSpecType, ref, ref)
+	if err != nil {
+		log.Ctx(ctx).Err(err).Msg("failed to start job for repository reference sync")
+	}
+
+	return repoOutput, nil
+}

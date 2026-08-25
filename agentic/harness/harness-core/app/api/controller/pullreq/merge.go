@@ -1,0 +1,628 @@
+// Copyright 2023 Harness, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package pullreq
+
+import (
+	"context"
+	"fmt"
+	"strconv"
+	"strings"
+	"time"
+
+	"github.com/harness/gitness/app/api/controller"
+	"github.com/harness/gitness/app/api/usererror"
+	"github.com/harness/gitness/app/auth"
+	"github.com/harness/gitness/app/paths"
+	"github.com/harness/gitness/app/services/merge"
+	"github.com/harness/gitness/app/services/protection"
+	"github.com/harness/gitness/app/services/pullreq"
+	"github.com/harness/gitness/audit"
+	"github.com/harness/gitness/contextutil"
+	"github.com/harness/gitness/errors"
+	"github.com/harness/gitness/git"
+	gitapi "github.com/harness/gitness/git/api"
+	gitenum "github.com/harness/gitness/git/enum"
+	gitness_store "github.com/harness/gitness/store"
+	"github.com/harness/gitness/types"
+	"github.com/harness/gitness/types/enum"
+
+	"github.com/gotidy/ptr"
+	"github.com/rs/zerolog/log"
+	"golang.org/x/exp/maps"
+)
+
+type MergeInput struct {
+	Method             enum.MergeMethod `json:"method"`
+	SourceSHA          string           `json:"source_sha"`
+	Title              string           `json:"title"`
+	Message            string           `json:"message"`
+	DeleteSourceBranch bool             `json:"delete_source_branch"`
+
+	BypassRules   bool   `json:"bypass_rules"`
+	BypassMessage string `json:"bypass_message"`
+	DryRun        bool   `json:"dry_run"`
+	DryRunRules   bool   `json:"dry_run_rules"`
+}
+
+func (in *MergeInput) sanitize() error {
+	if in.Method == "" && !in.DryRun && !in.DryRunRules {
+		return usererror.BadRequest("Merge method must be provided if dry run is false")
+	}
+
+	if in.SourceSHA == "" {
+		return usererror.BadRequest("Source SHA must be provided")
+	}
+
+	if in.Method != "" {
+		method, ok := in.Method.Sanitize()
+		if !ok {
+			return usererror.BadRequestf("Unsupported merge method: %q", in.Method)
+		}
+
+		in.Method = method
+	}
+
+	// cleanup title / message (NOTE: git doesn't support white space only)
+	in.Title = strings.TrimSpace(in.Title)
+	in.Message = strings.TrimSpace(in.Message)
+	in.BypassMessage = strings.TrimSpace(in.BypassMessage)
+
+	if (in.Method == enum.MergeMethodRebase || in.Method == enum.MergeMethodFastForward) &&
+		(in.Title != "" || in.Message != "") {
+		return usererror.BadRequestf(
+			"merge method %q doesn't support customizing commit title and message", in.Method)
+	}
+
+	return nil
+}
+
+// backfillApprovalInfo populates principal and user group information for default reviewer approvals.
+func (c *Controller) backfillApprovalInfo(
+	ctx context.Context,
+	approvals []*types.DefaultReviewerApprovalsResponse,
+) error {
+	for _, approval := range approvals {
+		principalInfos, err := c.principalInfoCache.Map(ctx, approval.PrincipalIDs)
+		if err != nil {
+			return fmt.Errorf("failed to fetch principal infos from info cache: %w", err)
+		}
+		approval.PrincipalInfos = maps.Values(principalInfos)
+
+		userGroups, err := c.userGroupStore.FindManyByIDs(ctx, approval.UserGroupIDs)
+		if err != nil {
+			return fmt.Errorf("failed to fetch user groups info from user group store: %w", err)
+		}
+		userGroupInfos := make([]*types.UserGroupInfo, 0, len(userGroups))
+		for _, ug := range userGroups {
+			userGroupInfos = append(userGroupInfos, ug.ToUserGroupInfo())
+		}
+		approval.UserGroupInfos = userGroupInfos
+	}
+
+	return nil
+}
+
+// Merge merges a pull request.
+//
+// It supports dry running by providing the DryRun=true. Dry running can be used to find any rule violations that
+// might block the merging. Dry running typically should be used with BypassRules=true.
+//
+// MergeMethod doesn't need to be provided for dry running. If no MergeMethod has been provided the function will
+// return allowed merge methods. Rules can limit allowed merge methods.
+//
+// If the pull request has been successfully merged the function will return the SHA of the merge commit.
+//
+//nolint:gocognit,gocyclo,cyclop
+func (c *Controller) Merge(
+	ctx context.Context,
+	session *auth.Session,
+	repoRef string,
+	pullreqNum int64,
+	in *MergeInput,
+) (*types.MergeResponse, *types.MergeViolations, error) {
+	if err := in.sanitize(); err != nil {
+		return nil, nil, err
+	}
+
+	requiredPermission := enum.PermissionRepoPush
+	if in.DryRunRules || in.DryRun {
+		requiredPermission = enum.PermissionRepoView
+	}
+
+	targetRepo, err := c.getRepoCheckAccess(ctx, session, repoRef, requiredPermission)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to acquire access to target repo: %w", err)
+	}
+
+	pr, err := c.pullreqStore.FindByNumber(ctx, targetRepo.ID, pullreqNum)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to get pull request by number: %w", err)
+	}
+
+	if pr.IsLinked() {
+		return nil, nil, errors.Forbidden(
+			"Merging a linked pull request is not allowed.")
+	}
+
+	if pr.Merged != nil {
+		return nil, nil, usererror.BadRequest("Pull request already merged.")
+	}
+
+	if pr.State != enum.PullReqStateOpen {
+		return nil, nil, usererror.BadRequest("Pull request must be open.")
+	}
+
+	if pr.SourceSHA != in.SourceSHA {
+		return nil, nil,
+			usererror.BadRequest("A newer commit is available. Only the latest commit can be merged.")
+	}
+
+	if c.mergeQueueService.IsEnqueued(pr) && !in.DryRunRules { // Allow dry running rules for PRs in MQ.
+		return nil, nil, usererror.BadRequest(
+			"Direct merge is not allowed. The pull request would be merged through the merge queue.")
+	}
+
+	if pr.IsDraft && !in.DryRunRules && !in.DryRun {
+		return nil, nil, usererror.BadRequest(
+			"Draft pull requests can't be merged. Clear the draft flag first.",
+		)
+	}
+
+	// Use APIRefsOnly for PR merge - this updates the target branch reference.
+	targetWriteParams, err := controller.CreateRPCAPIRefsWriteParams(ctx, c.urlProvider, session, targetRepo)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to create RPC write params: %w", err)
+	}
+
+	var sourceRepo *types.RepositoryCore
+
+	switch {
+	case pr.SourceRepoID == nil:
+		// the source repo is purged
+	case *pr.SourceRepoID != pr.TargetRepoID:
+		// if the source repo is nil, it's deleted
+		sourceRepo, err = c.repoFinder.FindByID(ctx, *pr.SourceRepoID)
+		if err != nil && !errors.Is(err, gitness_store.ErrResourceNotFound) {
+			return nil, nil, fmt.Errorf("failed to get source repository: %w", err)
+		}
+	default:
+		sourceRepo = targetRepo
+	}
+
+	// Global level locking. No locking for dry running rules. PR scope lock for dry run, branch scope for full merge.
+	// Lock duration includes merge timeout and adds 30s to the lock to give enough time for pre + post merge.
+	const lockDuration = merge.Timeout + 30*time.Second
+	switch {
+	case in.DryRunRules:
+		// No locking for dry running rules.
+	case in.DryRun:
+		// Dry running merge uses PR level lock and not branch level lock to reduce lock convoy risk on busy branches.
+		unlock, err := c.locker.LockPR(ctx, targetRepo.ID, pr.Number, lockDuration)
+		if err != nil {
+			return nil, nil,
+				fmt.Errorf("failed to lock PR %d for pull request merge dry-run: %w", pr.Number, err)
+		}
+		defer unlock()
+	default:
+		// Actual merge uses branch level lock on the target branch.
+		unlock, err := c.locker.LockBranch(ctx, targetRepo.ID, pr.TargetBranch, lockDuration)
+		if err != nil {
+			return nil, nil,
+				fmt.Errorf("failed to lock branch %q for pull request merge: %w", pr.TargetBranch, err)
+		}
+		defer unlock()
+	}
+
+	targetSHA, sourceSHA, isAncestor, err := c.mergeService.GetTargetSourceSHAs(ctx, targetRepo, pr)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to get pull request commit SHAs: %w", err)
+	}
+
+	protectionRules, isRepoOwner, err := c.fetchRules(ctx, session, targetRepo)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to fetch rules: %w", err)
+	}
+
+	ruleOut, violations, err := c.mergeService.CheckRules(ctx, protectionRules, merge.CheckRulesInput{
+		PullReq:          pr,
+		TargetRepo:       targetRepo,
+		SourceRepo:       sourceRepo,
+		Actor:            &session.Principal,
+		IsRepoOwner:      isRepoOwner,
+		IsAncestor:       isAncestor,
+		MergeMethod:      in.Method,
+		AllowBypassRules: in.BypassRules,
+	})
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to verify protection rules: %w", err)
+	}
+
+	// Block the merge if the target branch has a pull request sitting in the merge queue.
+	// Merging into it would move the target branch reference that the merge queue needs to
+	// keep stable while it validates the queued pull request. This mirrors the protection
+	// applied to direct pushes and the commit API.
+	mqViolations, err := c.mergeQueueService.BranchInQueueViolations(ctx, targetRepo.ID, pr.TargetBranch)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to check for merge queue existence: %w", err)
+	}
+	violations = append(violations, mqViolations...)
+
+	// Validate bypass message if required and bypassing rules
+	if !in.DryRunRules && !in.DryRun && in.BypassRules && ruleOut.RequiresBypassMessage && in.BypassMessage == "" {
+		return nil, nil, usererror.BadRequest("Bypass message is required when bypassing protection rules")
+	}
+
+	// only delete the source branch if it's the source repository is the same as the target repository.
+	deleteSourceBranch := pr.SourceRepoID != nil && pr.TargetRepoID == *pr.SourceRepoID &&
+		(in.DeleteSourceBranch || ruleOut.DeleteSourceBranch)
+
+	// If we're only dry run the rules, then we can return the response here.
+	if in.DryRunRules {
+		err := c.backfillApprovalInfo(ctx, ruleOut.DefaultReviewerApprovals)
+		if err != nil {
+			return nil, nil, fmt.Errorf("failed to populate approval info for default reviewers: %w", err)
+		}
+
+		return &types.MergeResponse{
+			BranchDeleted:  deleteSourceBranch,
+			RuleViolations: violations,
+
+			DryRunRules:       true,
+			MergeVerifyOutput: types.MergeVerifyOutput(ruleOut),
+		}, nil, nil
+	}
+
+	// we want to complete the merge independent of request cancel - start with new, time restricted context.
+	// TODO: This is a small change to reduce likelihood of dirty state.
+	// We still require a proper solution to handle an application crash or very slow execution times
+	// (which could cause an unlocking pre operation completion).
+	ctx, cancel := contextutil.WithNewTimeout(ctx, merge.Timeout)
+	defer cancel()
+
+	//nolint:nestif
+	if in.DryRun {
+		// As the merge API is always executed under a global lock, we use the opportunity of dry-running the merge
+		// to check the PR's mergeability status if it's currently "unchecked". This can happen if the target branch
+		// has advanced. It's possible that the merge base commit is different too.
+		// So, the next time the API gets called for the same PR the mergeability status will not be unchecked.
+		// Without dry-run the execution would proceed below and would either merge the PR or set the conflict status.
+
+		var mergeOutput git.MergeOutput
+
+		// We distinguish two types when checking mergeability: Rebase and Non-Rebase.
+		// * Merge methods Merge and Squash will always have the same results.
+		// * Merge method Rebase is special because it must always check all commits, one at a time.
+		// * Merge method Fast-Forward can never have conflicts,
+		//   but for it the merge base SHA must be equal to target branch SHA.
+		// The result of the tests will be stored (think cached) in the database for these two types
+		// in the fields merge_check_status and rebase_check_status.
+
+		if in.Method == "" {
+			in.Method = enum.MergeMethodMerge
+		}
+
+		checkMergeability := func(method enum.MergeMethod) bool {
+			switch method {
+			case enum.MergeMethodMerge, enum.MergeMethodSquash:
+				return pr.MergeCheckStatus == enum.MergeCheckStatusUnchecked
+			case enum.MergeMethodRebase:
+				return pr.RebaseCheckStatus == enum.MergeCheckStatusUnchecked
+			case enum.MergeMethodFastForward:
+				// Always check for ff merge. There can never be conflicts,
+				// but we are interested in if it returns the conflict error and merge-output data.
+				return true
+			default:
+				return true // should not happen
+			}
+		}(in.Method)
+
+		if checkMergeability {
+			// for merge-check we can skip git hooks explicitly (we don't update any refs anyway)
+			writeParams, err := controller.CreateRPCSystemReferencesWriteParams(ctx, c.urlProvider, session, targetRepo)
+			if err != nil {
+				return nil, nil, fmt.Errorf("failed to create RPC write params: %w", err)
+			}
+
+			mergeOutput, err = c.git.Merge(ctx, &git.MergeParams{
+				WriteParams: writeParams,
+				BaseSHA:     targetSHA,
+				HeadSHA:     sourceSHA,
+				Refs:        nil, // update no refs -> no commit will be created
+				Method:      gitenum.MergeMethod(in.Method),
+			})
+			if errors.IsInvalidArgument(err) || gitapi.IsUnrelatedHistoriesError(err) {
+				errClose := c.pullreqService.CloseBecauseNonUniqueMergeBase(ctx, targetSHA, sourceSHA, pr)
+				if errClose != nil && !errors.Is(errClose, pullreq.ErrPullReqNotOpen) {
+					return nil, nil,
+						fmt.Errorf("failed to close pull request after non-unique merge base: %w", errClose)
+				}
+
+				return nil, nil, err
+			}
+
+			if err != nil {
+				return nil, nil, fmt.Errorf("failed merge check with method=%s: %w", in.Method, err)
+			}
+
+			pr, err = c.pullreqStore.UpdateMergeCheckMetadataOptLock(ctx, pr, func(pr *types.PullReq) error {
+				if pr.SourceSHA != mergeOutput.HeadSHA.String() {
+					return errors.New("source SHA has changed")
+				}
+				// actual merge is using a different lock - ensure we don't overwrite any merge results.
+				if pr.State != enum.PullReqStateOpen {
+					return usererror.BadRequest("Pull request must be open")
+				}
+
+				pr.MergeBaseSHA = mergeOutput.MergeBaseSHA.String()
+				pr.MergeTargetSHA = ptr.String(mergeOutput.BaseSHA.String())
+				pr.MergeSHA = nil // dry-run doesn't create a merge commit so output is empty.
+
+				pr.UpdateMergeOutcome(in.Method, mergeOutput.ConflictFiles)
+
+				pr.Stats.DiffStats = types.NewDiffStats(
+					mergeOutput.CommitCount,
+					mergeOutput.ChangedFileCount,
+					mergeOutput.Additions,
+					mergeOutput.Deletions,
+				)
+
+				return nil
+			})
+			if err != nil {
+				// non-critical error
+				log.Ctx(ctx).Warn().Err(err).Msg("failed to update unchecked pull request")
+			} else {
+				c.sseStreamer.Publish(ctx, targetRepo.ParentID, enum.SSETypePullReqUpdated, pr)
+			}
+		}
+
+		var conflicts []string
+		if in.Method == enum.MergeMethodRebase {
+			conflicts = pr.RebaseConflicts
+		} else {
+			conflicts = pr.MergeConflicts
+		}
+
+		err := c.backfillApprovalInfo(ctx, ruleOut.DefaultReviewerApprovals)
+		if err != nil {
+			return nil, nil, fmt.Errorf("failed to populate approval info for default reviewers: %w", err)
+		}
+
+		// With in.DryRun=true this function never returns types.MergeViolations
+		out := &types.MergeResponse{
+			BranchDeleted:  deleteSourceBranch,
+			RuleViolations: violations,
+
+			// values only returned by dry run
+			DryRun:            true,
+			Mergeable:         len(conflicts) == 0,
+			ConflictFiles:     conflicts,
+			MergeVerifyOutput: types.MergeVerifyOutput(ruleOut),
+		}
+
+		return out, nil, nil
+	}
+
+	if protection.IsCritical(violations) {
+		sb := strings.Builder{}
+		for i, ruleViolation := range violations {
+			if i > 0 {
+				sb.WriteByte(',')
+			}
+			sb.WriteString(ruleViolation.Rule.Identifier)
+			sb.WriteString(":[")
+			for j, v := range ruleViolation.Violations {
+				if j > 0 {
+					sb.WriteByte(',')
+				}
+				sb.WriteString(v.Code)
+			}
+			sb.WriteString("]")
+		}
+
+		log.Ctx(ctx).Info().Msgf("aborting pull request merge because of rule violations: %s", sb.String())
+
+		return nil, &types.MergeViolations{
+			RuleViolations: violations,
+			Message:        protection.GenerateErrorMessageForBlockingViolations(violations),
+		}, nil
+	}
+
+	// Now that the lock is held, re-check that the PR wasn't merged (or closed) by a concurrent
+	// merge that completed while we were waiting to acquire the lock. Without this a racing second
+	// request would proceed on stale data, create a throwaway merge commit, and only fail later at
+	// the target-branch ref compare-and-swap with an opaque error. This gives it a clean early exit.
+	latestPR, err := c.pullreqStore.FindByNumber(ctx, targetRepo.ID, pullreqNum)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to re-fetch pull request after acquiring lock: %w", err)
+	}
+
+	if latestPR.Merged != nil {
+		return nil, nil, usererror.BadRequest("Pull request already merged.")
+	}
+
+	if latestPR.State != enum.PullReqStateOpen {
+		return nil, nil, usererror.BadRequest("Pull request must be open.")
+	}
+
+	if latestPR.TargetBranch != pr.TargetBranch {
+		return nil, nil, usererror.Conflict("Pull request target branch is changed concurrently.")
+	}
+
+	if latestPR.SourceSHA != in.SourceSHA {
+		return nil, nil, usererror.Conflict("Pull request source SHA is changed concurrently.")
+	}
+
+	pr = latestPR
+
+	// commit details: author, committer and message
+	mergeInput, err := c.mergeService.PreparePullReqMergeInput(
+		pr,
+		sourceRepo,
+		targetSHA,
+		session.Principal.ToPrincipalInfo(),
+		in.Method,
+		in.Title,
+		in.Message,
+	)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to prepare merge data: %w", err)
+	}
+
+	now := time.Now()
+	mergeOutput, err := c.git.Merge(ctx, &git.MergeParams{
+		WriteParams:   targetWriteParams,
+		BaseSHA:       targetSHA,
+		HeadSHA:       sourceSHA,
+		Message:       mergeInput.CommitMessage,
+		Committer:     mergeInput.Committer,
+		CommitterDate: &now,
+		Author:        mergeInput.Author,
+		AuthorDate:    &now,
+		Refs:          nil, // update no references yet, just create merge commit
+		Method:        gitenum.MergeMethod(in.Method),
+	})
+	if errors.IsInvalidArgument(err) || gitapi.IsUnrelatedHistoriesError(err) {
+		errClose := c.pullreqService.CloseBecauseNonUniqueMergeBase(ctx, targetSHA, sourceSHA, pr)
+		if errClose != nil && !errors.Is(errClose, pullreq.ErrPullReqNotOpen) {
+			return nil, nil,
+				fmt.Errorf("failed to close pull request after non-unique merge base: %w", errClose)
+		}
+
+		return nil, nil, err
+	}
+	if err != nil {
+		return nil, nil, fmt.Errorf("merge execution failed: %w", err)
+	}
+
+	//nolint:nestif
+	if mergeOutput.MergeSHA.String() == "" || len(mergeOutput.ConflictFiles) > 0 {
+		_, err = c.pullreqStore.UpdateMergeCheckMetadataOptLock(ctx, pr, func(pr *types.PullReq) error {
+			if pr.SourceSHA != mergeOutput.HeadSHA.String() {
+				return errors.New("source SHA has changed")
+			}
+
+			// update all Merge specific information
+			pr.MergeBaseSHA = mergeOutput.MergeBaseSHA.String()
+			pr.MergeTargetSHA = ptr.String(mergeOutput.BaseSHA.String())
+			pr.MergeSHA = nil
+			pr.UpdateMergeOutcome(in.Method, mergeOutput.ConflictFiles)
+			pr.Stats.DiffStats = types.NewDiffStats(
+				mergeOutput.CommitCount,
+				mergeOutput.ChangedFileCount,
+				mergeOutput.Additions,
+				mergeOutput.Deletions,
+			)
+			return nil
+		})
+		if err != nil {
+			// non-critical error
+			log.Ctx(ctx).Warn().Err(err).Msg("failed to update pull request with conflict files")
+		} else {
+			c.sseStreamer.Publish(ctx, targetRepo.ParentID, enum.SSETypePullReqUpdated, pr)
+		}
+
+		log.Ctx(ctx).Info().Msg("aborting pull request merge because of conflicts")
+
+		return nil, &types.MergeViolations{
+			ConflictFiles:  mergeOutput.ConflictFiles,
+			RuleViolations: violations,
+			// In case of conflicting files we prioritize those for the error message.
+			Message: fmt.Sprintf("Merge blocked by conflicting files: %v", mergeOutput.ConflictFiles),
+		}, nil
+	}
+
+	log.Ctx(ctx).Debug().Msgf("successfully merged PR")
+
+	// update DB and delete the source branch
+
+	isBypassed := protection.IsBypassed(violations)
+	mergedBy := session.Principal.ToPrincipalInfo()
+
+	// Update pull request in the database
+	pr, seqBranchDeleted, err := c.mergeService.TxRefAndDatabaseUpdate(
+		ctx,
+		targetWriteParams,
+		mergeInput.SourceSHA,
+		mergeInput.TargetBranch,
+		mergeInput.RefUpdates,
+		pr,
+		in.Method,
+		mergeOutput,
+		mergedBy,
+		isBypassed,
+		in.BypassMessage,
+	)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to update pull request after creating merge commit: %w", err)
+	}
+
+	// Try to delete the source branch and insert pull request activity for it.
+	var branchDeleted bool
+	if deleteSourceBranch {
+		branchDeleted = c.mergeService.DeleteBranchTry(ctx, pr, mergedBy, seqBranchDeleted)
+	}
+
+	// Publish pull request merge events
+	c.mergeService.Publish(
+		ctx,
+		pr,
+		targetRepo,
+		in.Method,
+		mergeOutput,
+		mergedBy,
+	)
+
+	if isBypassed {
+		err = c.auditService.Log(ctx,
+			session.Principal,
+			audit.NewResource(
+				audit.ResourceTypeRepository,
+				targetRepo.Identifier,
+				audit.RepoPath,
+				targetRepo.Path,
+				audit.BypassedResourceType,
+				audit.BypassedResourceTypePullRequest,
+				audit.BypassedResourceName,
+				strconv.FormatInt(pr.Number, 10),
+				audit.ResourceName,
+				fmt.Sprintf(
+					audit.BypassPullReqLabelFormat,
+					targetRepo.Identifier,
+					strconv.FormatInt(pr.Number, 10),
+				),
+				audit.BypassAction,
+				audit.BypassActionMerged,
+			),
+			audit.ActionBypassed,
+			paths.Parent(targetRepo.Path),
+			audit.WithNewObject(audit.PullRequestObject{
+				PullReq:        *pr,
+				RepoPath:       targetRepo.Path,
+				RuleViolations: violations,
+				BypassMessage:  in.BypassMessage,
+			}),
+		)
+		if err != nil {
+			log.Ctx(ctx).Warn().Msgf("failed to insert audit log for merge pull request operation: %s", err)
+		}
+	}
+
+	return &types.MergeResponse{
+		SHA:            mergeOutput.MergeSHA.String(),
+		BranchDeleted:  branchDeleted,
+		RuleViolations: violations,
+	}, nil, nil
+}
