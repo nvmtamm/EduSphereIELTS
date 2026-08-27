@@ -34,6 +34,8 @@
     "cmdk": "^1.1.1",
     "framer-motion": "^13.1.1",
     "lucide-react": "^1.33.0",
+    "mammoth": "^1.12.1",
+    "pdfjs-dist": "^6.2.108",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-resizable-panels": "^4.12.3",
