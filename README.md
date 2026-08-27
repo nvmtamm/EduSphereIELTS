@@ -8,11 +8,11 @@
 [![Vite](https://img.shields.io/badge/Vite-8.x-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Tailwind CSS v4](https://img.shields.io/badge/Tailwind_CSS-v4.0-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
-[![Tests Passing](https://img.shields.io/badge/Unit_Tests-56%2F56_Passed-brightgreen?style=for-the-badge&logo=xunit&logoColor=white)](https://github.com/nvmtamm/EduSphereIELTS)
+[![Tests Passing](https://img.shields.io/badge/Unit_Tests-61%2F61_Passed-brightgreen?style=for-the-badge&logo=xunit&logoColor=white)](https://github.com/nvmtamm/EduSphereIELTS)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
 <p align="center">
-  <b>An enterprise-grade, high-concurrency IELTS preparation ecosystem combining Clean Architecture, CQRS, RAG-driven AI grading (Semantic Kernel + Qdrant), official Google OAuth 2.0, MailKit SMTP OTP delivery, and an official Cambridge IELTS Pure Tri-tone design system.</b>
+  <b>An enterprise-grade, high-concurrency IELTS preparation ecosystem combining Clean Architecture, CQRS, Multi-Agent AI document ingestion (Gemini 3.6 Flash), RAG-driven AI grading (Semantic Kernel + Qdrant), official Google OAuth 2.0, MailKit SMTP OTP delivery, and an official Cambridge Computer-Delivered IELTS pure design system.</b>
 </p>
 
 [Explore Roadmap](#-development-roadmap--sprint-status) • [System Architecture](#-architectural-design) • [Quick Start](#-getting-started) • [API Specification](#-api-surface--endpoint-matrix)
@@ -25,7 +25,7 @@
 
 **EduSphere** is a modern, production-grade learning management and automated examination platform engineered specifically for the International English Language Testing System (**IELTS**). 
 
-The platform bridges deterministic examination scoring (Reading & Listening) with non-deterministic, generative AI assessment (Writing & Speaking) governed by official IELTS public band descriptors. Built from the ground up on **.NET 8 Clean Architecture** and **React 19**, it guarantees sub-50ms cache response times, zero credential leakage via a unified root environment loader, and seamless real-time student synchronization.
+The platform bridges deterministic examination scoring (Reading & Listening) with non-deterministic, generative AI assessment (Writing & Speaking) governed by official IELTS public band descriptors. Built from the ground up on **.NET 8 Clean Architecture** and **React 19**, it guarantees sub-50ms cache response times, zero credential leakage via a unified root environment loader, seamless real-time student synchronization, and an autonomous **Multi-Agent Ingestion Pipeline** converting raw PDFs into authentic Computer-Delivered IELTS practice tests.
 
 ---
 
@@ -49,6 +49,7 @@ graph TB
         SQL[("SQL Server 2022<br/>(EF Core 8, Fluent Configs)")]
         Redis[("Redis 7.x<br/>(Distributed Cache-Aside & OTP)")]
         Qdrant[("Qdrant Vector DB<br/>(RAG Rubric Embeddings)")]
+        MultiAgent["Multi-Agent AI Pipeline<br/>(Gemini 3.6 Flash Ingestion & Structuring)"]
         SemanticKernel["Semantic Kernel / OpenAI<br/>(AI Grader & Essay Evaluation)"]
         GoogleAuth["Google Identity Services<br/>(OAuth 2.0 ID Token Verification)"]
         SMTP["Gmail SMTP / MailKit<br/>(HTML OTP Email Dispatcher)"]
@@ -61,6 +62,7 @@ graph TB
     Infrastructure --> SQL
     Infrastructure --> Redis
     Infrastructure --> Qdrant
+    Infrastructure --> MultiAgent
     Infrastructure --> SemanticKernel
     Infrastructure --> GoogleAuth
     Infrastructure --> SMTP
@@ -72,6 +74,8 @@ graph TB
 
 - **Clean Architecture & Strict Separation of Concerns:** Inward-only dependency flow (`API` $\rightarrow$ `Infrastructure` $\rightarrow$ `Application` $\rightarrow$ `Domain`).
 - **CQRS Pattern via MediatR:** Decouples state-modifying operations (Commands) from read-only data retrievals (Queries).
+- **Multi-Agent AI Ingestion Pipeline (Gemini 3.6 Flash):** Autonomous 4-stage pipeline that parses authentic Cambridge IELTS PDF/text, cleans layout watermarks, extracts pure reading passages (Passages 1–3), and structures all 40 questions across standard question types (Multiple Choice, True/False/Not Given, Yes/No/Not Given, Matching Headings, Summary Completion).
+- **Official Cambridge CD-IELTS Workspace:** Split-screen resizable layout with 3-part partition navigation (`Part 1: 1–13`, `Part 2: 14–26`, `Part 3: 27–40`), interactive text highlighter, paragraph letter badges (`A`–`J`), font scaling (`14px`–`22px`), and live question palette synchronization.
 - **Single Root `.env` Architecture:** Unified environment management across Docker, ASP.NET Core (`EnvLoader.cs`), and Vite (`envDir: '../'`). Zero hardcoded secrets in `appsettings.json`.
 - **Hybrid Multi-Factor Authentication:**
   - Standard JWT with asymmetric-ready HMAC-SHA256 signature and cryptographic Refresh Token rotation.
@@ -80,6 +84,7 @@ graph TB
 - **Cache-Aside Strategy:** Integrated Redis distributed caching (`IDistributedCache`) for catalogs, reading passages, and short-lived OTP sessions.
 - **RAG-Powered AI Evaluation:** Microsoft Semantic Kernel orchestrating vector searches in Qdrant against official IELTS rubrics for objective Writing and Speaking scoring.
 - **Spaced Repetition Engine:** Implements the **SuperMemo SM-2** algorithmic interval scheduler for vocabulary retention.
+- **100% English Cambridge Academic Standard:** All frontend UI elements, badges, navigation, and modal forms strictly comply with official Academic English standards.
 
 ---
 
@@ -91,10 +96,11 @@ graph TB
 | **Framework** | .NET 8 (C# 12) | ASP.NET Core Web API with Kestrel high-throughput engine |
 | **Architecture** | Clean Architecture + CQRS | MediatR pipeline behaviors (Logging, Validation, Performance) |
 | **ORM & Database** | EF Core 8 + SQL Server 2022 | Code-First migrations, Fluent API relationships, soft deletes |
+| **AI Ingestion** | Gemini 3.6 Flash (32k Tokens) | Multi-Agent PDF digitization pipeline with deterministic quality gate |
 | **Caching Layer** | Redis 7 + StackExchange.Redis | Cache-aside for static tests and temporary OTP verification tokens |
 | **Security & Auth** | JWT + BCrypt + Google.Apis.Auth | Secure password hashing, token rotation, and Google OAuth2 verification |
 | **Email Service** | MailKit + MimeKit | Robust SMTP client with TLS handshake compatibility for macOS/Linux |
-| **Testing** | xUnit + FluentAssertions + Moq | 56/56 automated unit test suites with in-memory DB isolation |
+| **Testing** | xUnit + FluentAssertions + Moq | 61/61 automated unit test suites with in-memory DB isolation |
 
 ### Frontend Engineering
 | Component | Technology | Description |
@@ -102,6 +108,7 @@ graph TB
 | **Framework** | React 19 + TypeScript (Strict) | Modern component architecture with type-safe state contracts |
 | **Build Tool** | Vite 8 + Rolldown Engine | Sub-second HMR and optimized production bundling |
 | **Styling** | Tailwind CSS v4 + Lucide Icons | Official IELTS Pure Tri-tone (`#E00034` Red, Pure White, `#0A0A0A` Black) |
+| **Exam Workspace** | `react-resizable-panels` | Authentic Computer-Delivered IELTS split-screen with drag divider |
 | **State & Server Sync** | TanStack Query v5 (React Query) | Declarative caching, background prefetching, and query invalidation |
 | **Routing** | React Router v7 | Protected route wrappers, dynamic parameter matching, nested layouts |
 | **OAuth Integration** | `@react-oauth/google` v0.13.5 | Google Identity Services OAuth 2.0 Account Chooser modal |
@@ -114,6 +121,7 @@ graph TB
 EduSphere/
 ├── .env.example                         # Comprehensive environment variable template
 ├── .gitignore                           # Git ignore rules for OS, build, and environment secrets
+├── AGENTS.md                            # Centralized repository guidelines & standards
 ├── docker-compose.yml                   # Multi-container orchestration (SQL, Redis, Qdrant)
 ├── README.md                            # Primary project documentation
 ├── backend/
@@ -122,12 +130,12 @@ EduSphere/
 │   │   ├── EduSphere.Domain/           # Enterprise entities (User, Passage, Question, Submission)
 │   │   ├── EduSphere.Application/      # CQRS Commands, Queries, Interfaces, Behaviors
 │   │   │   ├── Common/                 # Result<T>, Error, Interfaces (IApplicationDbContext, IEmailSender)
-│   │   │   └── Features/Auth/          # Register, Login, Google, ForgotPassword, ResetPassword, Profile
-│   │   ├── EduSphere.Infrastructure/   # EF Core DbContext, Redis Cache, GoogleAuthService, SmtpEmailSender
+│   │   │   └── Features/               # Auth, Reading (Ingestion, Submissions, Roadmaps, AI Tutor)
+│   │   ├── EduSphere.Infrastructure/   # EF Core DbContext, Redis Cache, Multi-Agent Ingestion, Google Auth
 │   │   ├── EduSphere.API/              # Controllers, Program.cs, Extensions (EnvLoader), Middleware
 │   │   └── EduSphere.Shared/           # Shared models and data transfer contracts
 │   └── tests/
-│       ├── EduSphere.UnitTests/        # 56 unit test suites for Domain and CQRS Handlers
+│       ├── EduSphere.UnitTests/        # 61 unit test suites for Domain, Handlers, and Ingestion Pipeline
 │       └── EduSphere.IntegrationTests/ # End-to-end API integration tests
 ├── frontend/
 │   ├── vite.config.ts                  # Vite configuration with envDir pointing to root .env
@@ -137,7 +145,8 @@ EduSphere/
 │       ├── app/                        # Router, App entry, GoogleOAuthProvider & TanStack Providers
 │       ├── features/                   # Modular feature domains
 │       │   ├── auth/                   # Login, Register, Forgot/Reset Password, ProfileModal, GoogleLogin
-│       │   └── reading/                # Exam workspace, split-screen viewer, timer, question forms
+│       │   ├── dashboard/              # Dashboard metrics, practice history, skill radar
+│       │   └── reading/                # CD-IELTS workspace, PassagePanel, QuestionPalette, Renderers, Upload
 │       └── shared/                     # Contexts (AuthContext, ThemeContext), Header, Sidebar, Axios API
 └── plan/                               # Complete 7-Sprint engineering roadmap & architectural specs
 ```
@@ -150,7 +159,7 @@ EduSphere/
 | :---: | :--- | :--- | :---: |
 | **Sprint 0** | **Foundations** | Clean Architecture setup, EF Core 8, Docker compose, Git workflow | ✅ **Completed** |
 | **Sprint 1** | **Auth & UI Layout** | JWT Auth, Google OAuth2, Gmail OTP Reset, Profile Modal, Responsive Sidebar | ✅ **Completed** |
-| **Sprint 2** | **Reading Engine** | Split-screen passage viewer, 5 question types, auto-grading, Cambridge Band table | 🟡 **In Progress** |
+| **Sprint 2** | **Reading Engine** | CD-IELTS split workspace, Multi-Agent AI PDF Ingestion (Gemini 3.6 Flash), 40Q grading, Band Roadmap | ✅ **Completed** |
 | **Sprint 3** | **Listening Engine** | Audio player with single-play constraint, real-time waveform, transcript sync | ⏳ **Upcoming** |
 | **Sprint 4** | **Writing AI Engine** | RAG-based Task 1 & Task 2 grading, lexical & grammar replacement analysis | ⏳ **Upcoming** |
 | **Sprint 5** | **Speaking & SM-2** | Web Audio API recorder, pronunciation metrics, SuperMemo SM-2 flashcards | ⏳ **Upcoming** |
@@ -201,8 +210,13 @@ SMTP_USERNAME=your-email@gmail.com
 SMTP_PASSWORD=your-gmail-16-char-app-password
 SMTP_ENABLE=true
 
-# 5. Frontend API Endpoint
-VITE_API_BASE_URL=http://localhost:5000/api
+# 5. Gemini AI Multi-Agent Ingestion Keys
+GEMINI_API_KEY=your-gemini-api-key
+GEMINI_API_KEY_INGESTION=your-gemini-api-key
+GEMINI_CHAT_MODEL=gemini-3.6-flash
+
+# 6. Frontend API Endpoint
+VITE_API_BASE_URL=http://localhost:5005/api
 ```
 
 ---
@@ -222,7 +236,7 @@ docker compose up -d
 cd backend/src/EduSphere.API
 dotnet run
 ```
-*Backend initializes, applies EF Core migrations, seeds sample IELTS passages, and listens on `http://localhost:5000` (Swagger at `http://localhost:5000/swagger`).*
+*Backend initializes, applies EF Core migrations, seeds sample IELTS passages, and listens on `http://localhost:5005` (Swagger at `http://localhost:5005/swagger`).*
 
 ---
 
@@ -240,10 +254,10 @@ npm run dev
 
 ## 🧪 Testing & Verification
 
-The solution enforces automated testing across use cases, command validators, and domain entities:
+The solution enforces automated testing across use cases, command validators, domain entities, and multi-agent AI pipelines:
 
 ```bash
-# Execute all 56 unit test suites
+# Execute all 61 automated unit test suites
 dotnet test backend/EduSphere.sln
 
 # Build and validate frontend TypeScript bundle
@@ -267,12 +281,17 @@ cd frontend && npm run build
 | `PUT` | `/api/auth/profile` | `Bearer JWT` | Update user full name and Target Band Score (4.0–9.0) |
 | `POST` | `/api/auth/change-password` | `Bearer JWT` | Change account password using current password verification |
 
-### 📖 Reading Practice (`/api/reading`)
+### 📖 Reading Practice & AI Ingestion (`/api/reading`)
 | Method | Endpoint | Authorization | Description |
 | :--- | :--- | :---: | :--- |
-| `GET` | `/api/reading/passages` | Public / Cached | Get paginated IELTS reading passages with filter by topic/difficulty |
-| `GET` | `/api/reading/passages/{id}` | Public | Get full passage text with all associated question groups |
-| `POST` | `/api/reading/submit` | `Bearer JWT` | Submit answers $\rightarrow$ deterministic auto-grading $\rightarrow$ Band Score |
+| `GET` | `/api/reading/passages` | Public / Cached | Get paginated IELTS reading passages with filter by topic/difficulty/source |
+| `GET` | `/api/reading/passages/{id}` | Public | Get full passage text with all associated question groups & active sections |
+| `POST` | `/api/reading/ingest-document` | `Bearer JWT` | Multi-Agent AI ingestion pipeline converting PDF/text to 40Q IELTS test |
+| `POST` | `/api/reading/submissions` | `Bearer JWT` | Submit answers $\rightarrow$ deterministic auto-grading $\rightarrow$ Band Score |
+| `GET` | `/api/reading/submissions/{id}`| `Bearer JWT` | Review submission with detailed explanations per question |
+| `GET` | `/api/reading/roadmaps` | Public | Retrieve 6 Band Roadmaps (Pre-IELTS to Band 8.5+) with progress tracking |
+| `GET` | `/api/reading/vocabularies` | Public | Retrieve curated Academic vocabulary by target Band Tier |
+| `POST` | `/api/reading/ai-tutor` | Public | Interactive RAG AI Tutor assisting students with passage reading |
 
 ---
 
