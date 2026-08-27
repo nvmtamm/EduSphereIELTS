@@ -88,7 +88,7 @@ export const CommandMenu: React.FC<CommandMenuProps> = ({
             }}
           >
             <Layers className="mr-2 h-4 w-4 text-amber-500" />
-            <span>Band Vocabulary Decks & SM-2 Flashcards</span>
+            <span>IELTS Band Vocabulary Flashcards</span>
           </CommandItem>
 
           <CommandItem
@@ -100,8 +100,8 @@ export const CommandMenu: React.FC<CommandMenuProps> = ({
               }
             }}
           >
-            <UploadCloud className="mr-2 h-4 w-4 text-purple-500" />
-            <span>Multi-Agent Document Ingestion (Harness Core)</span>
+            <UploadCloud className="mr-2 h-4 w-4 text-red-500" />
+            <span>Upload & Convert Custom Exam</span>
             <CommandShortcut>⌘U</CommandShortcut>
           </CommandItem>
         </CommandGroup>

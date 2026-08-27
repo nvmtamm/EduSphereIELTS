@@ -68,45 +68,45 @@ export const router = createBrowserRouter([
           {
             path: '/writing',
             element: (
-              <div className="p-8 text-center bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
-                <h2 className="text-xl font-bold">IELTS Writing AI Evaluator</h2>
-                <p className="text-sm text-slate-500 mt-2">Coming in Sprint 4 (Semantic Kernel & Qdrant RAG Grading)</p>
+              <div className="p-8 text-center bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800">
+                <h2 className="text-xl font-black text-zinc-950 dark:text-white">IELTS Writing AI Evaluator</h2>
+                <p className="text-sm text-zinc-500 mt-2">Automated Band Scoring & Detailed Criterion Feedback</p>
               </div>
             )
           },
           {
             path: '/speaking',
             element: (
-              <div className="p-8 text-center bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
-                <h2 className="text-xl font-bold">IELTS Speaking AI Examiner</h2>
-                <p className="text-sm text-slate-500 mt-2">Coming in Sprint 5 (Voice Recognition & Fluency Analysis)</p>
+              <div className="p-8 text-center bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800">
+                <h2 className="text-xl font-black text-zinc-950 dark:text-white">IELTS Speaking AI Examiner</h2>
+                <p className="text-sm text-zinc-500 mt-2">Real-time Voice Recognition & Fluency Analysis</p>
               </div>
             )
           },
           {
             path: '/vocabulary',
             element: (
-              <div className="p-8 text-center bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
-                <h2 className="text-xl font-bold">SuperMemo SM-2 Spaced Repetition</h2>
-                <p className="text-sm text-slate-500 mt-2">Coming in Sprint 5 (Flashcards & Retention Algorithm)</p>
+              <div className="p-8 text-center bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800">
+                <h2 className="text-xl font-black text-zinc-950 dark:text-white">Academic Vocabulary Decks</h2>
+                <p className="text-sm text-zinc-500 mt-2">Spaced Repetition Flashcards & Active Retention</p>
               </div>
             )
           },
           {
             path: '/mock-test',
             element: (
-              <div className="p-8 text-center bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
-                <h2 className="text-xl font-bold">Full Mock Test Simulation</h2>
-                <p className="text-sm text-slate-500 mt-2">Coming in Sprint 6 (180-minute Exam Simulation)</p>
+              <div className="p-8 text-center bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800">
+                <h2 className="text-xl font-black text-zinc-950 dark:text-white">Full Mock Test Simulation</h2>
+                <p className="text-sm text-zinc-500 mt-2">Full Cambridge Timed Exam Simulation (180 minutes)</p>
               </div>
             )
           },
           {
             path: '/ai-tutor',
             element: (
-              <div className="p-8 text-center bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
-                <h2 className="text-xl font-bold">24/7 IELTS AI Tutor</h2>
-                <p className="text-sm text-slate-500 mt-2">Coming in Sprint 6 (RAG Vector Assistance)</p>
+              <div className="p-8 text-center bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800">
+                <h2 className="text-xl font-black text-zinc-950 dark:text-white">24/7 IELTS AI Reading Coach</h2>
+                <p className="text-sm text-zinc-500 mt-2">Socratic Hints, Passage Context Analysis & Strategy Guidance</p>
               </div>
             )
           }
