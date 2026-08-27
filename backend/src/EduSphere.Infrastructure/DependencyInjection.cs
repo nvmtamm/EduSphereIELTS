@@ -46,8 +46,16 @@ public static class DependencyInjection
         services.AddScoped<IReadingScoringService, ReadingScoringService>();
 
         // 5. AI Services & Multi-Agent Pipeline
-        services.AddHttpClient<IReadingAITutorService, ReadingAITutorService>();
-        services.AddHttpClient<IDocumentIngestionService, DocumentIngestionService>();
+        // IMPORTANT: Gemini 3.6-flash with thinking + full 40Q IELTS exam can take up to 2-3 min.
+        // Default HttpClient timeout is 100s which causes silent failures.
+        services.AddHttpClient<IReadingAITutorService, ReadingAITutorService>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(180);
+        });
+        services.AddHttpClient<IDocumentIngestionService, DocumentIngestionService>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(180);
+        });
 
         return services;
     }
