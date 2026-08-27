@@ -36,7 +36,7 @@ jobs:
         working-directory: backend
         run: dotnet build EduSphere.sln --no-restore --configuration Release
 
-      - name: Run Unit Tests (60/60 Tests)
+      - name: Run Unit Tests (61/61 Tests)
         working-directory: backend
         run: dotnet test tests/EduSphere.UnitTests/EduSphere.UnitTests.csproj --no-build --configuration Release --verbosity normal
 
