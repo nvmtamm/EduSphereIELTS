@@ -1,0 +1,28 @@
+page: Artifact Details Page
+downloadsThisWeek: Downloads This Week
+artifactLabelInputPlaceholder: Type input and hit enter
+labelsUpdated: Artifact labels updated successfully!
+totalDownloads: Total Downloads
+createdAsyncDownloadRequest: Download request created successfully! Please do not close the window.
+artifactDeleted: Package deleted successfully!
+packageArchived: Package archived successfully!
+deleteModal:
+  title: Delete Package
+  contentText: This action will delete package and all it's versions. Are you absolutely sure you want to proceed?
+  inputLabel: Type the package name to confirm
+  inputPlaceholder: Package Name
+softDeleteModal:
+  title: Delete Package
+  contentText: This action will delete package and all it's versions. You can still restore it from the deleted list.
+  inputLabel: Type the package name to confirm
+  inputPlaceholder: Package Name
+  forceLabel: Permanently delete package and all it's versions.
+  forceSubText: This action will delete package and all it's versions permanently. You can not restore it back.
+restoreModal:
+  title: Restore Package
+  contentText: This action will restore package and all it's versions.
+  inputLabel: Type the package name to confirm
+  inputPlaceholder: Package Name
+tabs:
+  versions: Versions
+  properties: Properties

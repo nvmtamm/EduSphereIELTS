@@ -1,0 +1,37 @@
+page: Version List Page
+table:
+  noVersionsTitle: There are no versions available.
+  noArchivedVersionsTitle: There are no archived versions.
+  notScanned: Not Scanned
+  columns:
+    version: Version
+    size: '{{ $.digestList.table.columns.size }}'
+    digests: Digests
+    fileCount: File Count
+    pullCommand: Download Command
+    activelyDeployed: Actively Deployed
+    downloads: '{{ $.repositoryList.table.columns.downloads }}'
+    publishedByAt: '{{ $.versionDetails.artifactDetails.layers.lastPush }}'
+    archivedAt: Archived At
+    deployments: '{{ $.versionDetails.tabs.deployments }}'
+    tags: Tags
+    scanStatus: Evaluation Status
+actions:
+  addTag: Add Tag
+  addTagDescription: Add tags by typing in the field below and pressing enter. Tags are unique across versions. If you add a tag that is already used by another version, the tag will be moved to this version.
+  addTagPlaceholder: Type tag name and press Enter
+  tagNameEntity: Tag name
+  copyVersion: Copy Version
+  deleteVersion: Delete
+  archiveVersion: Archive
+  restoreVersion: Restore
+  quarantine: Quarantine
+  removeQuarantine: Remove From Quarantine
+  reEvaluate: Re-Evaluate
+messages:
+  addTagSuccess: Tag added successfully
+  addTagFailed: Failed to add tag
+  copyVersionSuccess: Version copied successfully
+  copyVersionFailed: Failed to copy version
+  reEvaluateSuccess: Submitted request for Re-Evaluation successfully!
+  reEvaluateFailed: Failed to submit request!

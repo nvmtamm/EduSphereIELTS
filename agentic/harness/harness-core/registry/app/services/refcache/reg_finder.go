@@ -1,0 +1,188 @@
+//  Copyright 2023 Harness, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package refcache
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/harness/gitness/app/services/refcache"
+	"github.com/harness/gitness/app/store/cache"
+	"github.com/harness/gitness/registry/app/store"
+	"github.com/harness/gitness/registry/types"
+
+	"github.com/google/uuid"
+)
+
+type RegistryFinder interface {
+	MarkChanged(ctx context.Context, reg *types.Registry)
+	FindByID(ctx context.Context, repoID int64) (*types.Registry, error)
+	FindByUUID(ctx context.Context, repoUUID uuid.UUID) (*types.Registry, error)
+	FindByRootRef(ctx context.Context, rootParentRef string, regIdentifier string, opts ...types.QueryOption) (
+		*types.Registry,
+		error,
+	)
+	FindByRootParentID(ctx context.Context, rootParentID int64, regIdentifier string, opts ...types.QueryOption) (
+		*types.Registry,
+		error,
+	)
+	Update(ctx context.Context, registry *types.Registry) (err error)
+	Delete(ctx context.Context, parentID int64, name string) (err error)
+	GetUpstreamProxyByRegistryUUIDs(ctx context.Context, registryUUIDs []string) (map[string]*types.UpstreamProxy, error)
+}
+
+type registryFinder struct {
+	inner               store.RegistryRepository
+	regIDCache          store.RegistryIDCache
+	regUUIDToIDCache    store.RegistryUUIDToIDCache
+	regRootRefCache     store.RegistryRootRefCache
+	spaceFinder         refcache.SpaceFinder
+	evictor             cache.Evictor[*types.Registry]
+	upstreamProxyFinder UpstreamProxyFinder
+}
+
+func NewRegistryFinder(
+	registryRepository store.RegistryRepository,
+	regIDCache store.RegistryIDCache,
+	regUUIDToIDCache store.RegistryUUIDToIDCache,
+	regRootRefCache store.RegistryRootRefCache,
+	evictor cache.Evictor[*types.Registry],
+	spaceFinder refcache.SpaceFinder,
+	upstreamProxyFinder UpstreamProxyFinder,
+) RegistryFinder {
+	return registryFinder{
+		inner:               registryRepository,
+		regIDCache:          regIDCache,
+		regUUIDToIDCache:    regUUIDToIDCache,
+		regRootRefCache:     regRootRefCache,
+		evictor:             evictor,
+		spaceFinder:         spaceFinder,
+		upstreamProxyFinder: upstreamProxyFinder,
+	}
+}
+
+func (r registryFinder) MarkChanged(ctx context.Context, reg *types.Registry) {
+	r.evictor.Evict(ctx, reg)
+	r.evictUpstreamProxyCache(ctx, reg.ID)
+}
+
+func (r registryFinder) evictUpstreamProxyCache(ctx context.Context, registryID int64) {
+	upstreamProxy, err := r.upstreamProxyFinder.Get(ctx, registryID)
+	if err == nil && upstreamProxy != nil {
+		r.upstreamProxyFinder.MarkChanged(ctx, upstreamProxy)
+	}
+}
+
+func (r registryFinder) FindByID(ctx context.Context, repoID int64) (*types.Registry, error) {
+	return r.regIDCache.Get(ctx, repoID)
+}
+
+func (r registryFinder) FindByUUID(ctx context.Context, repoUUID uuid.UUID) (*types.Registry, error) {
+	repoID, err := r.regUUIDToIDCache.Get(ctx, repoUUID.String())
+	if err != nil {
+		return nil, fmt.Errorf("failed to find registry ID by UUID: %w", err)
+	}
+	return r.regIDCache.Get(ctx, repoID)
+}
+
+func (r registryFinder) FindByRootRef(
+	ctx context.Context, rootParentRef string, regIdentifier string,
+	opts ...types.QueryOption,
+) (
+	*types.Registry,
+	error,
+) {
+	space, err := r.spaceFinder.FindByRef(ctx, rootParentRef)
+	if err != nil {
+		return nil, fmt.Errorf("error finding space by root-ref: %w", err)
+	}
+	return r.FindByRootParentID(ctx, space.ID, regIdentifier, opts...)
+}
+
+func (r registryFinder) FindByRootParentID(
+	ctx context.Context, rootParentID int64, regIdentifier string, opts ...types.QueryOption,
+) (
+	*types.Registry,
+	error,
+) {
+	// Cache lookup always uses WithAllDeleted to get the registry ID
+	registryID, err := r.regRootRefCache.Get(ctx,
+		types.RegistryRootRefCacheKey{RootParentID: rootParentID, RegistryIdentifier: regIdentifier})
+	if err != nil {
+		return nil, fmt.Errorf("error finding registry by root-ref: %w", err)
+	}
+
+	// Get registry from cache
+	reg, err := r.regIDCache.Get(ctx, registryID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Apply soft delete filter based on opts
+	deleteFilter := types.ExtractDeleteFilter(opts...)
+	switch deleteFilter {
+	case types.DeleteFilterExcludeDeleted:
+		if reg.DeletedAt != nil {
+			return nil, fmt.Errorf("registry is deleted")
+		}
+	case types.DeleteFilterOnlyDeleted:
+		if reg.DeletedAt == nil {
+			return nil, fmt.Errorf("registry is not deleted")
+		}
+	case types.DeleteFilterIncludeDeleted:
+		// No filtering - return all registries
+	}
+
+	return reg, nil
+}
+
+func (r registryFinder) Update(ctx context.Context, registry *types.Registry) (err error) {
+	err = r.inner.Update(ctx, registry)
+	if err == nil {
+		r.MarkChanged(ctx, registry)
+	}
+	return err
+}
+
+func (r registryFinder) GetUpstreamProxyByRegistryUUIDs(
+	ctx context.Context, registryUUIDs []string,
+) (map[string]*types.UpstreamProxy, error) {
+	result := make(map[string]*types.UpstreamProxy, len(registryUUIDs))
+	for _, regUUID := range registryUUIDs {
+		regID, err := r.regUUIDToIDCache.Get(ctx, regUUID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to find registry ID for UUID %s: %w", regUUID, err)
+		}
+		upstreamProxy, err := r.upstreamProxyFinder.Get(ctx, regID)
+		if err != nil {
+			result[regUUID] = nil
+			continue
+		}
+		result[regUUID] = upstreamProxy
+	}
+	return result, nil
+}
+
+func (r registryFinder) Delete(ctx context.Context, parentID int64, name string) (err error) {
+	registry, err := r.inner.GetByParentIDAndName(ctx, parentID, name, types.WithAllDeleted())
+	if err != nil {
+		return fmt.Errorf("error finding registry by parent-ref: %w", err)
+	}
+	err = r.inner.Delete(ctx, parentID, name)
+	if err == nil {
+		r.MarkChanged(ctx, registry)
+	}
+	return err
+}

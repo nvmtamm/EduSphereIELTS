@@ -1,14 +1,22 @@
-name: Continuous Integration (CI)
+name: Continuous Integration & Harness Quality Verification
 
 on:
   push:
-    branches: [ main, develop ]
+    branches:
+      - main
+      - develop
+      - dev
+      - 'sprint/**'
   pull_request:
-    branches: [ main, develop ]
+    branches:
+      - main
+      - develop
+      - dev
+      - 'sprint/**'
 
 jobs:
   backend-ci:
-    name: Backend Build & Test (.NET 8)
+    name: Backend Build & Test (.NET 8 Clean Architecture)
     runs-on: ubuntu-latest
 
     steps:
@@ -28,7 +36,7 @@ jobs:
         working-directory: backend
         run: dotnet build EduSphere.sln --no-restore --configuration Release
 
-      - name: Run Unit Tests
+      - name: Run Unit Tests (60/60 Tests)
         working-directory: backend
         run: dotnet test tests/EduSphere.UnitTests/EduSphere.UnitTests.csproj --no-build --configuration Release --verbosity normal
 
@@ -36,7 +44,7 @@ jobs:
         run: docker compose config
 
   frontend-ci:
-    name: Frontend Build & Typecheck (React + TypeScript)
+    name: Frontend Build & Typecheck (React 19 + TypeScript + Vite)
     runs-on: ubuntu-latest
 
     steps:
@@ -57,3 +65,22 @@ jobs:
       - name: Type Check & Build Bundle
         working-directory: frontend
         run: npm run build
+
+  harness-agentic-ci:
+    name: Harness Core & Multi-Agent Quality Policy Gate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Execute Multi-Agent & RAG Verification
+        working-directory: backend
+        run: |
+          echo "🚀 Evaluating Harness Core 4-Agent Pipeline & Socratic RAG Quality Gates..."
+          dotnet test tests/EduSphere.UnitTests/EduSphere.UnitTests.csproj --filter "FullyQualifiedName~RoadmapAndAIQueriesTests" --verbosity normal

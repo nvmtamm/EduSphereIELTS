@@ -1,0 +1,39 @@
+page: Artifact List Page
+pageHeading: Artifacts
+deployedArtifacts: Deployed Artifacts
+viewArtifactDetails: View Artifact Details
+table:
+  noArtifactsTitle: There are no artifacts available.
+  noArchivedArtifactsTitle: There are no archived artifacts.
+  allRepositories: Registries
+  latestVersions: Latest Versions
+  allVersions: All Versions
+  columns:
+    name: Name
+    artifactName: Artifact Name
+    scanStatus: Evaluation Status
+    repository: Registry
+    tags: Labels
+    downloads: Downloads
+    latestVersion: Latest Version
+    pullCommand: Download Command
+    environments: Environments
+    sto: Security Vulnerabilities
+    lastUpdated: Uploaded At
+    archivedAt: Archived At
+    size: Size
+    type: Type
+    version: Tags / Version
+  actions:
+    editRepository: Edit Registry
+    deleteRepository: Delete Registry
+    deleteArtifact: Delete
+    download: Download
+    archivePackage: Archive
+    restorePackage: Restore
+    VulnerabilityStatus:
+      scanned: Scanned
+      nonScanned: Not Scanned
+      scanStatus: Evaluation Status
+      partiallyScanned: '{{ scanned }}/{{ total }} Scanned'
+      digestMenuItemText: '{{archName}} (digest: {{digest}})'

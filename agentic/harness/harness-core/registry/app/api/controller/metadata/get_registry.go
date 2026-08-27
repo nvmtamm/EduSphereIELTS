@@ -1,0 +1,161 @@
+//  Copyright 2023 Harness, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package metadata
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"net/http"
+
+	apiauth "github.com/harness/gitness/app/api/auth"
+	"github.com/harness/gitness/app/api/request"
+	"github.com/harness/gitness/registry/app/api/openapi/contracts/artifact"
+	"github.com/harness/gitness/registry/types"
+	"github.com/harness/gitness/store"
+	"github.com/harness/gitness/types/enum"
+
+	"github.com/rs/zerolog/log"
+)
+
+func (c *APIController) GetRegistry(
+	ctx context.Context,
+	r artifact.GetRegistryRequestObject,
+) (artifact.GetRegistryResponseObject, error) {
+	regInfo, err := c.RegistryMetadataHelper.GetRegistryRequestBaseInfo(ctx, "", string(r.RegistryRef))
+	if err != nil {
+		// Check if registry not found - error is properly wrapped with %w through the chain
+		if errors.Is(err, store.ErrResourceNotFound) {
+			return artifact.GetRegistry404JSONResponse{
+				NotFoundJSONResponse: artifact.NotFoundJSONResponse(
+					*GetErrorResponse(http.StatusNotFound, "Registry not found"),
+				),
+			}, nil
+		}
+		return artifact.GetRegistry400JSONResponse{
+			BadRequestJSONResponse: artifact.BadRequestJSONResponse(
+				*GetErrorResponse(http.StatusBadRequest, err.Error()),
+			),
+		}, nil
+	}
+	space, err := c.SpaceFinder.FindByRef(ctx, regInfo.ParentRef)
+	if err != nil {
+		return artifact.GetRegistry400JSONResponse{
+			BadRequestJSONResponse: artifact.BadRequestJSONResponse(
+				*GetErrorResponse(http.StatusBadRequest, err.Error()),
+			),
+		}, nil
+	}
+
+	session, _ := request.AuthSessionFrom(ctx)
+	permissionChecks := c.RegistryMetadataHelper.GetPermissionChecks(space, regInfo.RegistryIdentifier,
+		enum.PermissionRegistryView)
+	if err = apiauth.CheckRegistry(
+		ctx,
+		c.Authorizer,
+		session,
+		permissionChecks...,
+	); err != nil {
+		statusCode, message := HandleAuthError(err)
+		if statusCode == http.StatusUnauthorized {
+			return artifact.GetRegistry401JSONResponse{
+				UnauthenticatedJSONResponse: artifact.UnauthenticatedJSONResponse(
+					*GetErrorResponse(http.StatusUnauthorized, message),
+				),
+			}, nil
+		}
+		return artifact.GetRegistry403JSONResponse{
+			UnauthorizedJSONResponse: artifact.UnauthorizedJSONResponse(
+				*GetErrorResponse(http.StatusForbidden, message),
+			),
+		}, nil
+	}
+	repoEntity, err := c.RegistryRepository.GetByParentIDAndName(
+		ctx,
+		regInfo.ParentID,
+		regInfo.RegistryIdentifier,
+		types.WithAllDeleted(),
+	)
+	if err != nil {
+		if errors.Is(err, store.ErrResourceNotFound) {
+			return artifact.GetRegistry404JSONResponse{
+				NotFoundJSONResponse: artifact.NotFoundJSONResponse(
+					*GetErrorResponse(http.StatusNotFound, "registry not found"),
+				),
+			}, nil
+		}
+		log.Ctx(ctx).Error().Err(err).Msg("Failed to get registry by parent ID and name")
+		return throwGetRegistry500Error(err), nil
+	}
+	if string(repoEntity.Type) == string(artifact.RegistryTypeVIRTUAL) {
+		cleanupPolicies, err := c.CleanupPolicyStore.GetByRegistryID(ctx, repoEntity.ID)
+		if err != nil {
+			log.Ctx(ctx).Error().Err(err).Msg("Failed to get cleanup policies")
+			return throwGetRegistry500Error(err), nil
+		}
+		if len(repoEntity.Name) == 0 {
+			return artifact.GetRegistry404JSONResponse{
+				NotFoundJSONResponse: artifact.NotFoundJSONResponse(
+					*GetErrorResponse(http.StatusNotFound, fmt.Sprintf("registry %s doesn't exist", regInfo.RegistryIdentifier)),
+				),
+			}, nil
+		}
+		ref := space.Path + "/" + repoEntity.Name
+		jsonResponse, err := c.BuildVirtualRepositoryResponse(ctx,
+			repoEntity, c.getUpstreamProxyKeys(ctx, repoEntity.UpstreamProxies), cleanupPolicies,
+			c.URLProvider.RegistryURL(ctx, regInfo.RootIdentifier, regInfo.RegistryIdentifier), ref)
+		if err != nil {
+			return artifact.GetRegistry500JSONResponse{
+				InternalServerErrorJSONResponse: artifact.InternalServerErrorJSONResponse(
+					*GetErrorResponse(http.StatusInternalServerError, err.Error()),
+				),
+			}, nil
+		}
+		return artifact.GetRegistry200JSONResponse{
+			RegistryResponseJSONResponse: *jsonResponse,
+		}, nil
+	}
+	upstreamproxyEntity, err := c.UpstreamProxyStore.GetByRegistryIdentifier(
+		ctx,
+		regInfo.ParentID, regInfo.RegistryIdentifier,
+		types.WithAllDeleted(),
+	)
+	if len(upstreamproxyEntity.RepoKey) == 0 {
+		return artifact.GetRegistry404JSONResponse{
+			NotFoundJSONResponse: artifact.NotFoundJSONResponse(
+				*GetErrorResponse(http.StatusNotFound, fmt.Sprintf("registry %s doesn't exist", regInfo.RegistryIdentifier)),
+			),
+		}, nil
+	}
+	if err != nil {
+		return throwGetRegistry500Error(err), nil
+	}
+	ref := space.Path + "/" + upstreamproxyEntity.RepoKey
+	jsonResponse, err := c.BuildUpstreamProxyResponse(ctx, upstreamproxyEntity, ref)
+	if err != nil {
+		return throwGetRegistry500Error(err), nil
+	}
+	return artifact.GetRegistry200JSONResponse{
+		RegistryResponseJSONResponse: *jsonResponse,
+	}, nil
+}
+
+func throwGetRegistry500Error(err error) artifact.GetRegistry500JSONResponse {
+	return artifact.GetRegistry500JSONResponse{
+		InternalServerErrorJSONResponse: artifact.InternalServerErrorJSONResponse(
+			*GetErrorResponse(http.StatusInternalServerError, err.Error()),
+		),
+	}
+}

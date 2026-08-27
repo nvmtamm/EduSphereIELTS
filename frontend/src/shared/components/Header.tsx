@@ -1,104 +1,162 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState } from 'react'
+import { useLocation, Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { ThemeToggle } from './ThemeToggle'
 import { ProfileModal } from '@/features/auth/components/ProfileModal'
-import { LogOut, User as UserIcon, Target, Bell } from 'lucide-react'
+import { 
+  LogOut, 
+  User as UserIcon, 
+  Target, 
+  Bell, 
+  Search, 
+  ChevronRight,
+  Sparkles,
+  Command as CommandIcon,
+  ShieldCheck
+} from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/shared/components/ui/dropdown-menu'
 
-export const Header: React.FC = () => {
+interface HeaderProps {
+  onOpenCommandMenu?: () => void
+}
+
+export const Header: React.FC<HeaderProps> = ({ onOpenCommandMenu }) => {
   const { user, logout } = useAuth()
-  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const location = useLocation()
   const [profileModalOpen, setProfileModalOpen] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setDropdownOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+  // Generate dynamic breadcrumb segments
+  const pathSegments = location.pathname.split('/').filter(Boolean)
+  const breadcrumbs = pathSegments.map((segment, index) => {
+    const url = `/${pathSegments.slice(0, index + 1).join('/')}`
+    const label = segment.charAt(0).toUpperCase() + segment.slice(1).replace('-', ' ')
+    return { label, url, isLast: index === pathSegments.length - 1 }
+  })
 
   return (
     <>
-      <header className="h-16 sticky top-0 z-20 flex items-center justify-between px-6 border-b border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-black/95 backdrop-blur-md">
-        {/* Left title / target band score */}
-        <div className="flex items-center gap-3">
-          <h1 className="text-base font-extrabold text-zinc-950 dark:text-white">
-            IELTS Preparation Hub
-          </h1>
-          {user?.targetBandScore && (
-            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs font-bold text-zinc-900 dark:text-white shadow-xs">
-              <Target className="w-3.5 h-3.5 text-red-600" />
-              <span>Target: Band {user.targetBandScore.toFixed(1)}</span>
-            </div>
+      <header className="h-16 sticky top-0 z-20 flex items-center justify-between px-4 sm:px-6 border-b border-zinc-200 dark:border-zinc-800/80 bg-white/90 dark:bg-black/90 backdrop-blur-md">
+        {/* Left: Dynamic Breadcrumb & Path */}
+        <div className="flex items-center gap-2 text-xs">
+          <Link
+            to="/dashboard"
+            className="font-bold text-zinc-500 hover:text-zinc-950 dark:hover:text-white transition-colors"
+          >
+            EduSphere
+          </Link>
+
+          {breadcrumbs.length > 0 ? (
+            breadcrumbs.map((crumb, idx) => (
+              <React.Fragment key={idx}>
+                <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
+                {crumb.isLast ? (
+                  <span className="font-extrabold text-zinc-950 dark:text-white truncate max-w-[160px] sm:max-w-[240px]">
+                    {crumb.label}
+                  </span>
+                ) : (
+                  <Link
+                    to={crumb.url}
+                    className="font-semibold text-zinc-500 hover:text-zinc-950 dark:hover:text-white transition-colors"
+                  >
+                    {crumb.label}
+                  </Link>
+                )}
+              </React.Fragment>
+            ))
+          ) : (
+            <>
+              <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
+              <span className="font-extrabold text-zinc-950 dark:text-white">
+                Dashboard
+              </span>
+            </>
           )}
         </div>
 
-        {/* Right controls */}
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
+        {/* Center: Command Palette Trigger Button (⌘K) */}
+        <div className="flex-1 max-w-sm mx-4 hidden md:block">
+          <button
+            type="button"
+            onClick={onOpenCommandMenu}
+            className="w-full flex items-center justify-between px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/80 text-xs text-zinc-400 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all cursor-pointer shadow-2xs"
+          >
+            <div className="flex items-center gap-2 truncate">
+              <Search className="w-3.5 h-3.5 text-zinc-400" />
+              <span>Search modules, roadmaps, exams...</span>
+            </div>
+            <kbd className="inline-flex items-center gap-1 rounded bg-zinc-200 dark:bg-zinc-800 px-1.5 py-0.5 text-[10px] font-mono font-bold text-zinc-600 dark:text-zinc-400 border border-zinc-300 dark:border-zinc-700">
+              <span>⌘</span>K
+            </kbd>
+          </button>
+        </div>
 
-          {/* Notifications */}
-          <button className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors relative cursor-pointer">
-            <Bell className="w-5 h-5" />
-            <span className="w-2 h-2 rounded-full bg-red-600 absolute top-2 right-2 ring-2 ring-white dark:ring-black"></span>
+        {/* Right controls */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Mobile Search Button */}
+          <button
+            onClick={onOpenCommandMenu}
+            className="md:hidden p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+            title="Search (⌘K)"
+          >
+            <Search className="w-4 h-4" />
           </button>
 
-          {/* User profile dropdown */}
-          <div className="relative" ref={dropdownRef}>
-            <button
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-3 p-1.5 pr-3 rounded-full border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all cursor-pointer"
-            >
-              <div className="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
-                {user?.fullName?.charAt(0).toUpperCase() || 'U'}
-              </div>
-              <div className="hidden md:flex flex-col text-left">
-                <span className="text-xs font-bold text-zinc-950 dark:text-white leading-none">
-                  {user?.fullName || 'User'}
-                </span>
-                <span className="text-[10px] text-zinc-400 font-medium">
-                  {user?.role || 'Student'}
-                </span>
-              </div>
-            </button>
+          {/* Theme Switcher */}
+          <ThemeToggle />
 
-            {/* Dropdown Menu */}
-            {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-xl py-2 z-50 animate-in fade-in-0 zoom-in-95">
-                <div className="px-4 py-2.5 border-b border-zinc-100 dark:border-zinc-850">
-                  <p className="text-xs font-bold text-zinc-950 dark:text-white truncate">{user?.fullName}</p>
-                  <p className="text-[11px] text-zinc-400 truncate">{user?.email}</p>
+          {/* User Profile Dropdown Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-2.5 p-1 sm:pr-3 rounded-full border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all cursor-pointer">
+                <div className="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center font-black text-xs shadow-sm">
+                  {user?.fullName?.charAt(0).toUpperCase() || 'U'}
                 </div>
-
-                <div className="p-1">
-                  <button
-                    onClick={() => {
-                      setDropdownOpen(false)
-                      setProfileModalOpen(true)
-                    }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl transition-colors text-left cursor-pointer"
-                  >
-                    <UserIcon className="w-4 h-4 text-zinc-400" />
-                    My Profile
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      setDropdownOpen(false)
-                      logout()
-                    }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-red-600 dark:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl transition-colors text-left cursor-pointer"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Sign Out
-                  </button>
+                <div className="hidden lg:flex flex-col text-left">
+                  <span className="text-xs font-bold text-zinc-950 dark:text-white leading-none">
+                    {user?.fullName || 'User'}
+                  </span>
+                  <span className="text-[10px] text-zinc-400 font-medium">
+                    Target: Band {user?.targetBandScore ? user.targetBandScore.toFixed(1) : '7.5+'}
+                  </span>
                 </div>
-              </div>
-            )}
-          </div>
+              </button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>
+                <p className="text-xs font-bold text-zinc-950 dark:text-white truncate">{user?.fullName}</p>
+                <p className="text-[10px] text-zinc-400 font-normal truncate">{user?.email}</p>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem onClick={() => setProfileModalOpen(true)}>
+                <UserIcon className="mr-2 h-3.5 w-3.5 text-zinc-400" />
+                Profile & Target Score
+              </DropdownMenuItem>
+
+              <DropdownMenuItem onClick={onOpenCommandMenu}>
+                <CommandIcon className="mr-2 h-3.5 w-3.5 text-zinc-400" />
+                Command Palette (⌘K)
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem
+                onClick={logout}
+                className="text-red-600 dark:text-red-400 font-bold focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/40"
+              >
+                <LogOut className="mr-2 h-3.5 w-3.5" />
+                Sign Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 

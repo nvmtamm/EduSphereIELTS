@@ -1,0 +1,385 @@
+// Copyright 2023 Harness, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package pullreq
+
+import (
+	"context"
+	"fmt"
+	"strconv"
+	"time"
+
+	apiauth "github.com/harness/gitness/app/api/auth"
+	"github.com/harness/gitness/app/api/controller"
+	"github.com/harness/gitness/app/api/usererror"
+	"github.com/harness/gitness/app/auth"
+	pullreqevents "github.com/harness/gitness/app/events/pullreq"
+	"github.com/harness/gitness/errors"
+	"github.com/harness/gitness/git"
+	gitenum "github.com/harness/gitness/git/enum"
+	"github.com/harness/gitness/git/sha"
+	gitness_store "github.com/harness/gitness/store"
+	"github.com/harness/gitness/types"
+	"github.com/harness/gitness/types/enum"
+
+	"github.com/gotidy/ptr"
+	"github.com/rs/zerolog/log"
+)
+
+type StateInput struct {
+	State   enum.PullReqState `json:"state"`
+	IsDraft bool              `json:"is_draft"`
+}
+
+func (in *StateInput) Check() error {
+	state, ok := in.State.Sanitize() // Sanitize will pass through also merged state, so we must check later for it.
+	if !ok {
+		return usererror.BadRequest(fmt.Sprintf("Allowed states are: %s and %s",
+			enum.PullReqStateOpen, enum.PullReqStateClosed))
+	}
+
+	in.State = state
+
+	if in.State == enum.PullReqStateMerged {
+		return usererror.BadRequest("Pull requests can't be merged with this API")
+	}
+
+	return nil
+}
+
+// State updates the pull request's current state.
+//
+//nolint:gocognit,funlen
+func (c *Controller) State(ctx context.Context,
+	session *auth.Session, repoRef string, pullreqNum int64, in *StateInput,
+) (*types.PullReq, error) {
+	if err := in.Check(); err != nil {
+		return nil, err
+	}
+
+	targetRepo, err := c.getRepoCheckAccess(ctx, session, repoRef, enum.PermissionRepoView)
+	if err != nil {
+		return nil, fmt.Errorf("failed to acquire access to target repo: %w", err)
+	}
+
+	pr, err := c.pullreqStore.FindByNumber(ctx, targetRepo.ID, pullreqNum)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get pull request by number: %w", err)
+	}
+
+	if pr.IsLinked() {
+		return nil, errors.Forbidden(
+			"Changing state of a linked pull request is not allowed")
+	}
+
+	if pr.State == enum.PullReqStateMerged {
+		return nil, usererror.BadRequest("Merged pull requests can't be modified.")
+	}
+
+	targetRepoFull, err := c.repoStore.Find(ctx, targetRepo.ID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find target repo by id: %w", err)
+	}
+
+	if c.mergeQueueService.IsEnqueued(pr) {
+		return nil, usererror.BadRequest(
+			"Changing pull request state is not allowed, because the pull request is in the merge queue.")
+	}
+
+	if pr.State == in.State && in.IsDraft == pr.IsDraft {
+		return pr, nil // no changes are necessary: state is the same and is_draft hasn't change
+	}
+
+	var sourceRepo *types.RepositoryCore
+
+	switch {
+	case pr.SourceRepoID == nil:
+		// the source repo is purged
+		sourceRepo = nil
+	case *pr.SourceRepoID != pr.TargetRepoID:
+		// if the source repo is nil, it's deleted
+		sourceRepo, err = c.repoFinder.FindByID(ctx, *pr.SourceRepoID)
+		if err != nil && !errors.Is(err, gitness_store.ErrResourceNotFound) {
+			return nil, fmt.Errorf("failed to get source repo by id: %w", err)
+		}
+
+		if sourceRepo != nil {
+			if err = apiauth.CheckRepo(ctx, c.authorizer, session, sourceRepo, enum.PermissionRepoPush); err != nil {
+				return nil, fmt.Errorf("failed to acquire access to target repo: %w", err)
+			}
+		}
+	default:
+		sourceRepo = targetRepo
+
+		if err = apiauth.CheckRepo(ctx, c.authorizer, session, targetRepo, enum.PermissionRepoPush); err != nil {
+			return nil, fmt.Errorf("failed to acquire access to source repo: %w", err)
+		}
+	}
+
+	targetWriteParams, err := controller.CreateRPCSystemReferencesWriteParams(ctx, c.urlProvider, session, targetRepo)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create RPC write params: %w", err)
+	}
+
+	oldState := pr.State
+	oldDraft := pr.IsDraft
+
+	type change int
+	const (
+		changeReopen change = iota + 1
+		changeClose
+		changeDraft
+	)
+
+	var sourceSHA sha.SHA
+	var mergeBaseSHA sha.SHA
+	var targetSHA sha.SHA
+	var stateChange change
+
+	switch {
+	case pr.State != enum.PullReqStateOpen && in.State == enum.PullReqStateOpen:
+		if sourceRepo == nil {
+			return nil, usererror.BadRequest("Forked repository doesn't exist anymore.")
+		}
+
+		if sourceSHA, err = c.verifyBranchExistence(ctx, sourceRepo, pr.SourceBranch); err != nil {
+			return nil, err
+		}
+
+		if _, err = c.verifyBranchExistence(ctx, targetRepo, pr.TargetBranch); err != nil {
+			return nil, err
+		}
+
+		err = c.checkIfAlreadyExists(ctx, pr.TargetRepoID, *pr.SourceRepoID, pr.TargetBranch, pr.SourceBranch)
+		if err != nil {
+			return nil, err
+		}
+
+		if targetRepo.ID != sourceRepo.ID {
+			_, err = c.git.FetchObjects(ctx, &git.FetchObjectsParams{
+				WriteParams: targetWriteParams,
+				Source:      sourceRepo.GitUID,
+				ObjectSHAs:  []sha.SHA{sourceSHA},
+			})
+			if err != nil {
+				return nil, fmt.Errorf("failed to fetch git objects from the source repository: %w", err)
+			}
+		}
+
+		targetReadParams := git.CreateReadParams(targetRepo)
+
+		targetRef, err := c.git.GetRef(ctx, git.GetRefParams{
+			ReadParams: targetReadParams,
+			Name:       pr.TargetBranch,
+			Type:       gitenum.RefTypeBranch,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to resolve target branch reference: %w", err)
+		}
+
+		targetSHA = targetRef.SHA
+
+		mergeBaseResult, err := c.git.MergeBase(ctx, git.MergeBaseParams{
+			ReadParams: targetReadParams,
+			Ref1:       sourceSHA.String(),
+			Ref2:       targetSHA.String(),
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to find merge base: %w", err)
+		}
+
+		mergeBaseSHA = mergeBaseResult.MergeBaseSHA
+
+		if mergeBaseSHA == sourceSHA {
+			return nil, usererror.BadRequest("The source branch doesn't contain any new commits")
+		}
+
+		stateChange = changeReopen
+
+	case pr.State == enum.PullReqStateOpen && in.State != enum.PullReqStateOpen:
+		stateChange = changeClose
+
+	case pr.IsDraft != in.IsDraft:
+		stateChange = changeDraft
+	default:
+		// no change
+		return pr, nil
+	}
+
+	// Optimistic locking mechanism isn't used here, because re-trying the whole transaction would require
+	// rereading the pull request, and in case of fork PR fetching git objects again, and that could be
+	// very costly. It's safer to attempt only once and return 409 status code if pull request
+	// has been modified during the API call. This operation is usually rare and pull request
+	// typically isn't modified while its state is being changed.
+	err = c.tx.WithTx(ctx, func(ctx context.Context) error {
+		pr.ActivitySeq++ // because we need to add the activity entry
+
+		switch stateChange {
+		case changeClose:
+			nowMilli := time.Now().UnixMilli()
+
+			pr.State = enum.PullReqStateClosed
+			pr.SubState = enum.PullReqSubStateNone
+			pr.IsDraft = in.IsDraft
+
+			// clear all merge (check) related fields
+			pr.MergeSHA = nil
+			pr.Closed = &nowMilli
+			pr.MarkAsMergeUnchecked()
+
+			_, err = c.autoMergeStore.Delete(ctx, pr.ID)
+			if err != nil {
+				return fmt.Errorf("failed to delete auto merge: %w", err)
+			}
+
+			err = c.pullreqStore.Update(ctx, pr)
+			if err != nil {
+				return fmt.Errorf("failed to update pull request: %w", err)
+			}
+
+			// Delete the merge pull request reference. The git operation should be the last in the transaction.
+			err = c.git.UpdateRef(ctx, git.UpdateRefParams{
+				WriteParams: targetWriteParams,
+				Name:        strconv.FormatInt(pr.Number, 10),
+				Type:        gitenum.RefTypePullReqMerge,
+				NewValue:    sha.Nil,
+				OldValue:    sha.None, // we don't care about the old value
+			})
+			if err != nil {
+				log.Ctx(ctx).Warn().Err(err).Msg("failed to delete pull request merge ref")
+			}
+
+		case changeReopen:
+			pr.State = enum.PullReqStateOpen
+			pr.SubState = enum.PullReqSubStateNone
+			pr.IsDraft = in.IsDraft
+
+			pr.SourceSHA = sourceSHA.String()
+			pr.MergeTargetSHA = ptr.String(targetSHA.String())
+			pr.MergeBaseSHA = mergeBaseSHA.String()
+			pr.Closed = nil
+
+			err = c.pullreqStore.Update(ctx, pr)
+			if err != nil {
+				return fmt.Errorf("failed to update pull request: %w", err)
+			}
+
+			// Create the head pull request reference. The git operation should be the last in the transaction.
+			err = c.git.UpdateRef(ctx, git.UpdateRefParams{
+				WriteParams: targetWriteParams,
+				Name:        strconv.FormatInt(pr.Number, 10),
+				Type:        gitenum.RefTypePullReqHead,
+				NewValue:    sourceSHA,
+				OldValue:    sha.None, // the request is re-opened, so anything can be the old value
+			})
+			if err != nil {
+				return fmt.Errorf("failed to set value of PR head ref: %w", err)
+			}
+
+		case changeDraft:
+			pr.IsDraft = in.IsDraft
+			if pr.State == enum.PullReqStateOpen && in.IsDraft {
+				_, err = c.autoMergeStore.Delete(ctx, pr.ID)
+				if err != nil {
+					return fmt.Errorf("failed to delete auto merge: %w", err)
+				}
+
+				pr.SubState = enum.PullReqSubStateNone
+			}
+
+			err = c.pullreqStore.Update(ctx, pr)
+			if err != nil {
+				return fmt.Errorf("failed to update pull request: %w", err)
+			}
+		}
+
+		return nil
+	})
+	if err != nil {
+		if errors.Is(err, gitness_store.ErrVersionConflict) {
+			return nil, usererror.Conflict("Pull request has been modified during the API call.")
+		}
+		return nil, fmt.Errorf("failed to update pull request: %w", err)
+	}
+
+	// After the pull request's state has been changed, update the counters in the repository table.
+	// This is considered the best effort approach because the pull request has already been changed,
+	// and we shouldn't fail the API. Also, optimistic lock updates normally don't fail.
+
+	ctxNoCancel := context.WithoutCancel(ctx)
+
+	if stateChange == changeClose || stateChange == changeReopen {
+		var (
+			numOpenPullsDelta   int
+			numClosedPullsDelta int
+		)
+
+		if stateChange == changeClose {
+			numOpenPullsDelta = -1
+			numClosedPullsDelta = 1
+		} else {
+			numOpenPullsDelta = 1
+			numClosedPullsDelta = -1
+		}
+
+		_, err = c.repoStore.UpdateOptLock(ctxNoCancel, targetRepoFull, func(repo *types.Repository) error {
+			repo.NumOpenPulls += numOpenPullsDelta
+			repo.NumClosedPulls += numClosedPullsDelta
+			return nil
+		})
+		if err != nil {
+			log.Ctx(ctx).Err(err).
+				Int("num_open_pulls_delta", numOpenPullsDelta).
+				Int("num_closed_pulls_delta", numClosedPullsDelta).
+				Msg("failed to update number of pull requests in repository after PR state change")
+		}
+	}
+
+	// Create pull request activity for the pull request state change.
+
+	principalID := session.Principal.ID
+
+	payload := &types.PullRequestActivityPayloadStateChange{
+		Old:      oldState,
+		New:      pr.State,
+		OldDraft: oldDraft,
+		NewDraft: pr.IsDraft,
+	}
+	if _, errAct := c.activityStore.CreateWithPayload(ctxNoCancel, pr, principalID, payload, nil); errAct != nil {
+		// non-critical error
+		log.Ctx(ctx).Err(errAct).Msgf("failed to write pull request activity after state change")
+	}
+
+	switch stateChange {
+	case changeReopen:
+		c.eventReporter.Reopened(ctxNoCancel, &pullreqevents.ReopenedPayload{
+			Base:         eventBase(pr, &session.Principal),
+			SourceBranch: pr.SourceBranch,
+			SourceSHA:    sourceSHA.String(),
+			MergeBaseSHA: mergeBaseSHA.String(),
+		})
+	case changeClose:
+		c.eventReporter.Closed(ctxNoCancel, &pullreqevents.ClosedPayload{
+			Base:         eventBase(pr, &session.Principal),
+			SourceSHA:    pr.SourceSHA,
+			SourceBranch: pr.SourceBranch,
+		})
+	case changeDraft:
+		// Draft change isn't really the state change, so we don't publish events.
+	}
+
+	c.sseStreamer.Publish(ctxNoCancel, targetRepo.ParentID, enum.SSETypePullReqUpdated, pr)
+
+	return pr, nil
+}
