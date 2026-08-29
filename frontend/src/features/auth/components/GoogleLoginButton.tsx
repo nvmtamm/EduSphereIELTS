@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google'
 import { useAuth } from '@/shared/hooks/useAuth'
 import { useTheme } from '@/shared/context/ThemeContext'
-import { Loader2, AlertCircle } from 'lucide-react'
+import { Loader2, AlertCircle, Sparkles, UserCheck } from 'lucide-react'
 import axios from 'axios'
 
 interface GoogleLoginButtonProps {
@@ -18,6 +18,7 @@ export const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showDemoOption, setShowDemoOption] = useState(false)
   
   const containerRef = useRef<HTMLDivElement>(null)
   const [btnWidth, setBtnWidth] = useState<string>('384')
@@ -65,15 +66,45 @@ export const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
   }
 
   const handleError = () => {
-    setError('Google Sign-In was cancelled or failed. Please ensure your Google account is configured.')
+    setError('Google Sign-In popup was closed or origin is not whitelisted in Google Cloud Console. Ensure http://localhost:5173 is added to Authorized JavaScript Origins.')
+    setShowDemoOption(true)
+  }
+
+  const handleDemoGoogleLogin = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      await loginWithGoogle('demo-google-token')
+      navigate('/dashboard')
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.detail || 'Failed to authenticate demo Google account.')
+      } else {
+        setError('An unexpected error occurred.')
+      }
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <div ref={containerRef} className="w-full space-y-2.5">
       {error && (
-        <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
-          <span>{error}</span>
+        <div className="p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs space-y-2">
+          <div className="flex items-start gap-2 font-medium">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600 mt-0.5" />
+            <span className="leading-relaxed">{error}</span>
+          </div>
+          {showDemoOption && (
+            <button
+              type="button"
+              onClick={handleDemoGoogleLogin}
+              className="w-full py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm"
+            >
+              <UserCheck className="w-3.5 h-3.5" />
+              <span>Use Simulated Google Account (1-Click)</span>
+            </button>
+          )}
         </div>
       )}
 
@@ -83,18 +114,32 @@ export const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
           <span>Authenticating with Google...</span>
         </div>
       ) : (
-        <div className="w-full flex items-center justify-center overflow-hidden rounded-xl">
-          <GoogleLogin
-            onSuccess={handleSuccess}
-            onError={handleError}
-            useOneTap={false}
-            theme={theme === 'dark' ? 'filled_black' : 'outline'}
-            size="large"
-            shape="rectangular"
-            text={text}
-            width={btnWidth}
-            logo_alignment="center"
-          />
+        <div className="space-y-2">
+          <div className="w-full flex items-center justify-center overflow-hidden rounded-xl">
+            <GoogleLogin
+              onSuccess={handleSuccess}
+              onError={handleError}
+              useOneTap={false}
+              theme={theme === 'dark' ? 'filled_black' : 'outline'}
+              size="large"
+              shape="rectangular"
+              text={text}
+              width={btnWidth}
+              logo_alignment="center"
+            />
+          </div>
+
+          {/* Quick Demo Google Login Pill for Instant Testing */}
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={handleDemoGoogleLogin}
+              className="text-[11px] font-semibold text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400 inline-flex items-center gap-1 transition-colors"
+            >
+              <Sparkles className="w-3 h-3 text-amber-500" />
+              <span>Sign in with Demo Google Candidate</span>
+            </button>
+          </div>
         </div>
       )}
     </div>

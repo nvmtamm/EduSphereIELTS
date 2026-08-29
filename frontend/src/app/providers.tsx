@@ -14,8 +14,10 @@ const queryClient = new QueryClient({
   }
 })
 
+const DEFAULT_GOOGLE_CLIENT_ID = '450452084449-786p4rjna2l9fo98mhlce6m9s2pgiccv.apps.googleusercontent.com'
+
 export const Providers: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || DEFAULT_GOOGLE_CLIENT_ID
 
   return (
     <GoogleOAuthProvider clientId={googleClientId}>
