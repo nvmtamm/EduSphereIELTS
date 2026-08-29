@@ -44,10 +44,17 @@ public static class DependencyInjection
 
         // 4. Domain & Scoring Services
         services.AddScoped<IReadingScoringService, ReadingScoringService>();
+        services.AddScoped<IListeningScoringService, ListeningScoringService>();
 
         // 5. AI Services & Multi-Agent Pipeline
-        services.AddHttpClient<IReadingAITutorService, ReadingAITutorService>();
-        services.AddHttpClient<IDocumentIngestionService, DocumentIngestionService>();
+        services.AddHttpClient<IReadingAITutorService, ReadingAITutorService>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(180);
+        });
+        services.AddHttpClient<IDocumentIngestionService, DocumentIngestionService>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(180);
+        });
 
         return services;
     }
