@@ -44,6 +44,7 @@ public static class DependencyInjection
 
         // 4. Domain & Scoring Services
         services.AddScoped<IReadingScoringService, ReadingScoringService>();
+        services.AddScoped<IListeningScoringService, ListeningScoringService>();
 
         // 5. AI Services & Multi-Agent Pipeline
         // IMPORTANT: Gemini 3.6-flash with thinking + full 40Q IELTS exam can take up to 2-3 min.
