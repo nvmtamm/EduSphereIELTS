@@ -8,8 +8,8 @@ import {
   Volume2, 
   VolumeX, 
   Gauge, 
-  Sparkles,
-  Loader2
+  Loader2,
+  AlertCircle
 } from 'lucide-react';
 import { formatAudioTime } from '../utils/listeningScoring';
 
@@ -43,70 +43,92 @@ export const AudioWaveformPlayer: React.FC<AudioWaveformPlayerProps> = ({
   const [isMuted, setIsMuted] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1.0);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+
+  // Normalize audio URL
+  const resolvedUrl = React.useMemo(() => {
+    if (!audioUrl) return '';
+    if (audioUrl.startsWith('http://') || audioUrl.startsWith('https://')) {
+      return audioUrl;
+    }
+    // Relative path
+    return audioUrl.startsWith('/') ? audioUrl : `/${audioUrl}`;
+  }, [audioUrl]);
 
   // Initialize wavesurfer.js instance
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || !resolvedUrl) return;
 
     setIsLoading(true);
     setIsReady(false);
+    setHasError(false);
 
     // Destroy any existing instance
     if (wavesurferRef.current) {
       wavesurferRef.current.destroy();
+      wavesurferRef.current = null;
     }
 
-    const ws = WaveSurfer.create({
-      container: containerRef.current,
-      waveColor: '#94a3b8',
-      progressColor: '#3b82f6',
-      cursorColor: '#2563eb',
-      cursorWidth: 2,
-      barWidth: 3,
-      barGap: 2,
-      barRadius: 3,
-      height: compact ? 36 : 56,
-      normalize: true,
-      url: audioUrl
-    });
+    try {
+      const ws = WaveSurfer.create({
+        container: containerRef.current,
+        waveColor: '#94a3b8',
+        progressColor: '#2563eb',
+        cursorColor: '#1d4ed8',
+        cursorWidth: 2,
+        barWidth: 3,
+        barGap: 2,
+        barRadius: 3,
+        height: compact ? 36 : 56,
+        normalize: true,
+        url: resolvedUrl
+      });
 
-    ws.on('ready', () => {
-      setIsReady(true);
+      ws.on('ready', () => {
+        setIsReady(true);
+        setIsLoading(false);
+        setDuration(ws.getDuration());
+        ws.setVolume(volume);
+        ws.setPlaybackRate(playbackRate);
+      });
+
+      ws.on('timeupdate', (time) => {
+        setCurrentTime(time);
+        onTimeUpdate?.(time);
+      });
+
+      ws.on('seeking', (time) => {
+        setCurrentTime(time);
+        onSeek?.(time);
+      });
+
+      ws.on('play', () => setIsPlaying(true));
+      ws.on('pause', () => setIsPlaying(false));
+      ws.on('finish', () => {
+        setIsPlaying(false);
+        onEnded?.();
+      });
+
+      ws.on('error', (err) => {
+        console.error('Wavesurfer audio decode error:', err);
+        setIsLoading(false);
+        setHasError(true);
+      });
+
+      wavesurferRef.current = ws;
+    } catch (e) {
+      console.error('Failed to create WaveSurfer:', e);
       setIsLoading(false);
-      setDuration(ws.getDuration());
-      ws.setVolume(volume);
-      ws.setPlaybackRate(playbackRate);
-    });
-
-    ws.on('timeupdate', (time) => {
-      setCurrentTime(time);
-      onTimeUpdate?.(time);
-    });
-
-    ws.on('seeking', (time) => {
-      setCurrentTime(time);
-      onSeek?.(time);
-    });
-
-    ws.on('play', () => setIsPlaying(true));
-    ws.on('pause', () => setIsPlaying(false));
-    ws.on('finish', () => {
-      setIsPlaying(false);
-      onEnded?.();
-    });
-
-    ws.on('error', (err) => {
-      console.error('Wavesurfer error:', err);
-      setIsLoading(false);
-    });
-
-    wavesurferRef.current = ws;
+      setHasError(true);
+    }
 
     return () => {
-      ws.destroy();
-      wavesurferRef.current = null;
+      if (wavesurferRef.current) {
+        wavesurferRef.current.destroy();
+        wavesurferRef.current = null;
+      }
     };
-  }, [audioUrl]);
+  }, [resolvedUrl, compact]);
 
   // Handle external seek requests (e.g. clicking transcript)
   useEffect(() => {
@@ -158,15 +180,23 @@ export const AudioWaveformPlayer: React.FC<AudioWaveformPlayerProps> = ({
   return (
     <div className={`w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm overflow-hidden p-4 sm:p-5 transition-all ${className}`}>
       {/* Waveform Visualization Canvas */}
-      <div className="relative mb-3">
+      <div className="relative mb-3 min-h-[44px]">
         {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-zinc-50/80 dark:bg-zinc-900/80 z-10 rounded-xl backdrop-blur-xs">
-            <div className="flex items-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400">
+          <div className="absolute inset-0 flex items-center justify-center bg-zinc-50/90 dark:bg-zinc-900/90 z-10 rounded-xl backdrop-blur-xs">
+            <div className="flex items-center gap-2 text-xs font-semibold text-blue-600 dark:text-blue-400">
               <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Decoding audio waveform...</span>
+              <span>Loading & rendering audio waveform...</span>
             </div>
           </div>
         )}
+
+        {hasError && (
+          <div className="absolute inset-0 flex items-center justify-center bg-rose-50/90 dark:bg-rose-950/90 z-10 rounded-xl text-rose-600 dark:text-rose-400 text-xs font-medium gap-2">
+            <AlertCircle className="w-4 h-4" />
+            <span>Audio stream could not be loaded. Please ensure the backend is running.</span>
+          </div>
+        )}
+
         <div ref={containerRef} className="w-full cursor-pointer hover:opacity-95 transition-opacity" />
       </div>
 

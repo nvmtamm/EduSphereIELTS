@@ -108,6 +108,8 @@ app.UseSwaggerUI(c =>
 
 app.UseSerilogRequestLogging();
 
+app.UseStaticFiles();
+
 app.UseCors("AllowAll");
 
 app.UseAuthentication();
