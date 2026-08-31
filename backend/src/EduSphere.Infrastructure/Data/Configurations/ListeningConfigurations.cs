@@ -71,6 +71,11 @@ public class ListeningTestConfiguration : IEntityTypeConfiguration<ListeningTest
             .HasForeignKey(s => s.TestId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.HasMany(t => t.SectionAudios)
+            .WithOne(a => a.Test)
+            .HasForeignKey(a => a.ListeningTestId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         builder.HasIndex(t => new { t.SectionNumber, t.Difficulty });
         builder.HasIndex(t => t.Accent);
         builder.HasIndex(t => t.CollectionName);

@@ -30,6 +30,10 @@ public class ListeningTest : BaseEntity
     private readonly List<ListeningSubmission> _submissions = new();
     public IReadOnlyCollection<ListeningSubmission> Submissions => _submissions.AsReadOnly();
 
+    // F-04: Per-section audio files for FullTest_4Sections
+    private readonly List<ListeningSectionAudio> _sectionAudios = new();
+    public IReadOnlyCollection<ListeningSectionAudio> SectionAudios => _sectionAudios.AsReadOnly();
+
     private ListeningTest() { } // EF Core
 
     public ListeningTest(
@@ -78,6 +82,13 @@ public class ListeningTest : BaseEntity
     {
         ArgumentNullException.ThrowIfNull(transcript);
         _transcripts.Add(transcript);
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void AddSectionAudio(ListeningSectionAudio sectionAudio)
+    {
+        ArgumentNullException.ThrowIfNull(sectionAudio);
+        _sectionAudios.Add(sectionAudio);
         UpdatedAt = DateTime.UtcNow;
     }
 }

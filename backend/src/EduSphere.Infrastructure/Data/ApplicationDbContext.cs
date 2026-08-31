@@ -27,6 +27,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<ListeningTranscript> ListeningTranscripts => Set<ListeningTranscript>();
     public DbSet<ListeningSubmission> ListeningSubmissions => Set<ListeningSubmission>();
     public DbSet<ListeningSubmissionAnswer> ListeningSubmissionAnswers => Set<ListeningSubmissionAnswer>();
+    public DbSet<ListeningSectionAudio> ListeningSectionAudios => Set<ListeningSectionAudio>(); // F-04
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
