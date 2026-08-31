@@ -8,7 +8,9 @@ import {
   FileText, 
   Bookmark, 
   Edit3, 
-  AlertCircle
+  AlertCircle,
+  RotateCcw,
+  X
 } from 'lucide-react';
 import { listeningApi } from '../api/listeningApi';
 import type { ListeningTestDetail, ListeningQuestion } from '../types/listening';
@@ -18,10 +20,13 @@ import { ListeningNotepad } from '../components/ListeningNotepad';
 import { ListeningQuestionPalette } from '../components/ListeningQuestionPalette';
 import { ListeningExamTimer } from '../components/ListeningExamTimer';
 import { FormCompletionRenderer } from '../components/renderers/FormCompletionRenderer';
+import { TableCompletionRenderer } from '../components/renderers/TableCompletionRenderer';
 import { ListeningMultipleChoiceRenderer } from '../components/renderers/ListeningMultipleChoiceRenderer';
 import { ListeningMatchingRenderer } from '../components/renderers/ListeningMatchingRenderer';
 import { MapDiagramLabellingRenderer } from '../components/renderers/MapDiagramLabellingRenderer';
 import { getAccentBadge } from '../utils/listeningScoring';
+import { useListeningSessionPersist, readSavedSession } from '../hooks/useListeningSessionPersist';
+import type { ListeningSessionState } from '../hooks/useListeningSessionPersist';
 
 export const ListeningExamPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -44,6 +49,14 @@ export const ListeningExamPage: React.FC = () => {
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [examStartTime] = useState<number>(Date.now());
 
+  // F-02: Timer persistence state
+  const [secondsRemaining, setSecondsRemaining] = useState<number | undefined>(undefined);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+
+  // F-02: Resume banner state
+  const [savedSession, setSavedSession] = useState<ListeningSessionState | null>(null);
+  const [showResumeBanner, setShowResumeBanner] = useState(false);
+
   // Load test data from backend API
   useEffect(() => {
     if (!id) return;
@@ -53,13 +66,16 @@ export const ListeningExamPage: React.FC = () => {
         const data = await listeningApi.getTestById(id);
         setTest(data);
 
-        // Restore any saved answers from local draft
-        const savedDraft = localStorage.getItem(`edusphere_listening_draft_${id}`);
-        if (savedDraft) {
-          try {
-            setAnswers(JSON.parse(savedDraft));
-          } catch (e) {
-            console.error('Failed to parse saved draft:', e);
+        // F-02: Check for a full saved session first
+        const session = readSavedSession(id);
+        if (session && Object.keys(session.answers).length > 0) {
+          setSavedSession(session);
+          setShowResumeBanner(true);
+        } else {
+          // Legacy: restore plain answers draft
+          const savedDraft = localStorage.getItem(`edusphere_listening_draft_${id}`);
+          if (savedDraft) {
+            try { setAnswers(JSON.parse(savedDraft)); } catch { /* ignore */ }
           }
         }
       } catch (err: any) {
@@ -72,6 +88,35 @@ export const ListeningExamPage: React.FC = () => {
 
     fetchTest();
   }, [id]);
+
+  // F-02: Restore full session state when user clicks Resume
+  const handleResumeSession = useCallback(() => {
+    if (!savedSession) return;
+    setAnswers(savedSession.answers);
+    setMarkedQuestions(new Set(savedSession.markedQuestions));
+    setCurrentQuestionIndex(savedSession.currentQuestionIndex);
+    setSecondsRemaining(savedSession.secondsRemaining);
+    setElapsedSeconds(savedSession.elapsedSeconds);
+    setShowResumeBanner(false);
+    setSavedSession(null);
+  }, [savedSession]);
+
+  // F-02: Discard session and start fresh
+  const handleDiscardSession = useCallback(() => {
+    if (id) localStorage.removeItem(`edusphere_exam_session_${id}`);
+    setShowResumeBanner(false);
+    setSavedSession(null);
+  }, [id]);
+
+  // F-02: Session persistence autosave hook
+  const { clearSession } = useListeningSessionPersist({
+    testId: id,
+    answers,
+    markedQuestions,
+    secondsRemaining: secondsRemaining ?? (test?.durationSeconds ?? 1800),
+    elapsedSeconds,
+    currentQuestionIndex,
+  });
 
   // Autosave answers to localStorage
   const handleAnswerChange = useCallback((questionId: string, value: string) => {
@@ -115,7 +160,8 @@ export const ListeningExamPage: React.FC = () => {
         answers: payloadAnswers
       });
 
-      // Clear draft on submission
+      // F-02: Clear full session + legacy draft on successful submit
+      clearSession();
       localStorage.removeItem(`edusphere_listening_draft_${id}`);
       navigate(`/listening/result/${result.submissionId}`);
     } catch (err: any) {
@@ -206,7 +252,9 @@ export const ListeningExamPage: React.FC = () => {
         <div className="flex items-center gap-3">
           <ListeningExamTimer
             initialSeconds={test.durationSeconds || 1800}
+            initialSecondsRemaining={secondsRemaining} // F-02: resume from saved session
             onTimeExpired={() => setShowSubmitModal(true)}
+            onTick={(s) => setSecondsRemaining(s)} // F-02: track for autosave
           />
 
           <button
@@ -220,10 +268,44 @@ export const ListeningExamPage: React.FC = () => {
         </div>
       </header>
 
+      {/* F-02: Resume Session Banner */}
+      {showResumeBanner && savedSession && (
+        <div className="z-25 bg-amber-500/10 border-b border-amber-500/30 px-4 sm:px-6 py-2.5 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-xs font-semibold text-amber-700 dark:text-amber-400">
+            <RotateCcw className="w-3.5 h-3.5 shrink-0" />
+            <span>
+              A previous exam session was found — {Object.keys(savedSession.answers).length} answer(s) saved.
+              Resume where you left off?
+            </span>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={handleResumeSession}
+              className="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-lg transition-colors"
+            >
+              Resume
+            </button>
+            <button
+              type="button"
+              onClick={handleDiscardSession}
+              className="p-1 text-amber-600 hover:text-amber-800 dark:hover:text-amber-300 transition-colors"
+              title="Discard saved session"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 2. Audio Waveform Player Bar */}
       <div className="sticky top-[57px] z-20 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 p-3 sm:px-6">
         <AudioWaveformPlayer
-          audioUrl={test.audioUrl}
+          audioUrl={test.sectionAudios?.length > 1
+            ? test.sectionAudios.map(s => s.audioUrl)  // F-04: multi-section audio array
+            : test.audioUrl                              // single audio (legacy)
+          }
+          singlePlayMode={test.isOfficialExamMode}       // F-01: Cambridge one-play lock
           onTimeUpdate={(time) => setCurrentAudioTime(time)}
           seekTime={seekTime}
           compact
@@ -324,6 +406,13 @@ export const ListeningExamPage: React.FC = () => {
                             question={q}
                             value={val}
                             onChange={(newVal) => handleAnswerChange(q.id, newVal)}
+                          />
+                        ) : q.questionType === 'TableCompletion' ? (
+                          <TableCompletionRenderer
+                            question={q}
+                            value={val}
+                            onChange={(newVal) => handleAnswerChange(q.id, newVal)}
+                            isActive={currentQuestionIndex === test.questions.findIndex(tq => tq.id === q.id)}
                           />
                         ) : (
                           <FormCompletionRenderer

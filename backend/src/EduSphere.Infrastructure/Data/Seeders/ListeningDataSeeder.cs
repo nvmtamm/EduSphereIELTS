@@ -32,6 +32,9 @@ public static class ListeningDataSeeder
             var oldQuestions = await context.ListeningQuestions.ToListAsync();
             context.ListeningQuestions.RemoveRange(oldQuestions);
 
+            var oldSectionAudios = await context.ListeningSectionAudios.ToListAsync();
+            context.ListeningSectionAudios.RemoveRange(oldSectionAudios);
+
             var oldTests = await context.ListeningTests.ToListAsync();
             context.ListeningTests.RemoveRange(oldTests);
 
@@ -55,6 +58,11 @@ public static class ListeningDataSeeder
             targetBandTier: TargetBandTier.Band7_0_7_5,
             instructions: "Answer all 40 questions across 4 sections. You will hear each recording ONCE only. Write NO MORE THAN TWO WORDS AND/OR A NUMBER for completion questions.",
             audioFileSize: 1572864);
+
+        fullTest1.AddSectionAudio(new ListeningSectionAudio(fullTest1.Id, 1, "/audio/cambridge18-test1-full.mp3", 450, "Section 1: Transport & Moving Services"));
+        fullTest1.AddSectionAudio(new ListeningSectionAudio(fullTest1.Id, 2, "/audio/cambridge18-test1-full.mp3", 420, "Section 2: Community Volunteering Scheme"));
+        fullTest1.AddSectionAudio(new ListeningSectionAudio(fullTest1.Id, 3, "/audio/cambridge18-test1-full.mp3", 480, "Section 3: Ocean Clean-up Project"));
+        fullTest1.AddSectionAudio(new ListeningSectionAudio(fullTest1.Id, 4, "/audio/cambridge18-test1-full.mp3", 450, "Section 4: Environmental Acoustics"));
 
         AddSection1Questions(fullTest1);
         AddSection1Transcripts(fullTest1);
@@ -203,8 +211,26 @@ public static class ListeningDataSeeder
         test.AddQuestion(new ListeningQuestion(test.Id, 3, 25, QuestionType.Matching, "Role assigned to Elena",
             JsonSerializer.Serialize(new[] { "A. Calibrating hydrophone arrays", "B. Writing literature review", "C. Statistical regression analysis" }),
             "B", "Elena will complete the literature review.", 515));
-        test.AddQuestion(new ListeningQuestion(test.Id, 3, 26, QuestionType.NoteCompletion, "Sensors will measure ocean water _______ at 15-minute intervals.", "[]", "salinity", "Sensors measure ocean water salinity.", 540));
-        test.AddQuestion(new ListeningQuestion(test.Id, 3, 27, QuestionType.NoteCompletion, "Battery units are housed in waterproof _______ cases.", "[]", "aluminum / aluminium", "Housed in waterproof aluminum cases.", 565));
+        test.AddQuestion(new ListeningQuestion(test.Id, 3, 26, QuestionType.TableCompletion,
+            JsonSerializer.Serialize(new {
+                headers = new[] { "Telemetry Parameter", "Recording Frequency", "Sensor Enclosure" },
+                rows = new[] {
+                    new[] { "Water _______ levels", "Every 15 minutes", "Titanium casing" },
+                    new[] { "Acoustic frequency", "Continuous", "Waterproof aluminum case" }
+                },
+                instruction = "Complete the research apparatus table below."
+            }),
+            "[]", "salinity", "Sensors measure ocean water salinity.", 540));
+        test.AddQuestion(new ListeningQuestion(test.Id, 3, 27, QuestionType.TableCompletion,
+            JsonSerializer.Serialize(new {
+                headers = new[] { "Apparatus Component", "Housing Material", "Deployment Target" },
+                rows = new[] {
+                    new[] { "Battery power packs", "Waterproof _______ cases", "Kelp forest canopy" },
+                    new[] { "Hydrophone nodes", "Reinforced polycarbonate", "Seafloor baseline" }
+                },
+                instruction = "Complete the apparatus housing specification table."
+            }),
+            "[]", "aluminum / aluminium", "Housed in waterproof aluminum cases.", 565));
         test.AddQuestion(new ListeningQuestion(test.Id, 3, 28, QuestionType.NoteCompletion, "Draft report submission deadline is _______ 28th.", "[]", "November", "Deadline is November 28th.", 590));
         test.AddQuestion(new ListeningQuestion(test.Id, 3, 29, QuestionType.NoteCompletion, "Minimum word count for final analysis section: _______ words", "[]", "2000 / 2,000 / two thousand", "Analysis section must be at least 2000 words.", 615));
         test.AddQuestion(new ListeningQuestion(test.Id, 3, 30, QuestionType.MultipleChoice, "Professor Hughes recommends including:",
