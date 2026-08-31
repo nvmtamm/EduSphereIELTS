@@ -1,0 +1,16 @@
+# GitHub Linguist Configuration
+# https://github.com/github-linguist/linguist/blob/master/docs/overrides.md
+
+# 1. Mark third-party / agentic engine code as vendored so it is excluded from language statistics
+agentic/** linguist-vendored
+agentic/** linguist-detectable=false
+rag/** linguist-vendored
+
+# 2. Mark database scripts and plan docs
+database/** linguist-documentation
+plan/** linguist-documentation
+docs/** linguist-documentation
+
+# 3. Highlight core project languages
+backend/** linguist-detectable=true
+frontend/** linguist-detectable=true
