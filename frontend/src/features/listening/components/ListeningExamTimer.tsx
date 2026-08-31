@@ -4,6 +4,8 @@ import { formatAudioTime } from '../utils/listeningScoring';
 
 interface ListeningExamTimerProps {
   initialSeconds?: number;
+  /** F-02: Override the starting value — used when resuming a persisted session */
+  initialSecondsRemaining?: number;
   isTimed?: boolean;
   onTimeExpired?: () => void;
   onTick?: (secondsRemaining: number) => void;
@@ -11,13 +13,16 @@ interface ListeningExamTimerProps {
 }
 
 export const ListeningExamTimer: React.FC<ListeningExamTimerProps> = ({
-  initialSeconds = 1800, // 30 minutes
+  initialSeconds = 1800, // 30 minutes default
+  initialSecondsRemaining,
   isTimed = true,
   onTimeExpired,
   onTick,
   className = ''
 }) => {
-  const [seconds, setSeconds] = useState(isTimed ? initialSeconds : 0);
+  // F-02: If resuming a session, use the persisted remaining value; otherwise start fresh
+  const startValue = initialSecondsRemaining ?? (isTimed ? initialSeconds : 0);
+  const [seconds, setSeconds] = useState(startValue);
 
   useEffect(() => {
     const timer = setInterval(() => {
