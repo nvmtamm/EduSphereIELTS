@@ -19,6 +19,14 @@ public record ListeningTranscriptDto(
     string TextContent,
     int? LinkedQuestionNumber);
 
+// F-04: Per-section audio DTO for FullTest multi-audio
+public record ListeningSectionAudioDto(
+    Guid Id,
+    int SectionNumber,
+    string SectionTitle,
+    string AudioUrl,
+    int DurationSeconds);
+
 public record ListeningTestDetailDto(
     Guid Id,
     string Title,
@@ -35,5 +43,8 @@ public record ListeningTestDetailDto(
     string Instructions,
     Guid? UploadedByUserId,
     bool IsCommunityShared,
+    bool IsOfficialExamMode,        // F-01: controls single-play constraint on frontend
     List<ListeningQuestionDto> Questions,
-    List<ListeningTranscriptDto> Transcripts);
+    List<ListeningTranscriptDto> Transcripts,
+    List<ListeningSectionAudioDto> SectionAudios); // F-04
+

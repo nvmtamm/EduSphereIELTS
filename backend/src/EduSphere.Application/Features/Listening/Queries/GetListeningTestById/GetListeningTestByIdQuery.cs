@@ -53,6 +53,7 @@ public class GetListeningTestByIdQueryHandler : IRequestHandler<GetListeningTest
             .AsNoTracking()
             .Include(t => t.Questions)
             .Include(t => t.Transcripts)
+            .Include(t => t.SectionAudios) // F-04
             .FirstOrDefaultAsync(t => t.Id == request.Id, cancellationToken);
 
         if (test == null)
@@ -101,6 +102,20 @@ public class GetListeningTestByIdQueryHandler : IRequestHandler<GetListeningTest
                 t.LinkedQuestionNumber))
             .ToList();
 
+        // F-04: Map section audios
+        var sectionAudiosDto = test.SectionAudios
+            .OrderBy(a => a.SectionNumber)
+            .Select(a => new ListeningSectionAudioDto(
+                a.Id,
+                a.SectionNumber,
+                a.SectionTitle,
+                a.AudioUrl,
+                a.DurationSeconds))
+            .ToList();
+
+        // F-01: IsOfficialExamMode = true for OfficialCambridge source (Cambridge standard: one-play rule)
+        var isOfficialExamMode = test.SourceType.ToString() == "OfficialCambridge";
+
         var detailDto = new ListeningTestDetailDto(
             test.Id,
             test.Title,
@@ -117,8 +132,10 @@ public class GetListeningTestByIdQueryHandler : IRequestHandler<GetListeningTest
             test.Instructions,
             test.UploadedByUserId,
             test.IsCommunityShared,
+            isOfficialExamMode,
             questionsDto,
-            transcriptsDto);
+            transcriptsDto,
+            sectionAudiosDto);
 
         try
         {

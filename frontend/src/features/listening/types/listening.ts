@@ -39,6 +39,15 @@ export interface ListeningTranscript {
   linkedQuestionNumber?: number | null;
 }
 
+// F-04: Per-section audio for FullTest multi-audio playback
+export interface ListeningSectionAudio {
+  id: string;
+  sectionNumber: number;
+  sectionTitle: string;
+  audioUrl: string;
+  durationSeconds: number;
+}
+
 export interface ListeningTestDetail {
   id: string;
   title: string;
@@ -55,8 +64,10 @@ export interface ListeningTestDetail {
   instructions: string;
   uploadedByUserId?: string | null;
   isCommunityShared: boolean;
+  isOfficialExamMode: boolean;    // F-01: single-play constraint flag
   questions: ListeningQuestion[];
   transcripts: ListeningTranscript[];
+  sectionAudios: ListeningSectionAudio[]; // F-04: multi-audio for FullTest
 }
 
 export interface UserListeningAnswerSubmission {
