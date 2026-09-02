@@ -57,6 +57,22 @@ public static class DependencyInjection
         {
             client.Timeout = TimeSpan.FromSeconds(180);
         });
+        services.AddHttpClient<IListeningAITutorService, ListeningAITutorService>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(60);
+        });
+
+        // 6. Cloud Media Storage (AWS S3)
+        // Registers as singleton since S3 client is thread-safe and stateless
+        try
+        {
+            services.AddSingleton<IMediaStorageService, S3MediaStorageService>();
+        }
+        catch (Exception)
+        {
+            // AWS credentials not configured — S3 features will be unavailable
+            // This allows the app to start in environments without AWS setup
+        }
 
         return services;
     }
