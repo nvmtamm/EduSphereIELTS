@@ -17,6 +17,7 @@ interface SynchronizedTranscriptProps {
   transcripts: ListeningTranscript[];
   currentTime: number;
   onSeek: (timestamp: number) => void;
+  onSelectLinkedQuestion?: (questionNumber: number) => void;
   className?: string;
   allowAutoScroll?: boolean;
 }
@@ -25,6 +26,7 @@ export const SynchronizedTranscript: React.FC<SynchronizedTranscriptProps> = ({
   transcripts,
   currentTime,
   onSeek,
+  onSelectLinkedQuestion,
   className = '',
   allowAutoScroll = true
 }) => {
@@ -71,7 +73,7 @@ export const SynchronizedTranscript: React.FC<SynchronizedTranscriptProps> = ({
             placeholder="Search transcript dialog..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 text-xs bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400"
+            className="w-full pl-9 pr-3 py-1.5 text-xs bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/20 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400"
           />
         </div>
 
@@ -80,12 +82,12 @@ export const SynchronizedTranscript: React.FC<SynchronizedTranscriptProps> = ({
           onClick={() => setAutoScroll(!autoScroll)}
           className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-xl border transition-all ${
             autoScroll
-              ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/50'
+              ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800/50'
               : 'bg-white dark:bg-zinc-800 text-zinc-500 border-zinc-200 dark:border-zinc-700 hover:text-zinc-800'
           }`}
           title={autoScroll ? 'Auto-scroll is enabled' : 'Auto-scroll is paused'}
         >
-          <ArrowDownCircle className={`w-3.5 h-3.5 ${autoScroll ? 'text-blue-600 dark:text-blue-400' : ''}`} />
+          <ArrowDownCircle className={`w-3.5 h-3.5 ${autoScroll ? 'text-red-600 dark:text-red-400' : ''}`} />
           <span className="hidden sm:inline">Sync Scroll</span>
         </button>
       </div>
@@ -111,11 +113,11 @@ export const SynchronizedTranscript: React.FC<SynchronizedTranscriptProps> = ({
                 initial={false}
                 animate={{
                   scale: isActive ? 1.01 : 1,
-                  backgroundColor: isActive ? 'rgba(59, 130, 246, 0.08)' : 'transparent'
+                  backgroundColor: isActive ? 'rgba(220, 38, 38, 0.08)' : 'transparent'
                 }}
                 className={`group relative p-3.5 rounded-xl border transition-all cursor-pointer ${
                   isActive
-                    ? 'border-blue-500/40 shadow-xs ring-1 ring-blue-500/20'
+                    ? 'border-red-500/40 shadow-xs ring-1 ring-red-500/20'
                     : 'border-transparent hover:border-zinc-200 dark:hover:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800/40'
                 }`}
               >
@@ -123,7 +125,7 @@ export const SynchronizedTranscript: React.FC<SynchronizedTranscriptProps> = ({
                 {isActive && (
                   <motion.div
                     layoutId="activeTranscriptIndicator"
-                    className="absolute left-0 top-2 bottom-2 w-1 bg-blue-600 rounded-r-full"
+                    className="absolute left-0 top-2 bottom-2 w-1 bg-red-600 rounded-r-full"
                     transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                   />
                 )}
@@ -131,18 +133,26 @@ export const SynchronizedTranscript: React.FC<SynchronizedTranscriptProps> = ({
                 {/* Speaker Header & Timestamps */}
                 <div className="flex items-center justify-between mb-1.5">
                   <div className="flex items-center gap-2">
-                    <div className={`p-1 rounded-lg ${isActive ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-600' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'}`}>
+                    <div className={`p-1 rounded-lg ${isActive ? 'bg-red-100 dark:bg-red-900/50 text-red-600' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'}`}>
                       <User className="w-3 h-3" />
                     </div>
-                    <span className={`text-xs font-bold ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-zinc-800 dark:text-zinc-200'}`}>
+                    <span className={`text-xs font-bold ${isActive ? 'text-red-600 dark:text-red-400' : 'text-zinc-800 dark:text-zinc-200'}`}>
                       {t.speaker}
                     </span>
 
                     {t.linkedQuestionNumber && (
-                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold rounded-md bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSelectLinkedQuestion?.(t.linkedQuestionNumber!);
+                        }}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 hover:bg-amber-500 hover:text-white transition-all cursor-pointer shadow-2xs"
+                        title={`Jump to Question ${t.linkedQuestionNumber}`}
+                      >
                         <BookmarkCheck className="w-2.5 h-2.5" />
                         <span>Q{t.linkedQuestionNumber} Anchor</span>
-                      </span>
+                      </button>
                     )}
                   </div>
 
@@ -150,8 +160,8 @@ export const SynchronizedTranscript: React.FC<SynchronizedTranscriptProps> = ({
                     type="button"
                     className={`font-mono text-[11px] font-medium flex items-center gap-1 px-2 py-0.5 rounded-md transition-colors ${
                       isActive
-                        ? 'bg-blue-600 text-white shadow-xs'
-                        : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 group-hover:text-blue-600 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/30'
+                        ? 'bg-red-600 text-white shadow-xs'
+                        : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 group-hover:text-red-600 group-hover:bg-red-50 dark:group-hover:bg-red-900/30'
                     }`}
                   >
                     <Play className="w-2.5 h-2.5 fill-current" />
