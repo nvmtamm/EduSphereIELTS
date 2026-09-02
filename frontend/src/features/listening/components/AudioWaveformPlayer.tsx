@@ -86,8 +86,8 @@ export const AudioWaveformPlayer: React.FC<AudioWaveformPlayerProps> = ({
       const ws = WaveSurfer.create({
         container: containerRef.current,
         waveColor: '#94a3b8',
-        progressColor: '#2563eb',
-        cursorColor: '#1d4ed8',
+        progressColor: '#DC2626',
+        cursorColor: '#991B1B',
         cursorWidth: 2,
         barWidth: 3,
         barGap: 2,
@@ -213,7 +213,7 @@ export const AudioWaveformPlayer: React.FC<AudioWaveformPlayerProps> = ({
                 key={idx}
                 className={`flex-shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold whitespace-nowrap transition-all ${
                   isActive
-                    ? 'bg-blue-600 text-white shadow-sm'
+                    ? 'bg-red-600 text-white shadow-sm'
                     : isDone
                     ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
                     : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500'
@@ -230,7 +230,7 @@ export const AudioWaveformPlayer: React.FC<AudioWaveformPlayerProps> = ({
       <div className="relative mb-3 min-h-[44px]">
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-zinc-50/90 dark:bg-zinc-900/90 z-10 rounded-xl backdrop-blur-xs">
-            <div className="flex items-center gap-2 text-xs font-semibold text-blue-600 dark:text-blue-400">
+            <div className="flex items-center gap-2 text-xs font-semibold text-red-600 dark:text-red-400">
               <Loader2 className="w-4 h-4 animate-spin" />
               <span>Loading & rendering audio waveform...</span>
             </div>
@@ -275,7 +275,7 @@ export const AudioWaveformPlayer: React.FC<AudioWaveformPlayerProps> = ({
             className={`flex items-center justify-center w-11 h-11 text-white rounded-2xl shadow-md active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
               singlePlayMode && hasFinished
                 ? 'bg-zinc-500 dark:bg-zinc-600'
-                : 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/20'
+                : 'bg-red-600 hover:bg-red-700 shadow-red-500/20'
             }`}
             title={singlePlayMode && hasFinished ? 'Audio playback locked' : isPlaying ? 'Pause' : 'Play'}
           >
@@ -332,7 +332,7 @@ export const AudioWaveformPlayer: React.FC<AudioWaveformPlayerProps> = ({
                   onClick={() => handleSpeedChange(rate)}
                   className={`px-2 py-0.5 text-xs font-semibold rounded-lg transition-all ${
                     playbackRate === rate
-                      ? 'bg-white dark:bg-zinc-700 text-blue-600 dark:text-blue-400 shadow-xs'
+                      ? 'bg-white dark:bg-zinc-700 text-red-600 dark:text-red-400 shadow-xs'
                       : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
                   }`}
                 >
@@ -362,7 +362,7 @@ export const AudioWaveformPlayer: React.FC<AudioWaveformPlayerProps> = ({
               step="0.05"
               value={isMuted ? 0 : volume}
               onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
-              className="w-16 lg:w-20 h-1.5 bg-zinc-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-blue-600"
+              className="w-16 lg:w-20 h-1.5 bg-zinc-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-red-600"
             />
           </div>
         </div>

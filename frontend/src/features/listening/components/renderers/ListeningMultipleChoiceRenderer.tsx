@@ -40,7 +40,7 @@ export const ListeningMultipleChoiceRenderer: React.FC<ListeningMultipleChoiceRe
     <div className="space-y-3">
       {/* Prompt Header */}
       <div className="flex items-start gap-2.5">
-        <span className="font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-md text-xs sm:text-sm mt-0.5">
+        <span className="font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-2 py-0.5 rounded-md text-xs sm:text-sm mt-0.5">
           {question.questionNumber}
         </span>
         <p className="text-sm sm:text-base font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
@@ -65,14 +65,14 @@ export const ListeningMultipleChoiceRenderer: React.FC<ListeningMultipleChoiceRe
               disabled={disabled}
               className={`flex items-start gap-3 p-3 text-left rounded-xl border transition-all text-xs sm:text-sm ${
                 isSelected
-                  ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-500 text-blue-950 dark:text-blue-100 shadow-xs ring-1 ring-blue-500/20'
+                  ? 'bg-red-50 dark:bg-red-900/20 border-red-500 text-red-950 dark:text-red-100 shadow-xs ring-1 ring-red-500/20'
                   : 'bg-white dark:bg-zinc-800/60 border-zinc-200 dark:border-zinc-700/80 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800'
               } disabled:cursor-not-allowed`}
             >
               <span
                 className={`flex items-center justify-center w-6 h-6 rounded-lg text-xs font-bold shrink-0 transition-colors ${
                   isSelected
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-red-600 text-white'
                     : 'bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300'
                 }`}
               >

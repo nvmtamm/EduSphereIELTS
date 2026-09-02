@@ -38,7 +38,7 @@ export const ListeningQuestionPalette: React.FC<ListeningQuestionPaletteProps> =
 
         <div className="w-16 bg-zinc-100 dark:bg-zinc-800 h-2 rounded-full overflow-hidden">
           <div
-            className="bg-blue-600 h-full rounded-full transition-all duration-300"
+            className="bg-red-600 h-full rounded-full transition-all duration-300"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
@@ -58,11 +58,11 @@ export const ListeningQuestionPalette: React.FC<ListeningQuestionPaletteProps> =
               onClick={() => onSelectQuestion(idx)}
               className={`relative flex items-center justify-center h-8 rounded-lg text-xs font-bold transition-all ${
                 isCurrent
-                  ? 'ring-2 ring-blue-600 ring-offset-2 dark:ring-offset-zinc-900 z-10'
+                  ? 'ring-2 ring-red-600 ring-offset-2 dark:ring-offset-zinc-900 z-10'
                   : ''
               } ${
                 isAnswered
-                  ? 'bg-blue-600 text-white shadow-xs'
+                  ? 'bg-red-600 text-white shadow-xs'
                   : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700'
               }`}
             >
@@ -79,7 +79,7 @@ export const ListeningQuestionPalette: React.FC<ListeningQuestionPaletteProps> =
       {/* Legend */}
       <div className="flex items-center justify-between pt-3 mt-3 border-t border-zinc-100 dark:border-zinc-800/80 text-[11px] text-zinc-500">
         <div className="flex items-center gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-sm bg-blue-600" />
+          <div className="w-2.5 h-2.5 rounded-sm bg-red-600" />
           <span>Answered</span>
         </div>
         <div className="flex items-center gap-1.5">
