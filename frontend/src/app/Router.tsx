@@ -11,6 +11,7 @@ import { ReadingResultPage } from '@/features/reading/pages/ReadingResultPage'
 import { ListeningListPage } from '@/features/listening/pages/ListeningListPage'
 import { ListeningExamPage } from '@/features/listening/pages/ListeningExamPage'
 import { ListeningResultPage } from '@/features/listening/pages/ListeningResultPage'
+import { ListeningDictationPage } from '@/features/listening/pages/ListeningDictationPage'
 import { Layout } from '@/shared/components/Layout'
 import { ProtectedRoute } from '@/shared/components/ProtectedRoute'
 
@@ -70,6 +71,10 @@ export const router = createBrowserRouter([
           {
             path: '/listening/result/:id',
             element: <ListeningResultPage />
+          },
+          {
+            path: '/listening/dictation/:id',
+            element: <ListeningDictationPage />
           },
           {
             path: '/writing',
