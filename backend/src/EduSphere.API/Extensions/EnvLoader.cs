@@ -106,6 +106,18 @@ public static class EnvLoader
                 case "QDRANT_URL":
                     inMemoryConfig["Qdrant:Url"] = val;
                     break;
+                case "AWS_ACCESS_KEY_ID":
+                    inMemoryConfig["AWS:AccessKeyId"] = val;
+                    break;
+                case "AWS_SECRET_ACCESS_KEY":
+                    inMemoryConfig["AWS:SecretAccessKey"] = val;
+                    break;
+                case "AWS_REGION":
+                    inMemoryConfig["AWS:Region"] = val;
+                    break;
+                case "AWS_BUCKET_NAME":
+                    inMemoryConfig["AWS:BucketName"] = val;
+                    break;
             }
         }
 

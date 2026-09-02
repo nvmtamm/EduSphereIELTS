@@ -25,11 +25,18 @@
     --ring: 0 72.2% 50.6%;                 /* Brand Red Ring */
     --radius: 0.75rem;
 
-    /* 4-Skill Harmonized Pastel Tokens */
+    /* 4-Skill Harmonized Accent Tokens */
     --skill-reading: 199 89% 48%;          /* Sky Blue #0284C7 */
     --skill-listening: 271 81% 56%;        /* Purple #7C3AED */
     --skill-writing: 38 92% 50%;           /* Warm Amber #D97706 */
     --skill-speaking: 160 84% 39%;         /* Emerald Green #059669 */
+
+    /* Exam Semantic Colors */
+    --exam-correct: 142 71% 45%;           /* Green #16A34A */
+    --exam-incorrect: 0 84% 60%;           /* Red #EF4444 */
+    --exam-warning: 38 92% 50%;            /* Amber #F59E0B */
+    --exam-focus: 217 91% 60%;             /* Blue #2563EB */
+    --exam-toolbar: 0 0% 6%;               /* Near Black #0F0F0F */
   }
 
   .dark {
@@ -52,6 +59,13 @@
     --border: 217.2 32.6% 17.5%;           /* Dark Slate Border #1E293B */
     --input: 217.2 32.6% 17.5%;
     --ring: 0 72.2% 50.6%;
+
+    /* Dark mode exam tokens */
+    --exam-correct: 142 71% 45%;
+    --exam-incorrect: 0 62.8% 50%;
+    --exam-warning: 38 92% 50%;
+    --exam-focus: 217 91% 60%;
+    --exam-toolbar: 0 0% 4%;               /* Deeper Black #0A0A0A */
   }
 }
 
@@ -70,7 +84,24 @@ body {
   color: #FFFFFF;
 }
 
-/* Custom Sleek Scrollbar */
+/* ─── Mono Font Class for Timer / Numbers ─── */
+.font-mono-exam {
+  font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Smooth Page Transitions ─── */
+.page-enter {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+/* ─── Custom Sleek Scrollbar ─── */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -95,4 +126,43 @@ body {
 
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #475569;
+}
+
+/* ─── Exam Timer Pulse ─── */
+@keyframes timer-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.timer-critical {
+  animation: timer-pulse 1s ease-in-out infinite;
+  color: #DC2626;
+}
+
+/* ─── Card Spotlight Hover Glow ─── */
+.card-spotlight {
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-spotlight:hover {
+  border-color: rgba(220, 38, 38, 0.3);
+  box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.1),
+              0 4px 24px -4px rgba(220, 38, 38, 0.08);
+}
+
+.dark .card-spotlight:hover {
+  border-color: rgba(220, 38, 38, 0.4);
+  box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.15),
+              0 4px 24px -4px rgba(220, 38, 38, 0.12);
+}
+
+/* ─── Scrollbar-hidden utility ─── */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }

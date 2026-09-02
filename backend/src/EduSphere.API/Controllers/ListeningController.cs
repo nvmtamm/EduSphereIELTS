@@ -1,5 +1,6 @@
 using EduSphere.Application.Common.Models;
 using EduSphere.Application.Features.Listening.Commands.SubmitListeningExam;
+using EduSphere.Application.Features.Listening.Commands.ExplainListeningQuestion;
 using EduSphere.Application.Features.Listening.Models;
 using EduSphere.Application.Features.Listening.Queries.GetListeningHistory;
 using EduSphere.Application.Features.Listening.Queries.GetListeningTestById;
@@ -100,8 +101,26 @@ public class ListeningController : ApiControllerBase
         var result = await Mediator.Send(new GetListeningHistoryQuery(CurrentUserId), ct);
         return HandleResult(result);
     }
+    /// <summary>
+    /// Request AI diagnostic explanation for an IELTS listening question
+    /// </summary>
+    [Authorize]
+    [HttpPost("explain")]
+    [ProducesResponseType(typeof(ListeningAIExplanationDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> ExplainQuestion([FromBody] ExplainListeningQuestionRequest request, CancellationToken ct)
+    {
+        var command = new ExplainListeningQuestionCommand(request.QuestionId, request.UserAnswer);
+        var result = await Mediator.Send(command, ct);
+        return HandleResult(result);
+    }
 }
 
 public record SubmitListeningExamRequest(
     int DurationSeconds,
     List<UserListeningAnswerSubmissionDto> Answers);
+
+public record ExplainListeningQuestionRequest(
+    Guid QuestionId,
+    string? UserAnswer);

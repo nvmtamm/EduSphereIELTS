@@ -18,7 +18,7 @@ export const ListeningMatchingRenderer: React.FC<ListeningMatchingRendererProps>
     <div className="space-y-3">
       {/* Prompt Item */}
       <div className="flex items-start gap-2.5">
-        <span className="font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-md text-xs sm:text-sm mt-0.5">
+        <span className="font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-2 py-0.5 rounded-md text-xs sm:text-sm mt-0.5">
           {question.questionNumber}
         </span>
         <div className="flex-1">
@@ -45,11 +45,11 @@ export const ListeningMatchingRenderer: React.FC<ListeningMatchingRendererProps>
                 disabled={disabled}
                 className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-medium transition-all ${
                   isSelected
-                    ? 'bg-blue-600 border-blue-600 text-white shadow-xs'
+                    ? 'bg-red-600 border-red-600 text-white shadow-xs'
                     : 'bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700/60'
                 }`}
               >
-                <span className={`font-bold ${isSelected ? 'text-white' : 'text-blue-600 dark:text-blue-400'}`}>
+                <span className={`font-bold ${isSelected ? 'text-white' : 'text-red-600 dark:text-red-400'}`}>
                   {letter}.
                 </span>
                 <span>{optionText}</span>

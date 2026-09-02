@@ -36,11 +36,11 @@ export const ListeningExplorerTable: React.FC<ListeningExplorerTableProps> = ({
           const test = row.original;
           return (
             <div className="flex items-start gap-3 py-1">
-              <div className="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0">
+              <div className="p-2.5 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 mt-0.5 shrink-0">
                 <Headphones className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 group-hover:text-blue-600 transition-colors">
+                <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 group-hover:text-red-600 transition-colors">
                   {test.title}
                 </h4>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-1 mt-0.5">
@@ -66,7 +66,7 @@ export const ListeningExplorerTable: React.FC<ListeningExplorerTableProps> = ({
             <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold rounded-lg border ${
               isFull
                 ? 'bg-purple-500/10 border-purple-500/20 text-purple-600 dark:text-purple-400'
-                : 'bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-blue-400'
+                : 'bg-red-500/10 border-red-500/20 text-red-600 dark:text-red-400'
             }`}>
               {isFull ? 'Full 4 Parts' : `Section ${test.sectionNumber}`}
             </span>
@@ -134,7 +134,7 @@ export const ListeningExplorerTable: React.FC<ListeningExplorerTableProps> = ({
               <button
                 type="button"
                 onClick={() => navigate(`/listening/exam/${test.id}`)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-xs shadow-blue-500/20 active:scale-95 transition-all"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-xs shadow-red-500/20 active:scale-95 transition-all"
               >
                 <Play className="w-3.5 h-3.5 fill-current" />
                 <span>Start Test</span>
@@ -156,7 +156,7 @@ export const ListeningExplorerTable: React.FC<ListeningExplorerTableProps> = ({
   if (isLoading) {
     return (
       <div className="w-full py-16 flex flex-col items-center justify-center text-zinc-400 gap-3">
-        <div className="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-3 border-red-600 border-t-transparent rounded-full animate-spin" />
         <p className="text-sm font-medium">Loading official IELTS Listening exams...</p>
       </div>
     );
@@ -165,7 +165,7 @@ export const ListeningExplorerTable: React.FC<ListeningExplorerTableProps> = ({
   if (data.length === 0) {
     return (
       <div className="w-full py-16 flex flex-col items-center justify-center text-center p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl">
-        <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 mb-3">
+        <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 mb-3">
           <FolderOpen className="w-8 h-8" />
         </div>
         <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">No Listening Tests Found</h3>
@@ -199,7 +199,7 @@ export const ListeningExplorerTable: React.FC<ListeningExplorerTableProps> = ({
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
-              className="hover:bg-blue-50/30 dark:hover:bg-blue-950/10 transition-colors group cursor-pointer"
+              className="hover:bg-red-50/30 dark:hover:bg-red-950/10 transition-colors group cursor-pointer"
             >
               {row.getVisibleCells().map((cell) => (
                 <td key={cell.id} className="px-4 py-3.5 align-middle">

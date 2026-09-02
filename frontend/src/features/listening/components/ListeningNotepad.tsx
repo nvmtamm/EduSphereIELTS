@@ -37,7 +37,7 @@ export const ListeningNotepad: React.FC<ListeningNotepadProps> = ({ testId, clas
     <div className={`flex flex-col h-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xs overflow-hidden ${className}`}>
       <div className="p-3.5 border-b border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/50 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Edit3 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+          <Edit3 className="w-4 h-4 text-red-600 dark:text-red-400" />
           <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100">Live Listening Scratchpad</span>
         </div>
 
