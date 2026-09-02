@@ -20,7 +20,7 @@ export const MapDiagramLabellingRenderer: React.FC<MapDiagramLabellingRendererPr
     <div className="space-y-3 p-4 bg-zinc-50/50 dark:bg-zinc-800/30 border border-zinc-200 dark:border-zinc-700/60 rounded-2xl">
       {/* Question Prompt */}
       <div className="flex items-start gap-2.5">
-        <span className="font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-md text-xs sm:text-sm mt-0.5">
+        <span className="font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-2 py-0.5 rounded-md text-xs sm:text-sm mt-0.5">
           {question.questionNumber}
         </span>
         <div className="flex-1">
@@ -47,8 +47,8 @@ export const MapDiagramLabellingRenderer: React.FC<MapDiagramLabellingRendererPr
                 disabled={disabled}
                 className={`flex items-center justify-center w-9 h-9 rounded-xl font-bold text-sm border transition-all ${
                   isSelected
-                    ? 'bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-500/20 scale-105'
-                    : 'bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50/50 dark:hover:bg-zinc-700'
+                    ? 'bg-red-600 border-red-600 text-white shadow-md shadow-red-500/20 scale-105'
+                    : 'bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 hover:border-red-300 dark:hover:border-red-600 hover:bg-red-50/50 dark:hover:bg-zinc-700'
                 }`}
               >
                 {letter}

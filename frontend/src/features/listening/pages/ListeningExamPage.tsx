@@ -10,7 +10,9 @@ import {
   Edit3, 
   AlertCircle,
   RotateCcw,
-  X
+  X,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { listeningApi } from '../api/listeningApi';
 import type { ListeningTestDetail, ListeningQuestion } from '../types/listening';
@@ -142,6 +144,22 @@ export const ListeningExamPage: React.FC = () => {
     setSeekTime(timestamp);
   };
 
+  const jumpToQuestion = useCallback((idx: number) => {
+    if (!test || idx < 0 || idx >= test.questions.length) return;
+    setCurrentQuestionIndex(idx);
+    const qNum = test.questions[idx]?.questionNumber;
+    const el = document.getElementById(`question-${qNum}`);
+    el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [test]);
+
+  const goToNextQuestion = useCallback(() => {
+    jumpToQuestion(currentQuestionIndex + 1);
+  }, [currentQuestionIndex, jumpToQuestion]);
+
+  const goToPrevQuestion = useCallback(() => {
+    jumpToQuestion(currentQuestionIndex - 1);
+  }, [currentQuestionIndex, jumpToQuestion]);
+
   // Submit Handler
   const handleSubmitExam = async () => {
     if (!test || !id || isSubmitting) return;
@@ -187,7 +205,7 @@ export const ListeningExamPage: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-50 dark:bg-zinc-950 text-zinc-500">
-        <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4" />
+        <div className="w-10 h-10 border-4 border-red-600 border-t-transparent rounded-full animate-spin mb-4" />
         <p className="font-semibold text-sm">Preparing Cambridge IELTS Listening Audio Engine...</p>
       </div>
     );
@@ -202,7 +220,7 @@ export const ListeningExamPage: React.FC = () => {
         <button
           type="button"
           onClick={() => navigate('/listening')}
-          className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-sm"
+          className="px-4 py-2 bg-red-600 text-white rounded-xl text-xs font-bold shadow-sm"
         >
           Return to Listening Hub
         </button>
@@ -216,7 +234,7 @@ export const ListeningExamPage: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-zinc-100 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
       {/* 1. Sticky Top Navigation Bar */}
-      <header className="sticky top-0 z-30 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+      <header className="sticky top-0 z-30 bg-zinc-950 backdrop-blur-md border-b border-zinc-800 px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
         {/* Left: Exit & Test Title */}
         <div className="flex items-center gap-3">
           <button
@@ -226,7 +244,7 @@ export const ListeningExamPage: React.FC = () => {
                 navigate('/listening');
               }
             }}
-            className="p-2 rounded-xl text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+            className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
             title="Exit Exam"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -234,15 +252,15 @@ export const ListeningExamPage: React.FC = () => {
 
           <div>
             <div className="flex items-center gap-2">
-              <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-md border ${accentBadge.bgClass} ${accentBadge.textClass}`}>
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-md border border-zinc-700 bg-zinc-800 text-zinc-300">
                 <span>{accentBadge.flag}</span>
                 <span>{accentBadge.label}</span>
               </span>
-              <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 hidden sm:inline">
+              <span className="text-[11px] font-semibold text-zinc-400 hidden sm:inline">
                 {test.collectionName}
               </span>
             </div>
-            <h1 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white line-clamp-1">
+            <h1 className="text-sm sm:text-base font-bold text-white line-clamp-1">
               {test.title}
             </h1>
           </div>
@@ -260,7 +278,7 @@ export const ListeningExamPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setShowSubmitModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-blue-500/20 active:scale-95 transition-all"
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-red-500/20 active:scale-95 transition-all"
           >
             <Send className="w-4 h-4" />
             <span>Finish & Submit</span>
@@ -299,7 +317,7 @@ export const ListeningExamPage: React.FC = () => {
       )}
 
       {/* 2. Audio Waveform Player Bar */}
-      <div className="sticky top-[57px] z-20 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 p-3 sm:px-6">
+      <div className="sticky top-[57px] z-20 bg-zinc-50/95 dark:bg-zinc-900/95 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 p-3 sm:px-6">
         <AudioWaveformPlayer
           audioUrl={test.sectionAudios?.length > 1
             ? test.sectionAudios.map(s => s.audioUrl)  // F-04: multi-section audio array
@@ -317,8 +335,8 @@ export const ListeningExamPage: React.FC = () => {
         {/* Left Column: Questions List (7 cols on desktop) */}
         <div className="lg:col-span-7 space-y-6">
           {/* Instructions Box */}
-          <div className="p-4 bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/60 rounded-2xl">
-            <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300 font-bold text-xs uppercase tracking-wider mb-1">
+          <div className="p-4 bg-red-50/50 dark:bg-red-950/20 border border-red-200 dark:border-red-800/60 rounded-2xl">
+            <div className="flex items-center gap-2 text-red-700 dark:text-red-300 font-bold text-xs uppercase tracking-wider mb-1">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Official Cambridge Instructions</span>
             </div>
@@ -345,7 +363,7 @@ export const ListeningExamPage: React.FC = () => {
                 {/* Section Header */}
                 <div className="flex items-center justify-between pb-3 border-b border-zinc-100 dark:border-zinc-800/80">
                   <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-red-600" />
                     <h2 className="text-sm sm:text-base font-bold text-zinc-950 dark:text-white">
                       {sectionTitle}
                     </h2>
@@ -360,12 +378,18 @@ export const ListeningExamPage: React.FC = () => {
                   {questions.map((q) => {
                     const val = answers[q.id] || '';
                     const isMarked = markedQuestions.has(q.id);
+                    const isCurrent = test.questions[currentQuestionIndex]?.id === q.id;
 
                     return (
                       <div
                         key={q.id}
                         id={`question-${q.questionNumber}`}
-                        className="group relative p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800/60 hover:border-zinc-300 dark:hover:border-zinc-700 bg-zinc-50/40 dark:bg-zinc-900/40 transition-all"
+                        onClick={() => setCurrentQuestionIndex(test.questions.findIndex(tq => tq.id === q.id))}
+                        className={`group relative p-5 rounded-3xl border transition-all ${
+                          isCurrent
+                            ? 'ring-2 ring-red-500/40 border-red-500/60 bg-white dark:bg-zinc-900 shadow-lg'
+                            : 'border-zinc-200/90 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-900/40'
+                        }`}
                       >
                         {/* Flag button */}
                         <button
@@ -439,7 +463,7 @@ export const ListeningExamPage: React.FC = () => {
               onClick={() => setActiveSideTab('palette')}
               className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-xl transition-all ${
                 activeSideTab === 'palette'
-                  ? 'bg-blue-600 text-white shadow-xs'
+                  ? 'bg-red-600 text-white shadow-xs'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
               }`}
             >
@@ -452,7 +476,7 @@ export const ListeningExamPage: React.FC = () => {
               onClick={() => setActiveSideTab('transcript')}
               className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-xl transition-all ${
                 activeSideTab === 'transcript'
-                  ? 'bg-blue-600 text-white shadow-xs'
+                  ? 'bg-red-600 text-white shadow-xs'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
               }`}
             >
@@ -465,7 +489,7 @@ export const ListeningExamPage: React.FC = () => {
               onClick={() => setActiveSideTab('notepad')}
               className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-xl transition-all ${
                 activeSideTab === 'notepad'
-                  ? 'bg-blue-600 text-white shadow-xs'
+                  ? 'bg-red-600 text-white shadow-xs'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
               }`}
             >
@@ -498,6 +522,10 @@ export const ListeningExamPage: React.FC = () => {
                 transcripts={test.transcripts}
                 currentTime={currentAudioTime}
                 onSeek={handleSeekFromTranscript}
+                onSelectLinkedQuestion={(qNum) => {
+                  const idx = test.questions.findIndex(q => q.questionNumber === qNum);
+                  if (idx >= 0) jumpToQuestion(idx);
+                }}
                 className="h-full"
               />
             )}
@@ -512,12 +540,68 @@ export const ListeningExamPage: React.FC = () => {
         </div>
       </main>
 
-      {/* 4. Submission Confirmation Modal */}
+      {/* 4. Bottom Exam Navigation Dock (Authentic IELTS CBT Standard) */}
+      <footer className="sticky bottom-0 z-30 bg-zinc-950/95 text-white border-t border-zinc-800/90 px-4 sm:px-6 py-2.5 flex items-center justify-between gap-4 backdrop-blur-md shadow-2xl">
+        <div className="flex items-center gap-3 text-xs">
+          <span className="font-bold text-zinc-400">
+            Question <span className="text-white font-mono-exam font-black text-sm">{currentQuestionIndex + 1}</span> of {test.questions.length}
+          </span>
+          <span className="hidden sm:inline text-zinc-700">•</span>
+          <span className="hidden sm:inline text-zinc-400">
+            <span className="text-emerald-400 font-bold font-mono-exam">{answeredCount}</span> Answered
+          </span>
+          {markedQuestions.size > 0 && (
+            <>
+              <span className="hidden sm:inline text-zinc-700">•</span>
+              <span className="hidden sm:inline text-amber-400 font-semibold">
+                {markedQuestions.size} Flagged
+              </span>
+            </>
+          )}
+        </div>
+
+        {/* Center: Previous & Next Question Buttons */}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={goToPrevQuestion}
+            disabled={currentQuestionIndex === 0}
+            className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-xs font-bold text-zinc-300 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            <span className="hidden sm:inline">Previous</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={goToNextQuestion}
+            disabled={currentQuestionIndex === test.questions.length - 1}
+            className="flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-xs font-bold text-zinc-300 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+          >
+            <span className="hidden sm:inline">Next</span>
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Right: Submit Button in Dock */}
+        <div>
+          <button
+            type="button"
+            onClick={() => setShowSubmitModal(true)}
+            className="flex items-center gap-2 px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md shadow-red-600/30 active:scale-95 transition-all cursor-pointer"
+          >
+            <Send className="w-3.5 h-3.5" />
+            <span>Finish & Submit</span>
+          </button>
+        </div>
+      </footer>
+
+      {/* 5. Submission Confirmation Modal */}
       {showSubmitModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/70 backdrop-blur-xs animate-in fade-in">
           <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-2xl p-6 space-y-5">
             <div className="flex items-center gap-3">
-              <div className="p-3 rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+              <div className="p-3 rounded-2xl bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400">
                 <Send className="w-6 h-6" />
               </div>
               <div>
@@ -567,7 +651,7 @@ export const ListeningExamPage: React.FC = () => {
                 type="button"
                 onClick={handleSubmitExam}
                 disabled={isSubmitting}
-                className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md shadow-red-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
               >
                 {isSubmitting ? (
                   <>

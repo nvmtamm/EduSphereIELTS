@@ -60,7 +60,7 @@ export const TableCompletionRenderer: React.FC<TableCompletionRendererProps> = (
     return (
       <div className="space-y-2">
         <div className="flex flex-wrap items-center gap-2 text-sm text-zinc-800 dark:text-zinc-200 leading-relaxed">
-          <span className="font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-md text-xs">
+          <span className="font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-2 py-0.5 rounded-md text-xs">
             {question.questionNumber}
           </span>
           {parts.map((part, i) => (
@@ -73,7 +73,7 @@ export const TableCompletionRenderer: React.FC<TableCompletionRendererProps> = (
                   onChange={(e) => onChange(e.target.value)}
                   disabled={disabled}
                   placeholder="Answer..."
-                  className="inline-block min-w-[140px] px-3 py-1.5 text-sm bg-white dark:bg-zinc-800 border-2 border-dashed border-blue-400/60 focus:border-solid focus:border-blue-600 rounded-lg font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-zinc-400 placeholder:font-normal"
+                  className="inline-block min-w-[140px] px-3 py-1.5 text-sm bg-white dark:bg-zinc-800 border-2 border-dashed border-red-400/60 focus:border-solid focus:border-red-600 rounded-lg font-semibold focus:outline-none focus:ring-2 focus:ring-red-500/20 transition-all placeholder:text-zinc-400 placeholder:font-normal"
                 />
               )}
             </React.Fragment>
@@ -88,7 +88,7 @@ export const TableCompletionRenderer: React.FC<TableCompletionRendererProps> = (
     <div className="space-y-3">
       {/* Question number badge + instruction */}
       <div className="flex items-start gap-2">
-        <span className="shrink-0 font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-md text-xs">
+        <span className="shrink-0 font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-2 py-0.5 rounded-md text-xs">
           {question.questionNumber}
         </span>
         {tableData.instruction && (
@@ -101,7 +101,7 @@ export const TableCompletionRenderer: React.FC<TableCompletionRendererProps> = (
       {/* Table */}
       <div className={`overflow-x-auto rounded-xl border transition-all ${
         isActive
-          ? 'border-blue-400/60 dark:border-blue-500/50 shadow-sm shadow-blue-500/10'
+          ? 'border-red-400/60 dark:border-red-500/50 shadow-sm shadow-red-500/10'
           : 'border-zinc-200 dark:border-zinc-700/60'
       }`}>
         <table className="w-full text-xs sm:text-sm border-collapse">
@@ -145,8 +145,8 @@ export const TableCompletionRenderer: React.FC<TableCompletionRendererProps> = (
                           aria-label={`Q${question.questionNumber} answer`}
                           className={`min-w-[100px] max-w-[180px] w-full px-2.5 py-1 text-xs sm:text-sm bg-white dark:bg-zinc-800 border-2 border-dashed rounded-lg font-semibold focus:outline-none focus:ring-2 transition-all placeholder:text-zinc-400 placeholder:font-normal ${
                             isActive
-                              ? 'border-blue-500/60 focus:border-blue-600 focus:ring-blue-500/20'
-                              : 'border-zinc-300 dark:border-zinc-600 focus:border-blue-500 focus:ring-blue-500/10'
+                              ? 'border-red-500/60 focus:border-red-600 focus:ring-red-500/20'
+                              : 'border-zinc-300 dark:border-zinc-600 focus:border-red-500 focus:ring-red-500/10'
                           } ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
                         />
                       ) : (

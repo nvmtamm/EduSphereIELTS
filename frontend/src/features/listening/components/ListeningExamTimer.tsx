@@ -28,24 +28,27 @@ export const ListeningExamTimer: React.FC<ListeningExamTimerProps> = ({
     const timer = setInterval(() => {
       setSeconds((prev) => {
         if (isTimed) {
-          if (prev <= 1) {
+          if (prev <= 0) {
             clearInterval(timer);
-            onTimeExpired?.();
             return 0;
           }
-          const next = prev - 1;
-          onTick?.(next);
-          return next;
+          return prev - 1;
         } else {
-          const next = prev + 1;
-          onTick?.(next);
-          return next;
+          return prev + 1;
         }
       });
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isTimed, onTimeExpired, onTick]);
+  }, [isTimed]);
+
+  // Safely notify parent of tick without triggering setState inside updater
+  useEffect(() => {
+    onTick?.(seconds);
+    if (isTimed && seconds === 0) {
+      onTimeExpired?.();
+    }
+  }, [seconds, isTimed, onTick, onTimeExpired]);
 
   const isLowTime = isTimed && seconds <= 300; // < 5 mins
   const isCriticalTime = isTimed && seconds <= 60; // < 1 min

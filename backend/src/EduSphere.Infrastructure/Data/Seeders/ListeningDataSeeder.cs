@@ -50,7 +50,7 @@ public static class ListeningDataSeeder
             difficulty: DifficultyLevel.Hard,
             sectionType: ListeningSectionType.FullTest_4Sections,
             sectionNumber: 0,
-            audioUrl: "/audio/cambridge18-test1-full.mp3",
+            audioUrl: "https://edusphere-nvmtamm-2026.s3.ap-southeast-1.amazonaws.com/audio/cambridge18-test1-full.mp3",
             durationSeconds: 1800,
             accent: ListeningAccent.Mixed,
             sourceType: PassageSourceType.OfficialCambridge,
@@ -59,10 +59,10 @@ public static class ListeningDataSeeder
             instructions: "Answer all 40 questions across 4 sections. You will hear each recording ONCE only. Write NO MORE THAN TWO WORDS AND/OR A NUMBER for completion questions.",
             audioFileSize: 1572864);
 
-        fullTest1.AddSectionAudio(new ListeningSectionAudio(fullTest1.Id, 1, "/audio/cambridge18-test1-full.mp3", 450, "Section 1: Transport & Moving Services"));
-        fullTest1.AddSectionAudio(new ListeningSectionAudio(fullTest1.Id, 2, "/audio/cambridge18-test1-full.mp3", 420, "Section 2: Community Volunteering Scheme"));
-        fullTest1.AddSectionAudio(new ListeningSectionAudio(fullTest1.Id, 3, "/audio/cambridge18-test1-full.mp3", 480, "Section 3: Ocean Clean-up Project"));
-        fullTest1.AddSectionAudio(new ListeningSectionAudio(fullTest1.Id, 4, "/audio/cambridge18-test1-full.mp3", 450, "Section 4: Environmental Acoustics"));
+        fullTest1.AddSectionAudio(new ListeningSectionAudio(fullTest1.Id, 1, "https://edusphere-nvmtamm-2026.s3.ap-southeast-1.amazonaws.com/audio/cambridge18-test1-full.mp3", 450, "Section 1: Transport & Moving Services"));
+        fullTest1.AddSectionAudio(new ListeningSectionAudio(fullTest1.Id, 2, "https://edusphere-nvmtamm-2026.s3.ap-southeast-1.amazonaws.com/audio/cambridge18-test1-full.mp3", 420, "Section 2: Community Volunteering Scheme"));
+        fullTest1.AddSectionAudio(new ListeningSectionAudio(fullTest1.Id, 3, "https://edusphere-nvmtamm-2026.s3.ap-southeast-1.amazonaws.com/audio/cambridge18-test1-full.mp3", 480, "Section 3: Ocean Clean-up Project"));
+        fullTest1.AddSectionAudio(new ListeningSectionAudio(fullTest1.Id, 4, "https://edusphere-nvmtamm-2026.s3.ap-southeast-1.amazonaws.com/audio/cambridge18-test1-full.mp3", 450, "Section 4: Environmental Acoustics"));
 
         AddSection1Questions(fullTest1);
         AddSection1Transcripts(fullTest1);
@@ -85,7 +85,7 @@ public static class ListeningDataSeeder
             difficulty: DifficultyLevel.Easy,
             sectionType: ListeningSectionType.Section1_SocialDialogue,
             sectionNumber: 1,
-            audioUrl: "/audio/cambridge17-test2-sec1.mp3",
+            audioUrl: "https://edusphere-nvmtamm-2026.s3.ap-southeast-1.amazonaws.com/audio/cambridge17-test2-sec1.mp3",
             durationSeconds: 380,
             accent: ListeningAccent.British,
             sourceType: PassageSourceType.OfficialCambridge,
@@ -105,7 +105,7 @@ public static class ListeningDataSeeder
             difficulty: DifficultyLevel.Medium,
             sectionType: ListeningSectionType.Section2_SocialMonologue,
             sectionNumber: 2,
-            audioUrl: "/audio/cambridge16-test3-sec2.mp3",
+            audioUrl: "https://edusphere-nvmtamm-2026.s3.ap-southeast-1.amazonaws.com/audio/cambridge16-test3-sec2.mp3",
             durationSeconds: 420,
             accent: ListeningAccent.Australian,
             sourceType: PassageSourceType.OfficialCambridge,
@@ -125,7 +125,7 @@ public static class ListeningDataSeeder
             difficulty: DifficultyLevel.Hard,
             sectionType: ListeningSectionType.Section4_AcademicLecture,
             sectionNumber: 4,
-            audioUrl: "/audio/cambridge19-test4-sec4.mp3",
+            audioUrl: "https://edusphere-nvmtamm-2026.s3.ap-southeast-1.amazonaws.com/audio/cambridge19-test4-sec4.mp3",
             durationSeconds: 480,
             accent: ListeningAccent.American,
             sourceType: PassageSourceType.OfficialCambridge,

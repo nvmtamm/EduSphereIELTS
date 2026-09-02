@@ -154,3 +154,17 @@ export interface ListeningFilterParams {
   search?: string;
   isPersonalOnly?: boolean;
 }
+
+export interface ListeningAIExplanation {
+  questionId: string;
+  questionNumber: number;
+  questionPrompt: string;
+  userAnswer?: string | null;
+  correctAnswer: string;
+  accentNuance: string;
+  signpostingAnalysis: string;
+  socraticAdvice: string;
+  phoneticTrap: string;
+  transcriptExcerpt: string;
+  timestampSeconds: number;
+}

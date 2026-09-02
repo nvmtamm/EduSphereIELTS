@@ -33,5 +33,13 @@ export const listeningApi = {
   getHistory: async (): Promise<ListeningHistoryItem[]> => {
     const res = await apiClient.get<ListeningHistoryItem[]>('/listening/history');
     return res.data;
+  },
+
+  explainQuestion: async (questionId: string, userAnswer?: string): Promise<import('../types/listening').ListeningAIExplanation> => {
+    const res = await apiClient.post<import('../types/listening').ListeningAIExplanation>('/listening/explain', {
+      questionId,
+      userAnswer
+    });
+    return res.data;
   }
 };
