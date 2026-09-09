@@ -9,6 +9,7 @@ public class User : BaseEntity
     public string Email { get; private set; } = string.Empty;
     public string PasswordHash { get; private set; } = string.Empty;
     public UserRole Role { get; private set; } = UserRole.Student;
+    public bool IsActive { get; private set; } = true;
     public float? TargetBandScore { get; private set; }
 
     public string? RefreshToken { get; private set; }
@@ -65,6 +66,18 @@ public class User : BaseEntity
     public void UpdatePassword(string newPasswordHash)
     {
         PasswordHash = newPasswordHash;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void UpdateRole(UserRole newRole)
+    {
+        Role = newRole;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void ToggleActiveStatus(bool isActive)
+    {
+        IsActive = isActive;
         UpdatedAt = DateTime.UtcNow;
     }
 }
