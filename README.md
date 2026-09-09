@@ -32,58 +32,54 @@ The platform bridges deterministic examination scoring (Reading & Listening) wit
 
 ## 🏛 System Architecture
 
-EduSphere is architected following the **Clean Architecture** paradigm and **CQRS (Command Query Responsibility Segregation)** pattern, enforcing unidirectional inward dependency rules and isolating core business domain logic from infrastructure and external cloud service details.
+EduSphere is engineered following the **Clean Architecture** (Onion Architecture) paradigm and the **CQRS (Command Query Responsibility Segregation)** pattern. The system strictly enforces unidirectional inward dependency rules, isolating enterprise business logic and deterministic Cambridge scoring from volatile infrastructure frameworks and third-party cloud services.
 
-### Clean Architecture Blueprint
+### 1. High-Level Clean Architecture Blueprint
 
 <div align="center">
-
-![EduSphere Clean Architecture](docs/assets/architecture.svg)
-
+  <a href="docs/assets/architecture.svg" target="_blank">
+    <img src="docs/assets/architecture.svg" alt="EduSphere Clean Architecture Diagram" width="100%">
+  </a>
+  <p align="center"><i>Figure 1: High-Level System Architecture &amp; Examination Workflow Topology.</i></p>
 </div>
 
 <details>
-<summary><b>🔍 Click to view interactive Mermaid Architecture Flowchart</b></summary>
+<summary><b>🔍 View Native GitHub Mermaid Flowchart</b></summary>
 
 ```mermaid
 flowchart TD
-    subgraph Presentation ["🖥️ Presentation Layer"]
-        UI["<b>React 19 + Vite Frontend SPA</b><br/>Tailwind CSS v4 • TanStack Query • Framer Motion<br/><i>CD-IELTS Split Workspaces & Bento Practice Studios</i>"]
+    subgraph Presentation ["🖥️ 1. Presentation Layer"]
+        UI["<b>React 19 SPA Client</b><br/>Tailwind CSS v4 • TanStack Query v5 • Framer Motion<br/><i>CD-IELTS Split Workspaces & Bento Studios</i>"]
         API["<b>ASP.NET Core 8 Web API Gateway</b><br/>REST Controllers • Middleware • Serilog • EnvLoader"]
     end
 
-    subgraph Application ["⚙️ Application Core (CQRS)"]
+    subgraph Application ["⚙️ 2. Application Core (CQRS)"]
         MediatR["<b>MediatR CQRS Engine</b><br/>Commands • Queries • Pipeline Behaviors"]
-        Ports["<b>Core Ports & Abstractions</b><br/>IApplicationDbContext • IMediaStorage • IListeningAITutor • IEmailSender"]
+        Ports["<b>Core Ports &amp; Abstractions</b><br/>IApplicationDbContext • IMediaStorage • IListeningAITutor • IEmailSender"]
     end
 
-    subgraph Domain ["🏛️ Domain Core (Enterprise Business Rules)"]
+    subgraph Domain ["🏛️ 3. Domain Core (Enterprise Rules)"]
         Entities["<b>Enterprise Domain Entities</b><br/>ReadingPassage • ListeningTest • Question • Submission • User"]
-        Scoring["<b>Deterministic Cambridge IELTS Scoring</b><br/>Raw-to-Band Scoring Tables (0.0 – 9.0)"]
+        Scoring["<b>Deterministic Cambridge Scoring</b><br/>Raw-to-Band Scoring Tables (0.0 – 9.0)"]
     end
 
-    subgraph Infrastructure ["🔌 Infrastructure & Cloud Adapters"]
-        subgraph Storage ["Persistence & Cloud CDN"]
-            SQL[("<b>SQL Server 2022</b><br/>EF Core 8 Migrations")]
-            Redis[("<b>Redis 7.x</b><br/>Cache-Aside & OTP TTL")]
-            S3[("<b>AWS S3 Storage</b><br/>Media CDN & Presigned Audio")]
-        end
-
-        subgraph AI_Cloud ["AI Subsystems & Identity"]
-            Gemini["<b>Gemini 3.6 Flash Multi-Agent</b><br/>PDF Ingestion & AI Diagnostic Explainer"]
-            Qdrant[("<b>Qdrant Vector DB</b><br/>RAG Rubric Embeddings")]
-            GoogleAuth["<b>Google Identity Services</b><br/>OAuth 2.0 Verification"]
-            SMTP["<b>MailKit / Gmail</b><br/>TLS OTP Dispatcher"]
-        end
+    subgraph Infrastructure ["🔌 4. Infrastructure &amp; Cloud Adapters"]
+        SQL[("<b>SQL Server 2022</b><br/>EF Core 8")]
+        Redis[("<b>Redis 7.x</b><br/>Cache-Aside &amp; OTP")]
+        S3[("<b>AWS S3 Storage</b><br/>Audio Media CDN")]
+        Gemini["<b>Gemini 3.6 Flash Multi-Agent</b><br/>PDF Ingestion &amp; AI Explainer"]
+        Qdrant[("<b>Qdrant Vector DB</b><br/>RAG Rubric Embeddings")]
+        GoogleAuth["<b>Google Identity</b><br/>OAuth 2.0 SSO"]
+        SMTP["<b>MailKit / Gmail</b><br/>TLS OTP Dispatcher"]
     end
 
-    UI -->|"HTTPS / REST API / Media Stream"| API
-    API -->|"Dispatches"| MediatR
+    UI -->|"HTTPS / REST / Media Stream"| API
+    API -->|"MediatR Dispatches"| MediatR
     MediatR --> Ports
     MediatR --> Entities
     Entities --> Scoring
 
-    SQL -.->|"Implements & Persists"| Ports
+    SQL -.->|"Implements &amp; Persists"| Ports
     Redis -.->|"Implements"| Ports
     S3 -.->|"Implements"| Ports
     Gemini -.->|"Implements"| Ports
@@ -94,15 +90,97 @@ flowchart TD
 
 </details>
 
-### Architectural Layer Responsibilities
+### 2. Architectural Layers & Separation of Concerns
 
-| Layer | Responsibility | Key Technologies |
+| Tier | Layer & Project | Primary Responsibility | Inward Dependency Rule | Key Technologies |
+| :--- | :--- | :--- | :--- | :--- |
+| **1** | **Presentation (Web SPA)**<br/>`frontend/` | Renders authentic Cambridge CD-IELTS workspaces, audio waveform players, live transcript sync, and student analytics dashboards. | Communicates strictly via HTTPS REST APIs & S3 CDN endpoints. | React 19, TypeScript, Vite 8, Tailwind CSS v4, TanStack Query v5 |
+| **1** | **Presentation (API Gateway)**<br/>`EduSphere.API` | Central HTTP gateway, routing, JWT/OAuth authentication middleware, rate limiting, and RFC 7807 ProblemDetails error handling. | References `EduSphere.Application` and `EduSphere.Infrastructure`. | ASP.NET Core 8 Web API, Kestrel, Serilog, EnvLoader |
+| **2** | **Application Core**<br/>`EduSphere.Application` | Orchestrates all use cases via CQRS (Commands & Queries). Houses cross-cutting pipeline behaviors and port interfaces. | Depends **only** on `EduSphere.Domain`. Zero cloud/database dependencies. | MediatR 12, FluentValidation 11 |
+| **3** | **Domain Core**<br/>`EduSphere.Domain` | The enterprise core. Contains domain entities, aggregate roots, value objects, domain enums, and deterministic Cambridge raw-to-band scoring tables. | **Zero external dependencies.** Pure C# 12 business rules. | C# 12 Pure Domain Logic |
+| **4** | **Infrastructure & Adapters**<br/>`EduSphere.Infrastructure` | Provides concrete implementations of application ports: relational database mappings, distributed cache-aside, S3 presigned URLs, and Multi-Agent AI ingestion. | Depends on `EduSphere.Application` and `EduSphere.Domain`. | EF Core 8, SQL Server, Redis 7, AWS S3 SDK, Gemini 3.6 Flash, MailKit |
+
+### 3. Core Subsystem Architecture Workflows
+
+#### 🔄 Subsystem A: CQRS & MediatR Request Lifecycle
+
+Every state modification (Command) and read operation (Query) passes through automated pre-execution quality gates:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Client as React 19 SPA Client
+    participant API as Web API Gateway (AuthController / ReadingController)
+    participant Pipe as MediatR Pipeline Behaviors
+    participant Handler as Command / Query Handler
+    participant Infra as Infrastructure (EF Core / Redis Cache)
+
+    Client->>API: HTTP Request (JSON Body + Bearer Token)
+    API->>Pipe: Dispatches IRequest to MediatR
+    Note over Pipe: 1. LoggingBehavior: Starts high-resolution stopwatch
+    Note over Pipe: 2. ValidationBehavior: Executes FluentValidation rules
+    alt Validation Failure
+        Pipe-->>API: Throws ValidationException (RFC 7807 ProblemDetails)
+        API-->>Client: 400 Bad Request (Formatted Error List)
+    else Validation Success
+        Pipe->>Handler: Invokes Handle(request, cancellationToken)
+        Handler->>Infra: Query DB / Cache-Aside or Mutate Entity
+        Infra-->>Handler: Return Entity / Cached DTO
+        Handler-->>Pipe: Return Result<TResponse>
+        Note over Pipe: LoggingBehavior: Logs completion & execution duration (ms)
+        Pipe-->>API: Return Result<TResponse>
+        API-->>Client: 200 OK / 201 Created (Type-Safe JSON)
+    end
+```
+
+#### 🤖 Subsystem B: Autonomous Multi-Agent AI Ingestion Pipeline (Gemini 3.6 Flash)
+
+Converts unformatted Cambridge IELTS examination PDFs into structured, validated practice tests through a 4-stage autonomous pipeline:
+
+```mermaid
+flowchart LR
+    PDF["📄 Raw Cambridge IELTS PDF"] --> Cleaner["<b>Stage 1: Document Cleaner</b><br/>Strips headers, footers & watermarks"]
+    Cleaner --> Extractor["<b>Stage 2: Passage Extractor</b><br/>Isolates text & formats markdown"]
+    Extractor --> Parser["<b>Stage 3: 40Q Parser</b><br/>Extracts 40 questions & answer keys"]
+    Parser --> Verifier["<b>Stage 4: Deterministic Verifier</b><br/>Validates against Cambridge schema"]
+    Verifier --> Storage[("💾 SQL Server 2022 & S3 Audio CDN")]
+
+    classDef stage fill:#1e293b,stroke:#3b82f6,stroke-width:1.5px,color:#f8fafc;
+    classDef io fill:#0f172a,stroke:#10b981,stroke-width:1.5px,color:#f8fafc;
+    class Cleaner,Extractor,Parser,Verifier stage;
+    class PDF,Storage io;
+```
+
+#### 🎧 Subsystem C: AWS S3 Media CDN & Audio Waveform Streaming
+
+High-throughput audio streaming architecture preventing server CPU/memory bottlenecks during exam simulations:
+
+```mermaid
+flowchart TD
+    subgraph Upload_Flow ["1. Direct-to-S3 Ingestion Flow"]
+        Teacher["👨‍🏫 Examiner / Admin"] -->|"1. Request Presigned PUT URL"| API_Media["MediaController (ASP.NET Core)"]
+        API_Media -->|"2. Generate Presigned URL (15-min TTL)"| S3_Storage[("AWS S3 Storage Bucket")]
+        API_Media -->>|"3. Return Presigned URL"| Teacher
+        Teacher -->|"4. Direct Upload (PUT Audio Binary)"| S3_Storage
+    end
+
+    subgraph Streaming_Flow ["2. High-Throughput Exam Streaming Flow"]
+        Student["🎓 Student (Listening Exam)"] -->|"1. Fetch Exam Metadata"| API_Listen["ListeningController"]
+        API_Listen -->>|"2. Return Audio S3 CDN URL"| Student
+        Student -->|"3. Stream Audio Track (Range Requests)"| S3_Storage
+        Student -->|"4. Real-Time Waveform & Transcript Sync"| WaveSurfer["Wavesurfer.js Audio Player"]
+    end
+```
+
+### 4. Architectural Guarantees & Quality Attributes
+
+| Quality Attribute | Architectural Guarantee | Implementation Mechanism |
 | :--- | :--- | :--- |
-| **Presentation (Client)** | Single-page application rendering authentic Cambridge CD-IELTS workspaces, interactive audio waveform player, real-time transcript synchronization, and student dashboards. | React 19, TypeScript, Vite 8, Tailwind CSS v4, TanStack Query v5, Framer Motion |
-| **Presentation (API)** | High-throughput HTTP gateway, route controllers, JWT/OAuth authentication middleware, rate limiting, and centralized ProblemDetails error handling. | ASP.NET Core 8 Web API, Kestrel, Serilog, EnvLoader |
-| **Application Core** | Orchestrates business use cases using CQRS. Contains Commands, Queries, MediatR pipeline behaviors (validation, logging, performance), and port interfaces. Has zero external technology dependencies. | MediatR, FluentValidation |
-| **Domain Core** | The heart of Clean Architecture. Contains enterprise entities, value objects, domain enums, and deterministic Cambridge IELTS band scoring rules. Zero external dependencies. | C# 12 Pure Domain Logic |
-| **Infrastructure** | Concrete implementations of application ports: relational database mapping, distributed caching, S3 presigned URL generation, multi-agent AI ingestion, and vector search. | EF Core 8, SQL Server 2022, StackExchange.Redis, AWSSDK.S3, Gemini 3.6 Flash, Qdrant, MailKit |
+| **Zero Domain Leakage** | Enterprise business logic remains 100% agnostic to frameworks, databases, and UI libraries. | Pure C# 12 Domain project with zero NuGet dependencies outside standard system libraries. |
+| **Sub-50ms Response Time** | High-frequency catalog and practice test reads execute with sub-50ms latency. | Redis 7.x distributed cache-aside pattern (`IDistributedCache`) with configured TTLs. |
+| **Zero Server Audio Overhead** | API server CPU and network bandwidth are never consumed by large audio uploads or playback streaming. | AWS S3 Presigned PUT URLs for direct uploads and public CDN streaming for exam audio files. |
+| **AI Rate-Limit Isolation** | AI ingestion pipelines do not compete with real-time student AI Tutor requests. | Dedicated Google Gemini API key pooling per agent subsystem, preventing rate-limit cascades. |
+| **Deterministic Scoring Accuracy** | Reading and Listening band scores strictly follow official Cambridge conversion tables (0–40 raw to 0.0–9.0 band). | Dedicated deterministic domain scoring engine with 88 automated unit test suites. |
 
 ---
 
