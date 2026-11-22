@@ -34,7 +34,7 @@ export const ListeningNotepad: React.FC<ListeningNotepadProps> = ({ testId, clas
   };
 
   return (
-    <div className={`flex flex-col h-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xs overflow-hidden ${className}`}>
+    <div className={`flex flex-col h-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xs overflow-hidden ${className}`}>
       <div className="p-3.5 border-b border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/50 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Edit3 className="w-4 h-4 text-red-600 dark:text-red-400" />
@@ -43,7 +43,7 @@ export const ListeningNotepad: React.FC<ListeningNotepadProps> = ({ testId, clas
 
         <div className="flex items-center gap-2">
           {isSaved && (
-            <span className="flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+            <span className="flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
               <CheckCircle2 className="w-3 h-3" />
               Saved
             </span>

@@ -69,7 +69,7 @@ export const ListeningExamTimer: React.FC<ListeningExamTimerProps> = ({
         <Timer className="w-4 h-4 text-zinc-500" />
       )}
       <span>{formatAudioTime(seconds)}</span>
-      {isTimed && <span className="text-[10px] text-zinc-400 uppercase font-sans">Left</span>}
+      {isTimed && <span className="text-xs text-zinc-400 font-sans">Left</span>}
     </div>
   );
 };

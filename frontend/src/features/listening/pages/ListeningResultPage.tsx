@@ -169,7 +169,7 @@ export const ListeningResultPage: React.FC = () => {
           <button
             type="button"
             onClick={() => navigate(`/listening/exam/${result.testId}`)}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md shadow-red-600/20 active:scale-95 transition-all cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold active:scale-95 transition-all cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Retake Exam</span>
@@ -182,7 +182,7 @@ export const ListeningResultPage: React.FC = () => {
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4 }}
-        className="relative overflow-hidden bg-gradient-to-br from-zinc-950 via-zinc-900 to-red-950 text-white rounded-3xl p-6 sm:p-8 lg:p-10 shadow-2xl border border-zinc-800"
+        className="relative overflow-hidden bg-zinc-950 text-white rounded-2xl p-6 sm:p-8 lg:p-10 shadow-md border border-zinc-800"
       >
         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="space-y-3 text-center md:text-left">
@@ -190,7 +190,7 @@ export const ListeningResultPage: React.FC = () => {
               <Sparkles className="w-3.5 h-3.5 text-amber-400" />
               <span>Official Cambridge IELTS Diagnostic Result</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">
               {result.testTitle}
             </h1>
             <p className="text-xs sm:text-sm text-zinc-400 max-w-xl leading-relaxed">
@@ -199,15 +199,15 @@ export const ListeningResultPage: React.FC = () => {
           </div>
 
           {/* Band Score Trophy Badge with Animated Counter */}
-          <div className="flex items-center gap-5 bg-white/10 backdrop-blur-md border border-white/15 p-6 rounded-3xl shrink-0 shadow-2xl">
-            <div className="p-4 rounded-2xl bg-amber-400 text-zinc-950 shadow-md">
+          <div className="flex items-center gap-5 bg-white/10 backdrop-blur-md border border-white/15 p-6 rounded-2xl shrink-0 shadow-md">
+            <div className="p-4 rounded-xl bg-amber-400 text-zinc-950 shadow-md">
               <Trophy className="w-9 h-9" />
             </div>
             <div>
-              <div className="text-xs uppercase font-bold text-red-300 tracking-wider">
+              <div className="text-xs font-bold text-red-300">
                 Overall Band Score
               </div>
-              <div className="text-4xl sm:text-6xl font-black tracking-tight font-mono-exam">
+              <div className="text-4xl sm:text-6xl font-bold tracking-tight font-mono-exam">
                 {displayScore.toFixed(1)}
               </div>
               <div className="text-xs font-bold text-zinc-300 mt-1">
@@ -219,21 +219,21 @@ export const ListeningResultPage: React.FC = () => {
 
         {/* 3 Stats Counters */}
         <div className="grid grid-cols-3 gap-3 sm:gap-4 mt-8 pt-6 border-t border-white/10">
-          <div className="p-4 bg-white/5 rounded-2xl text-center border border-white/5">
+          <div className="p-4 bg-white/5 rounded-xl text-center border border-white/5">
             <div className="text-xs text-zinc-400 font-medium">Raw Correct Score</div>
             <div className="text-xl sm:text-2xl font-bold font-mono-exam mt-1 text-white">
               {result.rawScore} <span className="text-sm font-normal text-zinc-400">/ {result.totalQuestions}</span>
             </div>
           </div>
 
-          <div className="p-4 bg-white/5 rounded-2xl text-center border border-white/5">
+          <div className="p-4 bg-white/5 rounded-xl text-center border border-white/5">
             <div className="text-xs text-zinc-400 font-medium">Overall Accuracy</div>
             <div className="text-xl sm:text-2xl font-bold font-mono-exam mt-1 text-emerald-400">
               {result.accuracyPercentage}%
             </div>
           </div>
 
-          <div className="p-4 bg-white/5 rounded-2xl text-center border border-white/5">
+          <div className="p-4 bg-white/5 rounded-xl text-center border border-white/5">
             <div className="text-xs text-zinc-400 font-medium">Time Taken</div>
             <div className="text-xl sm:text-2xl font-bold font-mono-exam mt-1 text-zinc-200">
               {formatAudioTime(result.durationSeconds)}
@@ -244,7 +244,7 @@ export const ListeningResultPage: React.FC = () => {
 
       {/* 3. Section-by-Section Diagnostic Breakdown */}
       {result.sectionBreakdowns && result.sectionBreakdowns.length > 0 && (
-        <div className="p-6 sm:p-8 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-xs space-y-5">
+        <div className="p-6 sm:p-8 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xs space-y-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <BarChart3 className="w-5 h-5 text-red-600" />
@@ -259,11 +259,11 @@ export const ListeningResultPage: React.FC = () => {
             {result.sectionBreakdowns.map((sec: ListeningSectionBreakdown) => (
               <div
                 key={sec.sectionNumber}
-                className="p-5 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 space-y-3"
+                className="p-5 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-200/80 dark:border-zinc-700/80 space-y-3"
               >
                 <div className="flex items-center justify-between text-xs font-bold">
                   <span className="text-zinc-800 dark:text-zinc-200">Part {sec.sectionNumber}</span>
-                  <span className="text-red-600 dark:text-red-400 font-mono-exam text-sm font-extrabold">{sec.accuracyPercentage}%</span>
+                  <span className="text-red-600 dark:text-red-400 font-mono-exam text-sm font-bold">{sec.accuracyPercentage}%</span>
                 </div>
 
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-1">
@@ -285,7 +285,7 @@ export const ListeningResultPage: React.FC = () => {
                   />
                 </div>
 
-                <div className="flex justify-between text-[11px] font-semibold text-zinc-400 pt-0.5">
+                <div className="flex justify-between text-xs font-semibold text-zinc-400 pt-0.5">
                   <span>Score</span>
                   <span className="font-mono-exam text-zinc-700 dark:text-zinc-300 font-bold">{sec.rawScore} / {sec.totalQuestions} Correct</span>
                 </div>
@@ -298,7 +298,7 @@ export const ListeningResultPage: React.FC = () => {
       {/* 4. Tab Switcher & Question Filter Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         {/* Main Tab Switcher */}
-        <div className="flex items-center gap-1.5 p-1 bg-zinc-100 dark:bg-zinc-800/80 rounded-2xl border border-zinc-200 dark:border-zinc-700">
+        <div className="flex items-center gap-1.5 p-1 bg-zinc-100 dark:bg-zinc-800/80 rounded-xl border border-zinc-200 dark:border-zinc-700">
           <button
             type="button"
             onClick={() => setActiveTab('review')}
@@ -328,7 +328,7 @@ export const ListeningResultPage: React.FC = () => {
 
         {/* Filter for questions (All / Incorrect / Correct) */}
         {activeTab === 'review' && (
-          <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800/80 p-1 rounded-2xl border border-zinc-200 dark:border-zinc-700">
+          <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800/80 p-1 rounded-xl border border-zinc-200 dark:border-zinc-700">
             <button
               type="button"
               onClick={() => setActiveFilter('all')}
@@ -377,7 +377,7 @@ export const ListeningResultPage: React.FC = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className={`p-6 rounded-3xl border transition-all ${
+              className={`p-6 rounded-2xl border transition-all ${
                 ans.isCorrect
                   ? 'bg-white dark:bg-zinc-900 border-emerald-500/30 shadow-xs'
                   : 'bg-white dark:bg-zinc-900 border-rose-500/30 shadow-xs'
@@ -387,7 +387,7 @@ export const ListeningResultPage: React.FC = () => {
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3">
                   <span
-                    className={`flex items-center justify-center w-8 h-8 rounded-xl text-xs font-black shrink-0 font-mono-exam ${
+                    className={`flex items-center justify-center w-8 h-8 rounded-xl text-xs font-bold shrink-0 font-mono-exam ${
                       ans.isCorrect
                         ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
                         : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/30'
@@ -396,7 +396,7 @@ export const ListeningResultPage: React.FC = () => {
                     {ans.questionNumber}
                   </span>
                   <div>
-                    <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
+                    <span className="text-xs font-bold text-zinc-400">
                       Part {ans.sectionNumber} • {ans.questionType}
                     </span>
                     <h4 className="text-sm sm:text-base font-semibold text-zinc-950 dark:text-white mt-1 leading-snug">
@@ -422,7 +422,7 @@ export const ListeningResultPage: React.FC = () => {
               {/* Answers Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mt-5 pt-4 border-t border-zinc-100 dark:border-zinc-800/80">
                 {/* User Answer */}
-                <div className={`p-4 rounded-2xl border ${
+                <div className={`p-4 rounded-xl border ${
                   ans.isCorrect
                     ? 'bg-emerald-50/40 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/60'
                     : 'bg-rose-50/40 dark:bg-rose-950/20 border-rose-200 dark:border-rose-800/60'
@@ -443,7 +443,7 @@ export const ListeningResultPage: React.FC = () => {
                 </div>
 
                 {/* Correct Answer */}
-                <div className="p-4 bg-zinc-50/80 dark:bg-zinc-800/50 rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80">
+                <div className="p-4 bg-zinc-50/80 dark:bg-zinc-800/50 rounded-xl border border-zinc-200/80 dark:border-zinc-700/80">
                   <div className="text-xs font-bold text-zinc-500 dark:text-zinc-400 mb-1.5">
                     Official Cambridge Answer:
                   </div>
@@ -455,7 +455,7 @@ export const ListeningResultPage: React.FC = () => {
 
               {/* Explanation Note */}
               {ans.explanation && (
-                <div className="mt-3.5 p-3.5 bg-zinc-50 dark:bg-zinc-800/40 rounded-2xl text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed border border-zinc-100 dark:border-zinc-800/60">
+                <div className="mt-3.5 p-3.5 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed border border-zinc-100 dark:border-zinc-800/60">
                   <span className="font-bold text-red-600 dark:text-red-400 mr-1.5">Academic Analysis:</span>
                   {ans.explanation}
                 </div>
@@ -486,35 +486,35 @@ export const ListeningResultPage: React.FC = () => {
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
-                    className="p-5 rounded-2xl bg-zinc-950 text-white border border-zinc-800 space-y-3.5 shadow-xl"
+                    className="p-5 rounded-xl bg-zinc-950 text-white border border-zinc-800 space-y-3.5 shadow-md"
                   >
                     <div className="flex items-center justify-between border-b border-zinc-800 pb-2.5">
                       <div className="flex items-center gap-2 text-xs font-bold text-red-400">
                         <Sparkles className="w-4 h-4 text-red-500" />
                         <span>EduSphere AI IELTS Diagnostic Analysis</span>
                       </div>
-                      <span className="text-[10px] text-zinc-500 font-mono-exam">Gemini Cambridge Model</span>
+                      <span className="text-xs text-zinc-500 font-mono-exam">Gemini Cambridge Model</span>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                       <div className="p-3 bg-zinc-900/90 rounded-xl border border-zinc-800/80 space-y-1">
-                        <span className="text-[10px] font-black text-zinc-400 uppercase tracking-wider">🎙️ Accent & Phonetics</span>
-                        <p className="text-zinc-300 leading-relaxed text-[11px]">{aiExplanations[ans.questionId].accentNuance}</p>
+                        <span className="text-xs font-bold text-zinc-400">🎙️ Accent & Phonetics</span>
+                        <p className="text-zinc-300 leading-relaxed text-xs">{aiExplanations[ans.questionId].accentNuance}</p>
                       </div>
 
                       <div className="p-3 bg-zinc-900/90 rounded-xl border border-zinc-800/80 space-y-1">
-                        <span className="text-[10px] font-black text-zinc-400 uppercase tracking-wider">🚦 Signposting Signals</span>
-                        <p className="text-zinc-300 leading-relaxed text-[11px]">{aiExplanations[ans.questionId].signpostingAnalysis}</p>
+                        <span className="text-xs font-bold text-zinc-400">🚦 Signposting Signals</span>
+                        <p className="text-zinc-300 leading-relaxed text-xs">{aiExplanations[ans.questionId].signpostingAnalysis}</p>
                       </div>
 
                       <div className="p-3 bg-zinc-900/90 rounded-xl border border-zinc-800/80 space-y-1">
-                        <span className="text-[10px] font-black text-rose-400 uppercase tracking-wider">⚠️ Trap Analysis</span>
-                        <p className="text-zinc-300 leading-relaxed text-[11px]">{aiExplanations[ans.questionId].phoneticTrap}</p>
+                        <span className="text-xs font-bold text-rose-400">⚠️ Trap Analysis</span>
+                        <p className="text-zinc-300 leading-relaxed text-xs">{aiExplanations[ans.questionId].phoneticTrap}</p>
                       </div>
 
                       <div className="p-3 bg-zinc-900/90 rounded-xl border border-zinc-800/80 space-y-1">
-                        <span className="text-[10px] font-black text-emerald-400 uppercase tracking-wider">💡 Socratic Coach Advice</span>
-                        <p className="text-zinc-300 leading-relaxed text-[11px]">{aiExplanations[ans.questionId].socraticAdvice}</p>
+                        <span className="text-xs font-bold text-emerald-400">💡 Socratic Coach Advice</span>
+                        <p className="text-zinc-300 leading-relaxed text-xs">{aiExplanations[ans.questionId].socraticAdvice}</p>
                       </div>
                     </div>
                   </motion.div>
@@ -524,7 +524,7 @@ export const ListeningResultPage: React.FC = () => {
           ))}
         </div>
       ) : (
-        <div className="h-[650px] bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 p-4 shadow-xs">
+        <div className="h-[650px] bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-4 shadow-xs">
           <SynchronizedTranscript
             transcripts={result.transcripts}
             currentTime={currentAudioTime}

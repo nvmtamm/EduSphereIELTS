@@ -101,7 +101,7 @@ export const TableCompletionRenderer: React.FC<TableCompletionRendererProps> = (
       {/* Table */}
       <div className={`overflow-x-auto rounded-xl border transition-all ${
         isActive
-          ? 'border-red-400/60 dark:border-red-500/50 shadow-sm shadow-red-500/10'
+          ? 'border-red-400/60 dark:border-red-500/50'
           : 'border-zinc-200 dark:border-zinc-700/60'
       }`}>
         <table className="w-full text-xs sm:text-sm border-collapse">

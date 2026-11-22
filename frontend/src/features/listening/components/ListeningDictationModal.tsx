@@ -130,7 +130,7 @@ export const ListeningDictationModal: React.FC<ListeningDictationModalProps> = (
         initial={{ opacity: 0, scale: 0.95, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="w-full max-w-2xl bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+        className="w-full max-w-2xl bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-md overflow-hidden flex flex-col max-h-[90vh]"
       >
         {/* Modal Header */}
         <div className="p-5 sm:p-6 bg-zinc-950 text-white flex items-center justify-between border-b border-zinc-800">
@@ -142,7 +142,7 @@ export const ListeningDictationModal: React.FC<ListeningDictationModalProps> = (
               <h3 className="text-sm sm:text-base font-bold text-white">
                 IELTS Dictation Studio
               </h3>
-              <p className="text-[11px] text-zinc-400">
+              <p className="text-xs text-zinc-400">
                 Segment {currentIndex + 1} of {transcripts.length} • {currentSegment.speaker}
               </p>
             </div>
@@ -160,12 +160,12 @@ export const ListeningDictationModal: React.FC<ListeningDictationModalProps> = (
         {/* Modal Body */}
         <div className="p-6 space-y-6 overflow-y-auto">
           {/* Audio Controls Box */}
-          <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/80 flex flex-wrap items-center justify-between gap-4">
+          <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/80 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={isPlaying ? pauseSegment : playSegment}
-                className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md shadow-red-600/20 active:scale-95 transition-all cursor-pointer"
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold active:scale-95 transition-all cursor-pointer"
               >
                 {isPlaying ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current" />}
                 <span>{isPlaying ? 'Pause Audio' : 'Play Sentence'}</span>
@@ -211,7 +211,7 @@ export const ListeningDictationModal: React.FC<ListeningDictationModalProps> = (
               value={userInput}
               onChange={(e) => setUserInput(e.target.value)}
               placeholder="Listen carefully and transcribe the audio sentence here..."
-              className="w-full p-4 text-sm font-mono-exam bg-white dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-red-500/20 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 leading-relaxed resize-none shadow-xs"
+              className="w-full p-4 text-sm font-mono-exam bg-white dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/20 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 leading-relaxed resize-none shadow-xs"
               disabled={isChecked}
             />
           </div>
@@ -221,7 +221,7 @@ export const ListeningDictationModal: React.FC<ListeningDictationModalProps> = (
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/80 space-y-4"
+              className="p-5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/80 space-y-4"
             >
               <div className="flex items-center justify-between pb-3 border-b border-zinc-200 dark:border-zinc-700">
                 <div className="flex items-center gap-2">
@@ -229,7 +229,7 @@ export const ListeningDictationModal: React.FC<ListeningDictationModalProps> = (
                   <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100">Transcription Evaluation</span>
                 </div>
                 <div className="text-xs font-bold">
-                  Accuracy: <span className="font-mono-exam text-sm text-red-600 dark:text-red-400 font-extrabold">{accuracy}%</span>
+                  Accuracy: <span className="font-mono-exam text-sm text-red-600 dark:text-red-400 font-bold">{accuracy}%</span>
                 </div>
               </div>
 
@@ -278,7 +278,7 @@ export const ListeningDictationModal: React.FC<ListeningDictationModalProps> = (
               type="button"
               onClick={handleCheck}
               disabled={!userInput.trim()}
-              className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md shadow-red-600/20 active:scale-95 transition-all disabled:opacity-40 cursor-pointer"
+              className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold active:scale-95 transition-all disabled:opacity-40 cursor-pointer"
             >
               Evaluate Transcription
             </button>
@@ -292,7 +292,7 @@ export const ListeningDictationModal: React.FC<ListeningDictationModalProps> = (
                   onClose();
                 }
               }}
-              className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/20 active:scale-95 transition-all cursor-pointer"
+              className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold active:scale-95 transition-all cursor-pointer"
             >
               <span>{currentIndex < transcripts.length - 1 ? 'Next Sentence' : 'Finish Dictation'}</span>
               <ChevronRight className="w-4 h-4" />

@@ -47,7 +47,7 @@ export const ListeningExplorerTable: React.FC<ListeningExplorerTableProps> = ({
                   {test.topic}
                 </p>
                 <div className="flex items-center gap-2 mt-1.5">
-                  <span className="text-[11px] font-semibold text-zinc-500 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-md">
+                  <span className="text-xs font-semibold text-zinc-500 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-md">
                     {test.collectionName}
                   </span>
                 </div>
@@ -134,7 +134,7 @@ export const ListeningExplorerTable: React.FC<ListeningExplorerTableProps> = ({
               <button
                 type="button"
                 onClick={() => navigate(`/listening/exam/${test.id}`)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-xs shadow-red-500/20 active:scale-95 transition-all"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold active:scale-95 transition-all"
               >
                 <Play className="w-3.5 h-3.5 fill-current" />
                 <span>Start Test</span>
@@ -164,8 +164,8 @@ export const ListeningExplorerTable: React.FC<ListeningExplorerTableProps> = ({
 
   if (data.length === 0) {
     return (
-      <div className="w-full py-16 flex flex-col items-center justify-center text-center p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl">
-        <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 mb-3">
+      <div className="w-full py-16 flex flex-col items-center justify-center text-center p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl">
+        <div className="p-4 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 mb-3">
           <FolderOpen className="w-8 h-8" />
         </div>
         <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">No Listening Tests Found</h3>
@@ -177,7 +177,7 @@ export const ListeningExplorerTable: React.FC<ListeningExplorerTableProps> = ({
   }
 
   return (
-    <div className="w-full overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs">
+    <div className="w-full overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs">
       <table className="w-full text-left border-collapse">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -185,7 +185,7 @@ export const ListeningExplorerTable: React.FC<ListeningExplorerTableProps> = ({
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="px-4 py-3.5 text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider"
+                  className="px-4 py-3.5 text-xs font-bold text-zinc-600 dark:text-zinc-400"
                 >
                   {header.isPlaceholder
                     ? null

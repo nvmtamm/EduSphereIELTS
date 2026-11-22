@@ -199,7 +199,7 @@ export const AudioWaveformPlayer: React.FC<AudioWaveformPlayerProps> = ({
   const isMultiSection = audioUrls.length > 1;
 
   return (
-    <div className={`w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm overflow-hidden p-4 sm:p-5 transition-all ${className}`}>
+    <div className={`w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden p-4 sm:p-5 transition-all ${className}`}>
 
       {/* F-04: Multi-section progress tabs */}
       {isMultiSection && (
@@ -211,7 +211,7 @@ export const AudioWaveformPlayer: React.FC<AudioWaveformPlayerProps> = ({
             return (
               <div
                 key={idx}
-                className={`flex-shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold whitespace-nowrap transition-all ${
+                className={`flex-shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
                   isActive
                     ? 'bg-red-600 text-white shadow-sm'
                     : isDone
@@ -272,10 +272,10 @@ export const AudioWaveformPlayer: React.FC<AudioWaveformPlayerProps> = ({
             type="button"
             onClick={togglePlayPause}
             disabled={!isReady || (singlePlayMode && hasFinished)}
-            className={`flex items-center justify-center w-11 h-11 text-white rounded-2xl shadow-md active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+            className={`flex items-center justify-center w-11 h-11 text-white rounded-xl shadow-md active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
               singlePlayMode && hasFinished
                 ? 'bg-zinc-500 dark:bg-zinc-600'
-                : 'bg-red-600 hover:bg-red-700 shadow-red-500/20'
+                : 'bg-red-600 hover:bg-red-700'
             }`}
             title={singlePlayMode && hasFinished ? 'Audio playback locked' : isPlaying ? 'Pause' : 'Play'}
           >
@@ -306,7 +306,7 @@ export const AudioWaveformPlayer: React.FC<AudioWaveformPlayerProps> = ({
 
           {/* F-01: Single-play status badge */}
           {singlePlayMode && (
-            <span className={`hidden sm:inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-md border ${
+            <span className={`hidden sm:inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold rounded-md border ${
               hasFinished
                 ? 'bg-rose-500/10 border-rose-500/30 text-rose-600 dark:text-rose-400'
                 : 'bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-400'

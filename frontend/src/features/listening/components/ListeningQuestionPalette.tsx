@@ -24,14 +24,14 @@ export const ListeningQuestionPalette: React.FC<ListeningQuestionPaletteProps> =
   const progressPercent = questions.length > 0 ? Math.round((answeredCount / questions.length) * 100) : 0;
 
   return (
-    <div className={`p-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xs ${className}`}>
+    <div className={`p-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xs ${className}`}>
       {/* Header with Stats */}
       <div className="flex items-center justify-between mb-3">
         <div>
-          <h4 className="text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">
+          <h4 className="text-xs font-bold text-zinc-900 dark:text-zinc-100">
             Question Palette
           </h4>
-          <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
             {answeredCount} of {questions.length} answered ({progressPercent}%)
           </p>
         </div>
@@ -77,7 +77,7 @@ export const ListeningQuestionPalette: React.FC<ListeningQuestionPaletteProps> =
       </div>
 
       {/* Legend */}
-      <div className="flex items-center justify-between pt-3 mt-3 border-t border-zinc-100 dark:border-zinc-800/80 text-[11px] text-zinc-500">
+      <div className="flex items-center justify-between pt-3 mt-3 border-t border-zinc-100 dark:border-zinc-800/80 text-xs text-zinc-500">
         <div className="flex items-center gap-1.5">
           <div className="w-2.5 h-2.5 rounded-sm bg-red-600" />
           <span>Answered</span>

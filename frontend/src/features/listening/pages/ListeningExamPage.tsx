@@ -269,11 +269,11 @@ export const ListeningExamPage: React.FC = () => {
 
           <div>
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-md border border-zinc-700 bg-zinc-800 text-zinc-300">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold rounded-md border border-zinc-700 bg-zinc-800 text-zinc-300">
                 <span>{accentBadge.flag}</span>
                 <span>{accentBadge.label}</span>
               </span>
-              <span className="text-[11px] font-semibold text-zinc-400 hidden sm:inline">
+              <span className="text-xs font-semibold text-zinc-400 hidden sm:inline">
                 {test.collectionName}
               </span>
             </div>
@@ -296,7 +296,7 @@ export const ListeningExamPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setShowSubmitModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-red-500/20 active:scale-95 transition-all"
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs sm:text-sm font-bold active:scale-95 transition-all"
           >
             <Send className="w-4 h-4" />
             <span>Finish & Submit</span>
@@ -353,8 +353,8 @@ export const ListeningExamPage: React.FC = () => {
         {/* Left Column: Questions List (7 cols on desktop) */}
         <div className="lg:col-span-7 space-y-6">
           {/* Instructions Box */}
-          <div className="p-4 bg-red-50/50 dark:bg-red-950/20 border border-red-200 dark:border-red-800/60 rounded-2xl">
-            <div className="flex items-center gap-2 text-red-700 dark:text-red-300 font-bold text-xs uppercase tracking-wider mb-1">
+          <div className="p-4 bg-red-50/50 dark:bg-red-950/20 border border-red-200 dark:border-red-800/60 rounded-xl">
+            <div className="flex items-center gap-2 text-red-700 dark:text-red-300 font-bold text-xs mb-1">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Official Cambridge Instructions</span>
             </div>
@@ -376,7 +376,7 @@ export const ListeningExamPage: React.FC = () => {
             return (
               <div
                 key={secNum}
-                className="p-5 sm:p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-xs space-y-6"
+                className="p-5 sm:p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xs space-y-6"
               >
                 {/* Section Header */}
                 <div className="flex items-center justify-between pb-3 border-b border-zinc-100 dark:border-zinc-800/80">
@@ -403,9 +403,9 @@ export const ListeningExamPage: React.FC = () => {
                         key={q.id}
                         id={`question-${q.questionNumber}`}
                         onClick={() => setCurrentQuestionIndex(test.questions.findIndex(tq => tq.id === q.id))}
-                        className={`group relative p-5 rounded-3xl border transition-all ${
+                        className={`group relative p-5 rounded-2xl border transition-all ${
                           isCurrent
-                            ? 'ring-2 ring-red-500/40 border-red-500/60 bg-white dark:bg-zinc-900 shadow-lg'
+                            ? 'ring-2 ring-red-500/40 border-red-500/60 bg-white dark:bg-zinc-900 shadow-md'
                             : 'border-zinc-200/90 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-900/40'
                         }`}
                       >
@@ -475,7 +475,7 @@ export const ListeningExamPage: React.FC = () => {
         {/* Right Column: Interactive Side Panel (5 cols on desktop) */}
         <div className="lg:col-span-5 space-y-4 lg:sticky lg:top-[160px]">
           {/* Panel Selector Tabs */}
-          <div className="flex items-center gap-1 p-1 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xs">
+          <div className="flex items-center gap-1 p-1 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xs">
             <button
               type="button"
               onClick={() => setActiveSideTab('palette')}
@@ -559,10 +559,10 @@ export const ListeningExamPage: React.FC = () => {
       </main>
 
       {/* 4. Bottom Exam Navigation Dock (Authentic IELTS CBT Standard) */}
-      <footer className="sticky bottom-0 z-30 bg-zinc-950/95 text-white border-t border-zinc-800/90 px-4 sm:px-6 py-2.5 flex items-center justify-between gap-4 backdrop-blur-md shadow-2xl">
+      <footer className="sticky bottom-0 z-30 bg-zinc-950/95 text-white border-t border-zinc-800/90 px-4 sm:px-6 py-2.5 flex items-center justify-between gap-4 backdrop-blur-md shadow-md">
         <div className="flex items-center gap-3 text-xs">
           <span className="font-bold text-zinc-400">
-            Question <span className="text-white font-mono-exam font-black text-sm">{currentQuestionIndex + 1}</span> of {test.questions.length}
+            Question <span className="text-white font-mono-exam font-bold text-sm">{currentQuestionIndex + 1}</span> of {test.questions.length}
           </span>
           <span className="hidden sm:inline text-zinc-700">•</span>
           <span className="hidden sm:inline text-zinc-400">
@@ -606,7 +606,7 @@ export const ListeningExamPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setShowSubmitModal(true)}
-            className="flex items-center gap-2 px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md shadow-red-600/30 active:scale-95 transition-all cursor-pointer"
+            className="flex items-center gap-2 px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold active:scale-95 transition-all cursor-pointer"
           >
             <Send className="w-3.5 h-3.5" />
             <span>Finish & Submit</span>
@@ -617,9 +617,9 @@ export const ListeningExamPage: React.FC = () => {
       {/* 5. Submission Confirmation Modal */}
       {showSubmitModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/70 backdrop-blur-xs animate-in fade-in">
-          <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-2xl p-6 space-y-5">
+          <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-md p-6 space-y-5">
             <div className="flex items-center gap-3">
-              <div className="p-3 rounded-2xl bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400">
+              <div className="p-3 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400">
                 <Send className="w-6 h-6" />
               </div>
               <div>
@@ -633,7 +633,7 @@ export const ListeningExamPage: React.FC = () => {
             </div>
 
             {/* Answer Status Summary */}
-            <div className="p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-200 dark:border-zinc-700/60 space-y-2">
+            <div className="p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-200 dark:border-zinc-700/60 space-y-2">
               <div className="flex justify-between text-xs font-semibold">
                 <span className="text-zinc-600 dark:text-zinc-400">Answered Questions:</span>
                 <span className="text-zinc-950 dark:text-white font-mono font-bold">
@@ -669,7 +669,7 @@ export const ListeningExamPage: React.FC = () => {
                 type="button"
                 onClick={handleSubmitExam}
                 disabled={isSubmitting}
-                className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md shadow-red-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold active:scale-95 transition-all flex items-center justify-center gap-2"
               >
                 {isSubmitting ? (
                   <>

@@ -63,7 +63,7 @@ export const SynchronizedTranscript: React.FC<SynchronizedTranscriptProps> = ({
   }, [transcripts, searchTerm]);
 
   return (
-    <div className={`flex flex-col h-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xs overflow-hidden ${className}`}>
+    <div className={`flex flex-col h-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xs overflow-hidden ${className}`}>
       {/* Header with Search and Auto-scroll Toggle */}
       <div className="p-4 border-b border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/50 flex items-center justify-between gap-3">
         <div className="relative flex-1">
@@ -147,7 +147,7 @@ export const SynchronizedTranscript: React.FC<SynchronizedTranscriptProps> = ({
                           e.stopPropagation();
                           onSelectLinkedQuestion?.(t.linkedQuestionNumber!);
                         }}
-                        className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 hover:bg-amber-500 hover:text-white transition-all cursor-pointer shadow-2xs"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 hover:bg-amber-500 hover:text-white transition-all cursor-pointer shadow-2xs"
                         title={`Jump to Question ${t.linkedQuestionNumber}`}
                       >
                         <BookmarkCheck className="w-2.5 h-2.5" />
@@ -158,7 +158,7 @@ export const SynchronizedTranscript: React.FC<SynchronizedTranscriptProps> = ({
 
                   <button
                     type="button"
-                    className={`font-mono text-[11px] font-medium flex items-center gap-1 px-2 py-0.5 rounded-md transition-colors ${
+                    className={`font-mono text-xs font-medium flex items-center gap-1 px-2 py-0.5 rounded-md transition-colors ${
                       isActive
                         ? 'bg-red-600 text-white shadow-xs'
                         : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 group-hover:text-red-600 group-hover:bg-red-50 dark:group-hover:bg-red-900/30'

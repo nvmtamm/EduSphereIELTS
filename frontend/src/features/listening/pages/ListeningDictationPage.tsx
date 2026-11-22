@@ -287,7 +287,7 @@ export const ListeningDictationPage: React.FC = () => {
           </button>
           <div>
             <div className="flex items-center gap-2">
-              <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-md border ${accentBadge.bgClass} ${accentBadge.textClass}`}>
+              <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold rounded-md border ${accentBadge.bgClass} ${accentBadge.textClass}`}>
                 <span>{accentBadge.flag}</span>
                 <span>{accentBadge.label}</span>
               </span>
@@ -295,7 +295,7 @@ export const ListeningDictationPage: React.FC = () => {
                 {test.collectionName}
               </span>
             </div>
-            <h1 className="text-lg sm:text-xl font-black text-zinc-950 dark:text-white mt-0.5">
+            <h1 className="text-lg sm:text-xl font-bold text-zinc-950 dark:text-white mt-0.5">
               Dictation Studio: <span className="text-red-600">{test.title}</span>
             </h1>
           </div>
@@ -311,8 +311,8 @@ export const ListeningDictationPage: React.FC = () => {
       </div>
 
       {/* 2. Sentence Quick Jump Strip */}
-      <div className="p-3 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-xs flex items-center gap-1.5 overflow-x-auto scrollbar-none">
-        <span className="text-xs font-bold text-zinc-400 shrink-0 px-2 uppercase tracking-wider">Sentences:</span>
+      <div className="p-3 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-xs flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+        <span className="text-xs font-bold text-zinc-400 shrink-0 px-2">Sentences:</span>
         {dictationUnits.map((u, idx) => {
           const isCurrent = idx === currentUnitIndex;
           const isDone = Boolean(checkedUnits[idx]);
@@ -325,7 +325,7 @@ export const ListeningDictationPage: React.FC = () => {
               onClick={() => setCurrentUnitIndex(idx)}
               className={`flex items-center justify-center min-w-[34px] h-8 px-2 rounded-xl text-xs font-bold font-mono-exam transition-all shrink-0 cursor-pointer ${
                 isCurrent
-                  ? 'bg-red-600 text-white shadow-md shadow-red-600/30 scale-105'
+                  ? 'bg-red-600 text-white scale-105'
                   : isDone
                   ? acc >= 80
                     ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 border border-emerald-300 dark:border-emerald-800'
@@ -347,13 +347,13 @@ export const ListeningDictationPage: React.FC = () => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-lg p-6 sm:p-8 space-y-6"
+          className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-md p-6 sm:p-8 space-y-6"
         >
           {/* Unit Metadata & Audio Controller */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-zinc-100 dark:border-zinc-800">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 text-[11px] font-bold rounded-md bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/60">
+                <span className="px-2.5 py-0.5 text-xs font-bold rounded-md bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/60">
                   Sentence {currentUnitIndex + 1} of {totalUnits}
                 </span>
                 <span className="text-xs font-semibold text-zinc-500">
@@ -371,7 +371,7 @@ export const ListeningDictationPage: React.FC = () => {
               <button
                 type="button"
                 onClick={isPlaying ? pauseAudio : playCurrentUnit}
-                className="flex items-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-red-600/25 active:scale-95 transition-all cursor-pointer"
+                className="flex items-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold active:scale-95 transition-all cursor-pointer"
               >
                 {isPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current" />}
                 <span>{isPlaying ? 'Pause Sentence' : 'Play Sentence'}</span>
@@ -380,7 +380,7 @@ export const ListeningDictationPage: React.FC = () => {
               <button
                 type="button"
                 onClick={playCurrentUnit}
-                className="p-2.5 rounded-2xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 transition-colors cursor-pointer"
+                className="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 transition-colors cursor-pointer"
                 title="Replay Sentence from beginning"
               >
                 <RotateCcw className="w-4 h-4" />
@@ -422,7 +422,7 @@ export const ListeningDictationPage: React.FC = () => {
 
             {/* Hint Box (if toggled) */}
             {showHint && (
-              <div className="p-3.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 rounded-2xl text-xs font-mono-exam text-amber-800 dark:text-amber-300 leading-relaxed">
+              <div className="p-3.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 rounded-xl text-xs font-mono-exam text-amber-800 dark:text-amber-300 leading-relaxed">
                 <span className="font-bold mr-1.5">Hints:</span>
                 {hintText}
               </div>
@@ -434,7 +434,7 @@ export const ListeningDictationPage: React.FC = () => {
               onChange={(e) => setUserInputs(prev => ({ ...prev, [currentUnitIndex]: e.target.value }))}
               placeholder="Listen to the audio sentence above and transcribe what you hear here..."
               disabled={Boolean(currentCheck)}
-              className="w-full p-5 text-sm sm:text-base font-mono-exam bg-zinc-50/70 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/80 rounded-2xl focus:outline-none focus:ring-2 focus:ring-red-500/20 text-zinc-950 dark:text-white placeholder:text-zinc-400 leading-relaxed resize-none shadow-xs"
+              className="w-full p-5 text-sm sm:text-base font-mono-exam bg-zinc-50/70 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/20 text-zinc-950 dark:text-white placeholder:text-zinc-400 leading-relaxed resize-none shadow-xs"
             />
           </div>
 
@@ -445,7 +445,7 @@ export const ListeningDictationPage: React.FC = () => {
                 type="button"
                 onClick={handleCheckTranscription}
                 disabled={!currentUserText.trim()}
-                className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-2xl text-xs sm:text-sm font-bold shadow-lg shadow-red-600/30 active:scale-95 transition-all disabled:opacity-40 cursor-pointer flex items-center gap-2"
+                className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs sm:text-sm font-bold active:scale-95 transition-all disabled:opacity-40 cursor-pointer flex items-center gap-2"
               >
                 <Check className="w-4 h-4" />
                 <span>Check Sentence Accuracy</span>
@@ -456,7 +456,7 @@ export const ListeningDictationPage: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-6 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/80 space-y-4"
+              className="p-6 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/80 space-y-4"
             >
               <div className="flex items-center justify-between pb-3 border-b border-zinc-200 dark:border-zinc-700">
                 <div className="flex items-center gap-2">
@@ -464,7 +464,7 @@ export const ListeningDictationPage: React.FC = () => {
                   <span className="text-sm font-bold text-zinc-950 dark:text-white">Transcription Accuracy</span>
                 </div>
                 <div className="text-sm font-bold">
-                  Score: <span className="font-mono-exam text-base text-red-600 dark:text-red-400 font-black">{currentCheck.accuracy}%</span>
+                  Score: <span className="font-mono-exam text-base text-red-600 dark:text-red-400 font-bold">{currentCheck.accuracy}%</span>
                 </div>
               </div>
 
@@ -520,7 +520,7 @@ export const ListeningDictationPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsCompletedModalOpen(true)}
-                className="flex items-center gap-2 px-6 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
+                className="flex items-center gap-2 px-6 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all cursor-pointer"
               >
                 <Trophy className="w-4 h-4" />
                 <span>Complete Dictation Studio</span>
@@ -533,13 +533,13 @@ export const ListeningDictationPage: React.FC = () => {
       {/* 4. Completion Celebration Modal */}
       {isCompletedModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-2xl p-6 sm:p-8 text-center space-y-5">
-            <div className="w-14 h-14 rounded-2xl bg-amber-400 text-zinc-950 flex items-center justify-center mx-auto shadow-lg">
+          <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-md p-6 sm:p-8 text-center space-y-5">
+            <div className="w-14 h-14 rounded-xl bg-amber-400 text-zinc-950 flex items-center justify-center mx-auto shadow-md">
               <Trophy className="w-8 h-8" />
             </div>
 
             <div className="space-y-1">
-              <h3 className="text-xl font-black text-zinc-950 dark:text-white">
+              <h3 className="text-xl font-bold text-zinc-950 dark:text-white">
                 Dictation Studio Completed!
               </h3>
               <p className="text-xs text-zinc-500">
@@ -547,7 +547,7 @@ export const ListeningDictationPage: React.FC = () => {
               </p>
             </div>
 
-            <div className="p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-200 dark:border-zinc-700 space-y-2">
+            <div className="p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-200 dark:border-zinc-700 space-y-2">
               <div className="flex justify-between text-xs font-semibold">
                 <span className="text-zinc-500">Sentences Completed:</span>
                 <span className="font-bold text-zinc-900 dark:text-white font-mono-exam">{completedCount} / {totalUnits}</span>
@@ -574,7 +574,7 @@ export const ListeningDictationPage: React.FC = () => {
                   setCurrentUnitIndex(0);
                   setIsCompletedModalOpen(false);
                 }}
-                className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md shadow-red-600/30 transition-all cursor-pointer"
+                className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer"
               >
                 Restart Practice
               </button>
