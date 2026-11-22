@@ -74,7 +74,7 @@ export const RegisterForm: React.FC = () => {
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>Please correct the following:</span>
             </div>
-            <ul className="list-disc list-inside pl-1 space-y-0.5 text-[11px]">
+            <ul className="list-disc list-inside pl-1 space-y-0.5 text-xs">
               {error.map((msg, i) => (
                 <li key={i}>{msg}</li>
               ))}
@@ -142,7 +142,7 @@ export const RegisterForm: React.FC = () => {
           </div>
 
           {/* Password Strength Checklist */}
-          <div className="mt-2 grid grid-cols-2 gap-1.5 text-[11px]">
+          <div className="mt-2 grid grid-cols-2 gap-1.5 text-xs">
             <span className={`flex items-center gap-1 ${isMinLength ? 'text-emerald-600 dark:text-emerald-400 font-medium' : 'text-zinc-400'}`}>
               <Check className={`w-3 h-3 ${isMinLength ? 'opacity-100' : 'opacity-30'}`} /> 8+ Characters
             </span>
@@ -177,7 +177,7 @@ export const RegisterForm: React.FC = () => {
                 onClick={() => setTargetBandScore(score)}
                 className={`py-2 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
                   targetBandScore === score
-                    ? 'bg-gradient-to-r from-red-600 to-rose-600 border-red-600 text-white shadow-sm'
+                    ? 'bg-red-600 border-red-600 text-white shadow-sm'
                     : 'bg-zinc-50 dark:bg-zinc-800/80 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-red-400'
                 }`}
               >
@@ -191,7 +191,7 @@ export const RegisterForm: React.FC = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full mt-3 py-3 px-4 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-semibold text-sm shadow-lg shadow-red-600/25 flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer disabled:opacity-50"
+          className="w-full mt-3 py-3 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer disabled:opacity-50"
         >
           {loading ? (
             <>
@@ -210,7 +210,7 @@ export const RegisterForm: React.FC = () => {
       {/* Divider */}
       <div className="relative flex items-center justify-center my-4">
         <div className="border-t border-zinc-200 dark:border-zinc-800 w-full" />
-        <span className="bg-white dark:bg-zinc-900 px-3 text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider absolute">
+        <span className="bg-white dark:bg-zinc-900 px-3 text-xs font-semibold text-zinc-400 dark:text-zinc-500 absolute">
           Or register with
         </span>
       </div>

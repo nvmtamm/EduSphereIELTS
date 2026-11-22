@@ -50,24 +50,24 @@ export const ForgotPasswordPage: React.FC = () => {
       <div className="w-full max-w-md space-y-6 relative z-10 my-auto">
         {/* Brand Header */}
         <div className="text-center space-y-2.5">
-          <div className="inline-flex items-center justify-center w-13 h-13 rounded-2xl bg-gradient-to-tr from-red-600 to-rose-600 text-white shadow-xl shadow-red-600/30 mb-1">
+          <div className="inline-flex items-center justify-center w-13 h-13 rounded-xl bg-red-600 text-white mb-1">
             <GraduationCap className="w-7 h-7" />
           </div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-950 dark:text-white">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-950 dark:text-white">
               Edu<span className="text-red-600">Sphere</span>
             </h1>
-            <p className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mt-1">
+            <p className="text-xs font-bold text-zinc-400 dark:text-zinc-500 mt-1">
               IELTS Official Prep
             </p>
           </div>
         </div>
 
         {/* Form Card */}
-        <div className="p-7 sm:p-8 rounded-3xl bg-white/95 dark:bg-zinc-900/90 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800 shadow-2xl shadow-zinc-200/60 dark:shadow-black/60">
+        <div className="p-7 sm:p-8 rounded-2xl bg-white/95 dark:bg-zinc-900/90 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800 shadow-md shadow-zinc-200/60 dark:shadow-black/60">
           {submitted ? (
             <div className="text-center space-y-5">
-              <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto shadow-inner">
+              <div className="w-14 h-14 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto shadow-inner">
                 <CheckCircle2 className="w-8 h-8" />
               </div>
               <div className="space-y-1.5">
@@ -81,7 +81,7 @@ export const ForgotPasswordPage: React.FC = () => {
                 </p>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-800 text-left text-xs text-zinc-600 dark:text-zinc-400 space-y-1.5">
+              <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-800 text-left text-xs text-zinc-600 dark:text-zinc-400 space-y-1.5">
                 <p className="font-semibold text-zinc-900 dark:text-zinc-200 flex items-center gap-1.5">
                   <KeyRound className="w-3.5 h-3.5 text-red-500" />
                   What to do next:
@@ -94,7 +94,7 @@ export const ForgotPasswordPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => navigate(`/reset-password?email=${encodeURIComponent(email)}`)}
-                  className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-semibold text-sm shadow-lg shadow-red-600/25 flex items-center justify-center gap-2 transition-all cursor-pointer"
+                  className="w-full py-3 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer"
                 >
                   <span>Enter 6-Digit Code Now</span>
                   <ArrowRight className="w-4 h-4" />
@@ -112,7 +112,7 @@ export const ForgotPasswordPage: React.FC = () => {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="text-center space-y-1 mb-2">
-                <h2 className="text-xl font-black tracking-tight text-zinc-950 dark:text-white">
+                <h2 className="text-xl font-bold tracking-tight text-zinc-950 dark:text-white">
                   Reset Password
                 </h2>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400">
@@ -149,7 +149,7 @@ export const ForgotPasswordPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full mt-2 py-3 px-4 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-semibold text-sm shadow-lg shadow-red-600/25 flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer disabled:opacity-50"
+                className="w-full mt-2 py-3 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer disabled:opacity-50"
               >
                 {loading ? (
                   <>

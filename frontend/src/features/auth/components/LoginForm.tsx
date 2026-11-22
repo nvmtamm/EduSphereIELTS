@@ -50,12 +50,12 @@ export const LoginForm: React.FC = () => {
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Error Banner with contextual Forgot Password prompt */}
         {error && (
-          <div className="p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs space-y-2">
+          <div className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs space-y-2">
             <div className="flex items-center gap-2 font-semibold">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
-            <div className="pt-1 border-t border-rose-200/60 dark:border-rose-800/60 flex items-center justify-between text-[11px]">
+            <div className="pt-1 border-t border-rose-200/60 dark:border-rose-800/60 flex items-center justify-between text-xs">
               <span>Forgot your credentials?</span>
               <Link
                 to="/forgot-password"
@@ -124,7 +124,7 @@ export const LoginForm: React.FC = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full mt-2 py-3 px-4 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-semibold text-sm shadow-lg shadow-red-600/25 flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer disabled:opacity-50"
+          className="w-full mt-2 py-3 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer disabled:opacity-50"
         >
           {loading ? (
             <>
@@ -143,7 +143,7 @@ export const LoginForm: React.FC = () => {
       {/* Divider */}
       <div className="relative flex items-center justify-center my-4">
         <div className="border-t border-zinc-200 dark:border-zinc-800 w-full" />
-        <span className="bg-white dark:bg-zinc-900 px-3 text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider absolute">
+        <span className="bg-white dark:bg-zinc-900 px-3 text-xs font-semibold text-zinc-400 dark:text-zinc-500 absolute">
           Or continue with
         </span>
       </div>

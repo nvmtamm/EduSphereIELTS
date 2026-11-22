@@ -123,17 +123,17 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in-0">
-      <div className="relative w-full max-w-lg rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="relative w-full max-w-lg rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-md overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/50">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-red-600 to-rose-600 text-white flex items-center justify-center font-bold text-lg shadow-md shadow-red-600/30">
+            <div className="w-12 h-12 rounded-xl bg-red-600 text-white flex items-center justify-center font-bold text-lg">
               {user?.fullName?.charAt(0).toUpperCase() || 'U'}
             </div>
             <div>
-              <h2 className="text-base font-black tracking-tight text-zinc-950 dark:text-white flex items-center gap-2">
+              <h2 className="text-base font-bold tracking-tight text-zinc-950 dark:text-white flex items-center gap-2">
                 <span>{user?.fullName || 'User Profile'}</span>
-                <span className="px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-300 font-bold text-[10px]">
+                <span className="px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-300 font-bold text-xs">
                   {user?.role || 'Student'}
                 </span>
               </h2>
@@ -220,7 +220,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
                   <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">
                     Email Address
                   </label>
-                  <span className="flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                  <span className="flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
                     <ShieldCheck className="w-3 h-3" />
                     Verified
                   </span>
@@ -245,7 +245,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
                     <Target className="w-3.5 h-3.5 text-red-500" />
                     Target Band Score
                   </label>
-                  <span className="px-2.5 py-0.5 rounded-full bg-red-600 text-white font-black text-xs shadow-xs">
+                  <span className="px-2.5 py-0.5 rounded-full bg-red-600 text-white font-bold text-xs shadow-xs">
                     Band {targetBandScore.toFixed(1)}
                   </span>
                 </div>
@@ -257,7 +257,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
                       onClick={() => setTargetBandScore(score)}
                       className={`py-2 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
                         targetBandScore === score
-                          ? 'bg-gradient-to-r from-red-600 to-rose-600 border-red-600 text-white shadow-sm'
+                          ? 'bg-red-600 border-red-600 text-white shadow-sm'
                           : 'bg-zinc-50 dark:bg-zinc-800/80 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-red-400'
                       }`}
                     >
@@ -265,7 +265,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
                     </button>
                   ))}
                 </div>
-                <p className="text-[11px] text-zinc-400 mt-2 flex items-center gap-1">
+                <p className="text-xs text-zinc-400 mt-2 flex items-center gap-1">
                   <Sparkles className="w-3 h-3 text-red-500" />
                   Your practice questions and AI evaluation will tailor toward Band {targetBandScore.toFixed(1)}.
                 </p>
@@ -275,7 +275,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
                 <button
                   type="submit"
                   disabled={savingProfile}
-                  className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-semibold text-sm shadow-md shadow-red-600/25 flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+                  className="w-full py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
                 >
                   {savingProfile ? (
                     <>
@@ -344,7 +344,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
                 </div>
 
                 {/* Password Strength Checklist */}
-                <div className="mt-2 grid grid-cols-2 gap-1.5 text-[11px]">
+                <div className="mt-2 grid grid-cols-2 gap-1.5 text-xs">
                   <span className={`flex items-center gap-1 ${isMinLength ? 'text-emerald-600 dark:text-emerald-400 font-medium' : 'text-zinc-400'}`}>
                     <Check className={`w-3 h-3 ${isMinLength ? 'opacity-100' : 'opacity-30'}`} /> 8+ Characters
                   </span>
@@ -384,7 +384,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
                 <button
                   type="submit"
                   disabled={savingPassword}
-                  className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-semibold text-sm shadow-md shadow-red-600/25 flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+                  className="w-full py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
                 >
                   {savingPassword ? (
                     <>

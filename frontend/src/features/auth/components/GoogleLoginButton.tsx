@@ -90,7 +90,7 @@ export const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
   return (
     <div ref={containerRef} className="w-full space-y-2.5">
       {error && (
-        <div className="p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs space-y-2">
+        <div className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs space-y-2">
           <div className="flex items-start gap-2 font-medium">
             <AlertCircle className="w-4 h-4 shrink-0 text-rose-600 mt-0.5" />
             <span className="leading-relaxed">{error}</span>
@@ -134,7 +134,7 @@ export const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
             <button
               type="button"
               onClick={handleDemoGoogleLogin}
-              className="text-[11px] font-semibold text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400 inline-flex items-center gap-1 transition-colors"
+              className="text-xs font-semibold text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400 inline-flex items-center gap-1 transition-colors"
             >
               <Sparkles className="w-3 h-3 text-amber-500" />
               <span>Sign in with Demo Google Candidate</span>
