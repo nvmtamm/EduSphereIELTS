@@ -1,11 +1,10 @@
 import React, { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { ColumnDef } from '@tanstack/react-table'
-import { Clock, Play, BookOpen, Layers } from 'lucide-react'
 import type { ReadingPassageItem } from '../types/reading.types'
 import { DataTable } from '@/shared/components/ui/data-table/data-table'
 import { DataTableColumnHeader } from '@/shared/components/ui/data-table/data-table-column-header'
-import { Badge } from '@/shared/components/ui/badge'
+import { StatusBadge, difficultyTone } from '@/shared/components/Feedback'
 
 interface ExamTableProps {
   data: ReadingPassageItem[]
@@ -32,14 +31,14 @@ export const ExamTable: React.FC<ExamTableProps> = ({ data, loading = false }) =
           <div className="space-y-1 max-w-md">
             <Link
               to={`/reading/exam/${item.id}`}
-              className="font-bold text-slate-900 dark:text-white hover:text-red-600 dark:hover:text-red-400 transition-colors line-clamp-1 block text-sm"
+              className="font-semibold text-slate-900 dark:text-white hover:text-red-600 transition-colors line-clamp-1 block text-sm"
               title={cleanTitle}
             >
               {cleanTitle}
             </Link>
             <div className="flex items-center gap-2 text-xs text-slate-500">
-              <span className="font-medium text-slate-600 dark:text-slate-400">{item.topic || 'Academic Topic'}</span>
-              <span>•</span>
+              <span>{item.topic || 'Academic Topic'}</span>
+              <span>·</span>
               <span>{item.totalQuestions || 13} Questions</span>
             </div>
           </div>
@@ -53,16 +52,14 @@ export const ExamTable: React.FC<ExamTableProps> = ({ data, loading = false }) =
       ),
       cell: ({ row }) => {
         const src = row.getValue('sourceType') as string
-        const sourceMap: Record<string, { label: string; variant: 'sky' | 'purple' | 'warning' | 'default' }> = {
-          OfficialCambridge: { label: 'Cambridge Official', variant: 'sky' },
-          PastActualTest: { label: 'Past Actual Test', variant: 'purple' },
-          PublisherSeries: { label: 'Publisher Series', variant: 'warning' },
-          UserUploaded: { label: 'Personal Vault', variant: 'default' },
-          AIGenerated: { label: 'AI Adaptive Vault', variant: 'purple' },
+        const sourceMap: Record<string, string> = {
+          OfficialCambridge: 'Cambridge Official',
+          PastActualTest: 'Past Actual Test',
+          PublisherSeries: 'Publisher Series',
+          UserUploaded: 'Personal Vault',
+          AIGenerated: 'AI Adaptive Bank',
         }
-
-        const config = sourceMap[src] || { label: 'Personal Vault', variant: 'default' }
-        return <Badge variant={config.variant}>{config.label}</Badge>
+        return <span className="text-sm text-slate-600 dark:text-slate-300">{sourceMap[src] || 'Personal Vault'}</span>
       },
       filterFn: (row, id, value) => {
         return value.includes(row.getValue(id))
@@ -75,17 +72,15 @@ export const ExamTable: React.FC<ExamTableProps> = ({ data, loading = false }) =
       ),
       cell: ({ row }) => {
         const tier = row.getValue('targetBandTier') as string
-        const tierLabels: Record<string, { label: string; variant: 'default' | 'secondary' | 'indigo' | 'purple' | 'success' | 'warning' | 'sky' }> = {
-          PreIelts: { label: 'Pre-IELTS (0–3.5)', variant: 'success' },
-          Band4_0_4_5: { label: 'Band 4.0–4.5', variant: 'secondary' },
-          Band5_0_5_5: { label: 'Band 5.0–5.5', variant: 'warning' },
-          Band6_0_6_5: { label: 'Band 6.0–6.5', variant: 'sky' },
-          Band7_0_7_5: { label: 'Band 7.0–7.5', variant: 'indigo' },
-          Band8_0_Plus: { label: 'Band 8.0–8.5+', variant: 'purple' },
+        const tierLabels: Record<string, string> = {
+          PreIelts: 'Pre-IELTS (0–3.5)',
+          Band4_0_4_5: 'Band 4.0–4.5',
+          Band5_0_5_5: 'Band 5.0–5.5',
+          Band6_0_6_5: 'Band 6.0–6.5',
+          Band7_0_7_5: 'Band 7.0–7.5',
+          Band8_0_Plus: 'Band 8.0–8.5+',
         }
-
-        const config = tierLabels[tier] || { label: 'Band 6.0–6.5', variant: 'sky' }
-        return <Badge variant={config.variant}>{config.label}</Badge>
+        return <span className="text-sm text-slate-600 dark:text-slate-300 whitespace-nowrap">{tierLabels[tier] || 'Band 6.0–6.5'}</span>
       },
       filterFn: (row, id, value) => {
         return value.includes(row.getValue(id))
@@ -98,13 +93,7 @@ export const ExamTable: React.FC<ExamTableProps> = ({ data, loading = false }) =
       ),
       cell: ({ row }) => {
         const diff = row.getValue('difficulty') as string
-        if (diff === 'Hard') {
-          return <Badge variant="destructive">Hard (Passage 3)</Badge>
-        }
-        if (diff === 'Medium') {
-          return <Badge variant="warning">Medium (Passage 2)</Badge>
-        }
-        return <Badge variant="success">Easy (Passage 1)</Badge>
+        return <StatusBadge tone={difficultyTone(diff)}>{diff}</StatusBadge>
       },
       filterFn: (row, id, value) => {
         return value.includes(row.getValue(id))
@@ -118,10 +107,7 @@ export const ExamTable: React.FC<ExamTableProps> = ({ data, loading = false }) =
       cell: ({ row }) => {
         const time = row.getValue('estimatedTimeMinutes') as number
         return (
-          <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
-            <Clock className="w-3.5 h-3.5 text-slate-400" />
-            <span>{time || 20} mins</span>
-          </div>
+          <span className="text-sm text-slate-600 dark:text-slate-300 whitespace-nowrap">{time || 20} min</span>
         )
       },
     },
@@ -133,10 +119,9 @@ export const ExamTable: React.FC<ExamTableProps> = ({ data, loading = false }) =
         return (
           <Link
             to={`/reading/exam/${item.id}`}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-red-200 dark:border-red-900/60 bg-red-50 hover:bg-red-600 dark:bg-red-950/40 text-red-600 hover:text-white dark:text-red-400 dark:hover:text-white font-bold text-xs shadow-2xs transition-all cursor-pointer group"
+            className="inline-flex items-center px-3.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-semibold whitespace-nowrap"
           >
-            <Play className="w-3 h-3 fill-current group-hover:scale-110 transition-transform" />
-            <span>Start Test</span>
+            Start
           </Link>
         )
       },
@@ -166,6 +151,7 @@ export const ExamTable: React.FC<ExamTableProps> = ({ data, loading = false }) =
       difficultyOptions={difficultyOptions}
       sourceTypeOptions={sourceTypeOptions}
       loading={loading}
+      hideToolbar
     />
   )
 }
