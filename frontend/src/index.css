@@ -2,9 +2,58 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Palette: calm blue-grey neutrals + a single red accent (replaces default slate/zinc/red). */
+@theme {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --color-slate-50: #f8f9fb;
+  --color-slate-100: #f2f4f7;
+  --color-slate-200: #e6e8ec;
+  --color-slate-300: #d3d6dc;
+  --color-slate-400: #8594a3;
+  --color-slate-500: #667085;
+  --color-slate-600: #505460;
+  --color-slate-700: #3a4052;
+  --color-slate-800: #242938;
+  --color-slate-900: #242938;
+  --color-slate-950: #171a24;
+  --color-zinc-50: #f8f9fb;
+  --color-zinc-100: #f2f4f7;
+  --color-zinc-200: #e6e8ec;
+  --color-zinc-300: #d3d6dc;
+  --color-zinc-400: #8594a3;
+  --color-zinc-500: #667085;
+  --color-zinc-600: #505460;
+  --color-zinc-700: #3a4052;
+  --color-zinc-800: #242938;
+  --color-zinc-900: #242938;
+  --color-zinc-950: #171a24;
+  --color-red-50: #fdeded;
+  --color-red-100: #fbe0e0;
+  --color-red-200: #f6c4c4;
+  --color-red-500: #d95252;
+  --color-red-600: #d14242;
+  --color-red-700: #b53030;
+  --color-amber-50: #fff6e5;
+  --color-amber-100: #ffe9bf;
+  --color-amber-500: #e8a317;
+  --color-amber-700: #a35e00;
+  --color-blue-50: #eef2fd;
+  --color-blue-700: #2243b0;
+  --color-blue-600: #2b52d4;
+  --color-blue-700: #2243b0;
+  --color-emerald-50: #ecf9ee;
+  --color-emerald-600: #329546;
+  --color-emerald-700: #287a38;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.875rem;
+  --radius-2xl: 1rem;
+  --shadow-xs: 0 1px 2px rgba(48, 64, 120, 0.07);
+  --shadow-md: 0 4px 12px rgba(48, 66, 120, 0.08);
+}
+
 @layer base {
   :root {
-    --background: 210 40% 98%;             /* Soft Slate Off-White #F8FAFC */
+    --background: 0 0% 100%;             /* Soft Slate Off-White #F8FAFC */
     --foreground: 222.2 84% 4.9%;          /* Deep Slate #0F172A */
     --card: 0 0% 100%;                     /* Pure White Content Card #FFFFFF */
     --card-foreground: 222.2 84% 4.9%;
@@ -71,7 +120,7 @@
 
 body {
   margin: 0;
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: hsl(var(--background));
