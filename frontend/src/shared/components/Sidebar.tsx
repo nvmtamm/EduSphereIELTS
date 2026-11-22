@@ -29,7 +29,8 @@ const navSections: NavSection[] = [
   {
     title: 'Overview',
     items: [
-      { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard }
+      { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+      { name: 'Learning Path', path: '/learning-path', icon: GraduationCap }
     ]
   },
   {

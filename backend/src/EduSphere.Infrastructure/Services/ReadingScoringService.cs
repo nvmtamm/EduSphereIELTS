@@ -11,6 +11,14 @@ public partial class ReadingScoringService : IReadingScoringService
         if (string.IsNullOrWhiteSpace(userAnswer) || string.IsNullOrWhiteSpace(correctAnswer))
             return false;
 
+        // "Choose TWO letters": order-insensitive set comparison, e.g. "C,A" == "A, C"
+        if (questionType is QuestionType.MultipleChoiceMulti)
+        {
+            var userSet = ToLetterSet(userAnswer);
+            var correctSet = ToLetterSet(correctAnswer);
+            return userSet.Count > 0 && userSet.SetEquals(correctSet);
+        }
+
         var cleanUser = CleanAnswer(userAnswer);
         var cleanCorrect = CleanAnswer(correctAnswer);
 
@@ -77,6 +85,12 @@ public partial class ReadingScoringService : IReadingScoringService
         // Bỏ dấu chấm ở cuối câu trả lời nếu có
         return cleaned.TrimEnd('.');
     }
+
+    private static HashSet<string> ToLetterSet(string input) =>
+        input.Split(new[] { ',', ';', '/', ' ' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(s => s.TrimEnd('.').ToUpperInvariant())
+            .Where(s => s.Length > 0)
+            .ToHashSet();
 
     private static string NormalizeTfng(string input)
     {

@@ -85,3 +85,34 @@ public class ReadingScoringServiceTests
         _sut.CalculateBandScore(8, 13).Should().Be(6.0);
     }
 }
+
+public class ReadingScoringServiceSprint39Tests
+{
+    private readonly ReadingScoringService _sut = new();
+
+    [Theory]
+    [InlineData("A,C", "A, C", true)]
+    [InlineData("C,A", "A,C", true)]
+    [InlineData("a c", "A,C", true)]
+    [InlineData("A", "A,C", false)]
+    [InlineData("A,B", "A,C", false)]
+    [InlineData("A,C,D", "A,C", false)]
+    public void IsAnswerCorrect_MultipleChoiceMulti_IsOrderInsensitive(string user, string correct, bool expected)
+    {
+        _sut.IsAnswerCorrect(user, correct, QuestionType.MultipleChoiceMulti).Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData("c", "C", true)]
+    [InlineData("B", "C", false)]
+    public void IsAnswerCorrect_MatchingInformation_MatchesParagraphLetter(string user, string correct, bool expected)
+    {
+        _sut.IsAnswerCorrect(user, correct, QuestionType.MatchingInformation).Should().Be(expected);
+    }
+
+    [Fact]
+    public void IsAnswerCorrect_ShortAnswer_AcceptsAlternativesAndTrailingDot()
+    {
+        _sut.IsAnswerCorrect("Forty-five.", "45 / forty-five", QuestionType.ShortAnswer).Should().BeTrue();
+    }
+}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   ArrowLeft, 
   Send, 
@@ -21,6 +21,8 @@ import { SynchronizedTranscript } from '../components/SynchronizedTranscript';
 import { ListeningNotepad } from '../components/ListeningNotepad';
 import { ListeningQuestionPalette } from '../components/ListeningQuestionPalette';
 import { ListeningExamTimer } from '../components/ListeningExamTimer';
+import { ExamModeSelect } from '@/shared/components/ExamModeSelect';
+import { parseExamMode } from '@/shared/components/examMode';
 import { FormCompletionRenderer } from '../components/renderers/FormCompletionRenderer';
 import { TableCompletionRenderer } from '../components/renderers/TableCompletionRenderer';
 import { ListeningMultipleChoiceRenderer } from '../components/renderers/ListeningMultipleChoiceRenderer';
@@ -33,6 +35,9 @@ import type { ListeningSessionState } from '../hooks/useListeningSessionPersist'
 export const ListeningExamPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  // practice = untimed, free replay; exam = official countdown + single audio play
+  const mode = parseExamMode(searchParams.get('mode'));
 
   const [test, setTest] = useState<ListeningTestDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -202,6 +207,18 @@ export const ListeningExamPage: React.FC = () => {
     return grouped;
   }, [test]);
 
+  if (!mode) {
+    return (
+      <ExamModeSelect
+        title={test?.title ?? 'IELTS Listening'}
+        subtitle={test ? `${test.questions.length} questions` : undefined}
+        examNote="Audio plays once"
+        onSelect={(m) => setSearchParams({ mode: m }, { replace: true })}
+        onBack={() => navigate('/listening')}
+      />
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-50 dark:bg-zinc-950 text-zinc-500">
@@ -271,6 +288,7 @@ export const ListeningExamPage: React.FC = () => {
           <ListeningExamTimer
             initialSeconds={test.durationSeconds || 1800}
             initialSecondsRemaining={secondsRemaining} // F-02: resume from saved session
+            isTimed={mode === 'exam'}
             onTimeExpired={() => setShowSubmitModal(true)}
             onTick={(s) => setSecondsRemaining(s)} // F-02: track for autosave
           />
@@ -323,7 +341,7 @@ export const ListeningExamPage: React.FC = () => {
             ? test.sectionAudios.map(s => s.audioUrl)  // F-04: multi-section audio array
             : test.audioUrl                              // single audio (legacy)
           }
-          singlePlayMode={test.isOfficialExamMode}       // F-01: Cambridge one-play lock
+          singlePlayMode={mode === 'exam'}       // F-01: Cambridge one-play lock
           onTimeUpdate={(time) => setCurrentAudioTime(time)}
           seekTime={seekTime}
           compact

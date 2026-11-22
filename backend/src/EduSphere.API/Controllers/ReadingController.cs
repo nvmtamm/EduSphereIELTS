@@ -5,6 +5,7 @@ using EduSphere.Application.Features.Reading.Models;
 using EduSphere.Application.Features.Reading.Queries.AskReadingAITutor;
 using EduSphere.Application.Features.Reading.Queries.GetBandRoadmaps;
 using EduSphere.Application.Features.Reading.Queries.GetBandVocabularies;
+using EduSphere.Application.Features.Reading.Queries.GetReadingHint;
 using EduSphere.Application.Features.Reading.Queries.GetReadingPassageById;
 using EduSphere.Application.Features.Reading.Queries.GetReadingPassages;
 using EduSphere.Application.Features.Reading.Queries.GetReadingSubmissionById;
@@ -87,6 +88,18 @@ public class ReadingController : ApiControllerBase
     {
         var query = new AskReadingAITutorQuery(request.PassageId, request.Question, request.ActiveQuestionPrompt, request.IsPostExamReview);
         var result = await Mediator.Send(query, ct);
+        return HandleResult(result);
+    }
+
+    /// <summary>
+    /// Practice mode hint ladder: step 1 Understand, 2 Locate, 3 Read evidence, 4 Check &amp; choose
+    /// </summary>
+    [HttpGet("passages/{passageId:guid}/questions/{questionId:guid}/hint")]
+    [ProducesResponseType(typeof(ReadingHintDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetHint(Guid passageId, Guid questionId, [FromQuery] int step = 1, CancellationToken ct = default)
+    {
+        var result = await Mediator.Send(new GetReadingHintQuery(passageId, questionId, step), ct);
         return HandleResult(result);
     }
 

@@ -5,6 +5,9 @@ export type QuestionType =
   | 'MatchingHeadings'
   | 'SummaryCompletion'
   | 'SentenceCompletion'
+  | 'MatchingInformation'
+  | 'MultipleChoiceMulti'
+  | 'ShortAnswer'
 
 export type DifficultyLevel = 'Easy' | 'Medium' | 'Hard'
 
@@ -170,4 +173,13 @@ export interface PagedList<T> {
   totalPages: number
   hasPreviousPage: boolean
   hasNextPage: boolean
+}
+
+export interface ReadingHint {
+  step: number
+  title: string
+  content: string
+  keywords: string[]
+  relevantParagraph?: string | null
+  hasNextStep: boolean
 }

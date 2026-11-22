@@ -97,6 +97,21 @@ public static class EnvLoader
                 case "GEMINI_API_KEY_GENERATOR":
                     inMemoryConfig["Gemini:GeneratorKey"] = val;
                     break;
+                case "GOOGLE_GENAI_USE_VERTEXAI":
+                    inMemoryConfig["Vertex:Enabled"] = val;
+                    break;
+                case "GOOGLE_CLOUD_PROJECT":
+                    inMemoryConfig["Vertex:Project"] = val;
+                    break;
+                case "GOOGLE_CLOUD_LOCATION":
+                    inMemoryConfig["Vertex:Location"] = val;
+                    break;
+                case "GOOGLE_APPLICATION_CREDENTIALS":
+                    inMemoryConfig["Vertex:CredentialsPath"] = val;
+                    break;
+                case "VERTEX_GEMINI_MODEL":
+                    inMemoryConfig["Vertex:Model"] = val;
+                    break;
                 case "GEMINI_CHAT_MODEL":
                     inMemoryConfig["Gemini:ChatModel"] = val;
                     break;

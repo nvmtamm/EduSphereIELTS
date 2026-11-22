@@ -431,3 +431,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Local service-account credentials (never commit)
+secrets/

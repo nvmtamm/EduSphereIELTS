@@ -29,6 +29,14 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<ListeningSubmissionAnswer> ListeningSubmissionAnswers => Set<ListeningSubmissionAnswer>();
     public DbSet<ListeningSectionAudio> ListeningSectionAudios => Set<ListeningSectionAudio>(); // F-04
 
+    // Learning Path
+    public DbSet<LearningLesson> LearningLessons => Set<LearningLesson>();
+    public DbSet<UserLessonProgress> UserLessonProgresses => Set<UserLessonProgress>();
+
+    // Writing
+    public DbSet<WritingPrompt> WritingPrompts => Set<WritingPrompt>();
+    public DbSet<WritingSubmission> WritingSubmissions => Set<WritingSubmission>();
+
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {

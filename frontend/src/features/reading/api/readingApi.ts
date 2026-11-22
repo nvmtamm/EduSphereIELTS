@@ -8,6 +8,7 @@ import type {
   BandRoadmap,
   BandVocabulary,
   AITutorMessage,
+  ReadingHint,
   DocumentIngestPayload,
   DocumentIngestResult
 } from '../types/reading.types'
@@ -50,6 +51,13 @@ export const readingApi = {
     isPostExamReview?: boolean
   }): Promise<AITutorMessage> => {
     const res = await apiClient.post<AITutorMessage>('/reading/ai-tutor', payload)
+    return res.data
+  },
+
+  getHint: async (passageId: string, questionId: string, step: number): Promise<ReadingHint> => {
+    const res = await apiClient.get<ReadingHint>(`/reading/passages/${passageId}/questions/${questionId}/hint`, {
+      params: { step }
+    })
     return res.data
   },
 

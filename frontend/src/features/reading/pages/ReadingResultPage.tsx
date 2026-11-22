@@ -35,6 +35,13 @@ export const ReadingResultPage: React.FC = () => {
         setLoading(true)
         const data = await readingApi.getSubmissionById(id)
         setResult(data)
+        try {
+          const done = new Set<string>(JSON.parse(localStorage.getItem('reading.completedPassages') ?? '[]'))
+          done.add(data.passageId)
+          localStorage.setItem('reading.completedPassages', JSON.stringify([...done]))
+        } catch {
+          /* storage unavailable */
+        }
       } catch (err) {
         console.error('Failed to load exam result', err)
       } finally {
@@ -235,6 +242,7 @@ export const ReadingResultPage: React.FC = () => {
       {/* Explanation Modal */}
       <ExplanationModal
         answer={selectedAnswerForModal}
+        passageId={result.passageId}
         onClose={() => setSelectedAnswerForModal(null)}
       />
 
