@@ -77,19 +77,19 @@ export const WritingResultPage: React.FC = () => {
         <ArrowLeft className="w-4 h-4" /> Back to Writing
       </Link>
 
-      <div className="rounded-3xl bg-zinc-950 p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="rounded-2xl bg-zinc-950 p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-1">
-          <span className="text-[11px] font-bold text-red-400 uppercase">{taskLabel(sub.taskType)} · {sub.wordCount} words</span>
-          <h1 className="text-xl font-black text-white">{sub.promptTitle}</h1>
+          <span className="text-xs font-bold text-red-400">{taskLabel(sub.taskType)} · {sub.wordCount} words</span>
+          <h1 className="text-xl font-bold text-white">{sub.promptTitle}</h1>
           <p className="text-xs text-zinc-400">Graded by: {fb.gradedBy === 'Gemini' ? 'AI examiner' : 'Offline estimate (no AI key configured)'}</p>
         </div>
-        <div className="p-5 rounded-2xl bg-red-600 text-center min-w-[130px]">
-          <span className="text-[11px] font-bold text-red-100 uppercase">Overall band</span>
-          <div className="text-5xl font-black text-white">{sub.overallBand.toFixed(1)}</div>
+        <div className="p-5 rounded-xl bg-red-600 text-center min-w-[130px]">
+          <span className="text-xs font-bold text-red-100">Overall band</span>
+          <div className="text-5xl font-bold text-white">{sub.overallBand.toFixed(1)}</div>
         </div>
       </div>
 
-      <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
+      <div className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
         <RadarChart values={[
           { label: 'TR', value: sub.taskResponse },
           { label: 'CC', value: sub.coherenceCohesion },
@@ -100,11 +100,11 @@ export const WritingResultPage: React.FC = () => {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {CRITERIA.map((c) => (
-          <div key={c.key} className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
-            <p className="text-[11px] font-bold text-slate-500">{c.label}</p>
-            <p className="text-2xl font-black text-slate-900 dark:text-white">{sub[c.key].toFixed(1)}</p>
+          <div key={c.key} className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
+            <p className="text-xs font-bold text-slate-500">{c.label}</p>
+            <p className={`text-2xl font-bold ${sub[c.key] >= 6.5 ? 'text-emerald-600' : sub[c.key] >= 5.5 ? 'text-slate-900 dark:text-white' : 'text-amber-700'}`}>{sub[c.key].toFixed(1)}</p>
             <div className="h-1.5 mt-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
-              <div className="h-full bg-red-600" style={{ width: `${(sub[c.key] / 9) * 100}%` }} />
+              <div className="h-full bg-blue-600" style={{ width: `${(sub[c.key] / 9) * 100}%` }} />
             </div>
           </div>
         ))}
@@ -126,7 +126,7 @@ export const WritingResultPage: React.FC = () => {
       {tab === 'evaluation' ? (
         <div className="space-y-6">
           {fb.lengthPenaltyApplied && (
-            <p className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 text-xs font-bold text-amber-800 dark:text-amber-300">
+            <p className="px-4 py-3 rounded-xl border-l-4 border-amber-500 bg-amber-50 dark:bg-amber-950/30 text-sm text-amber-800 dark:text-amber-300">
               Your essay is under the minimum word count, so Task Response was capped.
             </p>
           )}
@@ -134,15 +134,15 @@ export const WritingResultPage: React.FC = () => {
 
           <div className="grid md:grid-cols-2 gap-3">
             {CRITERIA.map((c) => (
-              <div key={c.key} className="p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900">
-                <p className="text-xs font-black text-slate-900 dark:text-white mb-1">{c.label}</p>
+              <div key={c.key} className="p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900">
+                <p className="text-xs font-bold text-slate-900 dark:text-white mb-1">{c.label}</p>
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{fb.criterionComments[c.key] ?? '—'}</p>
               </div>
             ))}
           </div>
 
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
-            <p className="text-xs font-black text-slate-900 dark:text-white mb-3">Your essay (mistakes underlined)</p>
+          <div className="p-5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
+            <p className="text-xs font-bold text-slate-900 dark:text-white mb-3">Your essay (mistakes underlined)</p>
             <p className="text-sm leading-7 whitespace-pre-wrap text-slate-800 dark:text-slate-200">
               <HighlightedEssay essay={sub.essay} quotes={fb.errors.map((e) => e.quote)} />
             </p>
@@ -150,10 +150,10 @@ export const WritingResultPage: React.FC = () => {
 
           {fb.errors.length > 0 && (
             <div className="space-y-2">
-              <p className="text-xs font-black text-slate-900 dark:text-white">Corrections</p>
+              <p className="text-xs font-bold text-slate-900 dark:text-white">Corrections</p>
               {fb.errors.map((e, i) => (
                 <div key={i} className="p-3 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs space-y-1">
-                  <span className="px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 font-bold text-[10px]">{e.category}</span>
+                  <span className="px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 font-bold text-xs">{e.category}</span>
                   <p><span className="line-through text-rose-600">{e.quote}</span> → <strong className="text-emerald-700 dark:text-emerald-400">{e.correction}</strong></p>
                   <p className="text-slate-500">{e.explanation}</p>
                 </div>
@@ -163,7 +163,7 @@ export const WritingResultPage: React.FC = () => {
 
           {fb.vocabularySuggestions.length > 0 && (
             <div>
-              <p className="text-xs font-black text-slate-900 dark:text-white mb-2">Vocabulary upgrades</p>
+              <p className="text-xs font-bold text-slate-900 dark:text-white mb-2">Vocabulary upgrades</p>
               <div className="flex flex-wrap gap-2">
                 {fb.vocabularySuggestions.map((v) => (
                   <span key={v} className="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">{v}</span>
@@ -174,12 +174,12 @@ export const WritingResultPage: React.FC = () => {
         </div>
       ) : (
         <div className="space-y-4">
-          <div className="p-4 rounded-2xl bg-sky-50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-900 text-xs text-slate-700 dark:text-slate-300">
-            <p className="font-black mb-1">Outline</p>
+          <div className="p-4 rounded-xl bg-sky-50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-900 text-xs text-slate-700 dark:text-slate-300">
+            <p className="font-bold mb-1">Outline</p>
             {sub.outline}
           </div>
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
-            <p className="text-xs font-black mb-3">Model answer (≈ band {sub.modelBand.toFixed(1)})</p>
+          <div className="p-5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
+            <p className="text-xs font-bold mb-3">Model answer (≈ band {sub.modelBand.toFixed(1)})</p>
             <p className="text-sm leading-7 whitespace-pre-wrap text-slate-800 dark:text-slate-200">{sub.modelEssay}</p>
           </div>
         </div>

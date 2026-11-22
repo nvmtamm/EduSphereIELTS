@@ -85,7 +85,7 @@ export const WritingWorkspacePage: React.FC = () => {
       <Group orientation="horizontal" className="flex-1">
         <Panel defaultSize={42} minSize={25}>
           <div className="h-full overflow-y-auto p-6 bg-white dark:bg-slate-950 space-y-4">
-            <h1 className="text-lg font-black text-slate-900 dark:text-white">{prompt.title}</h1>
+            <h1 className="text-lg font-bold text-slate-900 dark:text-white">{prompt.title}</h1>
             <p className="text-sm leading-relaxed text-slate-800 dark:text-slate-200">{prompt.promptText}</p>
             {prompt.dataText && (
               <table className="text-xs border border-slate-200 dark:border-slate-700">

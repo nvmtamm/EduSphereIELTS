@@ -14,7 +14,7 @@ const Markdown: React.FC<{ source: string }> = ({ source }) => (
   <div className="space-y-4">
     {source.split(/\n{2,}/).map((block, i) =>
       block.startsWith('## ') ? (
-        <h2 key={i} className="text-xl font-black text-slate-900 dark:text-white">{block.slice(3)}</h2>
+        <h2 key={i} className="text-xl font-bold text-slate-900 dark:text-white">{block.slice(3)}</h2>
       ) : (
         <p key={i} className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">{inline(block)}</p>
       )
@@ -60,20 +60,20 @@ export const LessonPage: React.FC = () => {
       </Link>
 
       <div>
-        <span className="text-[11px] font-black text-red-600 uppercase tracking-wider">{lesson.stageTitle} · {lesson.code}</span>
-        <h1 className="text-2xl font-black text-slate-900 dark:text-white mt-1">{lesson.title}</h1>
+        <span className="text-xs font-bold text-red-600">{lesson.stageTitle} · {lesson.code}</span>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{lesson.title}</h1>
       </div>
 
-      <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
+      <div className="p-6 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
         <Markdown source={lesson.summaryMarkdown} />
       </div>
 
       <div className="space-y-2">
-        <h3 className="text-sm font-black text-slate-900 dark:text-white">Lesson activities</h3>
+        <h3 className="text-sm font-bold text-slate-900 dark:text-white">Lesson activities</h3>
         {items.map((it, i) => (
           <div key={i} className="flex items-center justify-between p-3 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900">
             <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
-              <span className="uppercase text-[10px] text-red-600 mr-2">{it.type}</span>{it.title}
+              <span className="uppercase text-xs text-red-600 mr-2">{it.type}</span>{it.title}
             </span>
             {it.route && (
               <Link to={it.route} className="inline-flex items-center gap-1 text-xs font-bold text-red-600 hover:underline">
