@@ -61,6 +61,10 @@ public static class DependencyInjection
         {
             client.Timeout = TimeSpan.FromSeconds(60);
         });
+        services.AddHttpClient<IWritingScorerService, SemanticKernelWritingScorer>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(120);
+        });
 
         // 6. Cloud Media Storage (AWS S3)
         // Registers as singleton since S3 client is thread-safe and stateless

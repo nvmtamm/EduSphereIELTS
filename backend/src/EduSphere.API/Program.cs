@@ -89,6 +89,8 @@ using (var scope = app.Services.CreateScope())
         await db.Database.MigrateAsync();
         await ReadingDataSeeder.SeedAsync(db);
         await ListeningDataSeeder.SeedAsync(db);
+        await WritingDataSeeder.SeedAsync(db);
+        await AdminUserSeeder.SeedAsync(db);
     }
     catch (Exception ex)
     {

@@ -27,5 +27,9 @@ public interface IApplicationDbContext
     DbSet<ListeningSubmissionAnswer> ListeningSubmissionAnswers { get; }
     DbSet<ListeningSectionAudio> ListeningSectionAudios { get; } // F-04
 
+    // Writing
+    DbSet<WritingPrompt> WritingPrompts { get; }
+    DbSet<WritingSubmission> WritingSubmissions { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -11,8 +11,12 @@ import {
   Bot,
   ChevronLeft,
   ChevronRight,
-  GraduationCap
+  GraduationCap,
+  Users,
+  Library,
+  ShieldCheck
 } from 'lucide-react'
+import { useAuth } from '../hooks/useAuth'
 
 interface NavItem {
   name: string
@@ -51,10 +55,22 @@ const navSections: NavSection[] = [
   }
 ]
 
+const adminSection: NavSection = {
+  title: 'Administration',
+  items: [
+    { name: 'Admin Overview', path: '/admin/dashboard', icon: ShieldCheck },
+    { name: 'User Management', path: '/admin/users', icon: Users },
+    { name: 'Exam Bank', path: '/admin/exam-bank', icon: Library }
+  ]
+}
+
 export const Sidebar: React.FC = () => {
+  const { user } = useAuth()
   const [collapsed, setCollapsed] = useState<boolean>(() => {
     return localStorage.getItem('edusphere_sidebar_collapsed') === 'true'
   })
+
+  const sections = user?.role === 'Admin' ? [...navSections, adminSection] : navSections
 
   useEffect(() => {
     localStorage.setItem('edusphere_sidebar_collapsed', String(collapsed))
@@ -115,7 +131,7 @@ export const Sidebar: React.FC = () => {
 
         {/* Navigation sections */}
         <nav className="p-3 space-y-4 overflow-y-auto max-h-[calc(100vh-80px)]">
-          {navSections.map((section, sIdx) => (
+          {sections.map((section, sIdx) => (
             <div key={sIdx} className="space-y-1.5">
               {!collapsed && (
                 <p className="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">

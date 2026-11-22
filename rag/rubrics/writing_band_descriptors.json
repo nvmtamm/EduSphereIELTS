@@ -1,0 +1,62 @@
+{
+  "task1": {
+    "task_achievement": {
+      "9": "Fully satisfies all the requirements of the task. Clearly presents a fully developed response with an insightful overview and comprehensive supporting data.",
+      "8": "Covers all requirements of the task appropriately, relevantly and sufficiently. Presents a clear overview of main trends, differences or stages. Highlights key features clearly and appropriately.",
+      "7": "Covers the requirements of the task. Presents a clear overview of main trends, differences or stages. Clearly presents and highlights key features but could be more fully extended.",
+      "6": "Addresses the requirements of the task. Presents an overview with information appropriately selected. Highlights key features but some details may be irrelevant, inappropriate or inaccurate.",
+      "5": "Generally addresses the task; the format may be inappropriate in places. Recounts detail mechanically with no clear overview. May present key features but lack data."
+    },
+    "coherence_and_cohesion": {
+      "9": "Uses cohesion in such a way that it attracts no attention. Skillfully manages paragraphing.",
+      "8": "Sequences information and ideas logically. Manages all aspects of cohesion well. Uses paragraphing sufficiently and appropriately.",
+      "7": "Logically organises information and ideas; there is clear progression throughout. Uses a range of cohesive devices appropriately although there may be some under-/over-use.",
+      "6": "Arranges information and ideas coherently and there is a clear overall progression. Uses cohesive devices effectively, but cohesion within and/or between sentences may be faulty or mechanical.",
+      "5": "Presents information with some organisation but there may be a lack of overall progression. Makes inadequate, inaccurate or over-use of cohesive devices."
+    },
+    "lexical_resource": {
+      "9": "Uses a wide range of vocabulary with very natural and sophisticated control of lexical features; rare minor errors occur only as 'slips'.",
+      "8": "Uses a wide range of vocabulary fluently and flexibly to convey precise meanings. Skillfully uses uncommon lexical items, with rare inaccuracies in word choice and collocation.",
+      "7": "Uses a sufficient range of vocabulary to allow some flexibility and precision. Uses less common lexical items with some awareness of style and collocation.",
+      "6": "Uses an adequate range of vocabulary for the task. Attempts to use less common vocabulary but with some inaccuracy. Makes some errors in spelling and/or word formation.",
+      "5": "Uses a limited range of vocabulary, but this is minimally adequate for the task. May make noticeable errors in spelling and/or word formation that cause some difficulty for the reader."
+    },
+    "grammatical_range_and_accuracy": {
+      "9": "Uses a wide range of structures with full flexibility and accuracy; rare minor errors occur only as 'slips'.",
+      "8": "Uses a wide range of structures. The majority of sentences are error-free. Makes only very occasional errors or non-systematic inaccuracies.",
+      "7": "Uses a variety of complex structures. Produces frequent error-free sentences. Has good control of grammar and punctuation but may make a few errors.",
+      "6": "Uses a mix of simple and complex sentence forms. Makes some errors in grammar and punctuation but they rarely reduce communication.",
+      "5": "Uses only a limited range of structures. Attempts complex sentences but these tend to be less accurate than simple sentences."
+    }
+  },
+  "task2": {
+    "task_response": {
+      "9": "Fully addresses all parts of the task. Presents a fully developed position in answer to the question with relevant, fully extended and well supported ideas.",
+      "8": "Sufficiently addresses all parts of the task. Presents a well-developed response to the question with relevant, extended and supported ideas.",
+      "7": "Addresses all parts of the task. Presents a clear position throughout the response. Presents, extends and supports main ideas, but there may be a tendency to over-generalise.",
+      "6": "Addresses all parts of the task although some parts may be more fully covered than others. Presents a relevant position although the conclusions may become unclear or repetitive.",
+      "5": "Addresses the task only partially; the format may be inappropriate in places. Expresses a position but the development is not always clear."
+    },
+    "coherence_and_cohesion": {
+      "9": "Uses cohesion in such a way that it attracts no attention. Skillfully manages paragraphing.",
+      "8": "Sequences information and ideas logically. Manages all aspects of cohesion well. Uses paragraphing sufficiently and appropriately.",
+      "7": "Logically organises information and ideas; there is clear progression throughout. Uses a range of cohesive devices appropriately although there may be some under-/over-use.",
+      "6": "Arranges information and ideas coherently and there is a clear overall progression. Uses cohesive devices effectively, but cohesion within and/or between sentences may be faulty or mechanical.",
+      "5": "Presents information with some organisation but there may be a lack of overall progression. Makes inadequate, inaccurate or over-use of cohesive devices."
+    },
+    "lexical_resource": {
+      "9": "Uses a wide range of vocabulary with very natural and sophisticated control of lexical features; rare minor errors occur only as 'slips'.",
+      "8": "Uses a wide range of vocabulary fluently and flexibly to convey precise meanings. Skillfully uses uncommon lexical items, with rare inaccuracies in word choice and collocation.",
+      "7": "Uses a sufficient range of vocabulary to allow some flexibility and precision. Uses less common lexical items with some awareness of style and collocation.",
+      "6": "Uses an adequate range of vocabulary for the task. Attempts to use less common vocabulary but with some inaccuracy. Makes some errors in spelling and/or word formation.",
+      "5": "Uses a limited range of vocabulary, but this is minimally adequate for the task. May make noticeable errors in spelling and/or word formation that cause some difficulty for the reader."
+    },
+    "grammatical_range_and_accuracy": {
+      "9": "Uses a wide range of structures with full flexibility and accuracy; rare minor errors occur only as 'slips'.",
+      "8": "Uses a wide range of structures. The majority of sentences are error-free. Makes only very occasional errors or non-systematic inaccuracies.",
+      "7": "Uses a variety of complex structures. Produces frequent error-free sentences. Has good control of grammar and punctuation but may make a few errors.",
+      "6": "Uses a mix of simple and complex sentence forms. Makes some errors in grammar and punctuation but they rarely reduce communication.",
+      "5": "Uses only a limited range of structures. Attempts complex sentences but these tend to be less accurate than simple sentences."
+    }
+  }
+}

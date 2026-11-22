@@ -12,8 +12,15 @@ import { ListeningListPage } from '@/features/listening/pages/ListeningListPage'
 import { ListeningExamPage } from '@/features/listening/pages/ListeningExamPage'
 import { ListeningResultPage } from '@/features/listening/pages/ListeningResultPage'
 import { ListeningDictationPage } from '@/features/listening/pages/ListeningDictationPage'
+import { WritingListPage } from '@/features/writing/pages/WritingListPage'
+import { WritingExamPage } from '@/features/writing/pages/WritingExamPage'
+import { WritingResultPage } from '@/features/writing/pages/WritingResultPage'
+import { AdminDashboardPage } from '@/features/admin/pages/AdminDashboardPage'
+import { AdminUsersPage } from '@/features/admin/pages/AdminUsersPage'
+import { AdminExamBankPage } from '@/features/admin/pages/AdminExamBankPage'
 import { Layout } from '@/shared/components/Layout'
 import { ProtectedRoute } from '@/shared/components/ProtectedRoute'
+import { AdminRoute } from '@/shared/components/AdminRoute'
 
 export const router = createBrowserRouter([
   // Public Auth Routes
@@ -47,6 +54,10 @@ export const router = createBrowserRouter([
         path: '/listening/exam/:id',
         element: <ListeningExamPage />
       },
+      {
+        path: '/writing/exam/:id',
+        element: <WritingExamPage />
+      },
 
       // App Shell with Sidebar & Header
       {
@@ -78,12 +89,11 @@ export const router = createBrowserRouter([
           },
           {
             path: '/writing',
-            element: (
-              <div className="p-8 text-center bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800">
-                <h2 className="text-xl font-black text-zinc-950 dark:text-white">IELTS Writing AI Evaluator</h2>
-                <p className="text-sm text-zinc-500 mt-2">Automated Band Scoring & Detailed Criterion Feedback</p>
-              </div>
-            )
+            element: <WritingListPage />
+          },
+          {
+            path: '/writing/result/:id',
+            element: <WritingResultPage />
           },
           {
             path: '/speaking',
@@ -120,6 +130,25 @@ export const router = createBrowserRouter([
                 <p className="text-sm text-zinc-500 mt-2">Socratic Hints, Passage Context Analysis & Strategy Guidance</p>
               </div>
             )
+          },
+
+          // Admin Protected Routes
+          {
+            element: <AdminRoute />,
+            children: [
+              {
+                path: '/admin/dashboard',
+                element: <AdminDashboardPage />
+              },
+              {
+                path: '/admin/users',
+                element: <AdminUsersPage />
+              },
+              {
+                path: '/admin/exam-bank',
+                element: <AdminExamBankPage />
+              }
+            ]
           }
         ]
       }

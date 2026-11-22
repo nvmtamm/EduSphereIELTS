@@ -3,6 +3,7 @@ export interface User {
   fullName: string
   email: string
   role: 'Student' | 'Admin'
+  isActive?: boolean
   targetBandScore?: number
   createdAt: string
 }
