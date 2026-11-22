@@ -28,24 +28,24 @@ export const ExamModeSelect: React.FC<ExamModeSelectProps> = ({ title, subtitle,
         <ArrowLeft className="w-4 h-4" />
       </button>
       <div className="min-w-0">
-        <p className="text-sm font-extrabold text-slate-900 dark:text-white truncate">{title}</p>
-        {subtitle && <p className="text-[11px] text-slate-500 truncate">{subtitle}</p>}
+        <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{title}</p>
+        {subtitle && <p className="text-xs text-slate-500 truncate">{subtitle}</p>}
       </div>
     </header>
 
     <main className="flex-1 flex items-center justify-center p-4 sm:p-8">
       <div className="w-full max-w-3xl space-y-5">
         <div className="text-center space-y-1">
-          <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">Choose how you want to take this test</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Choose how you want to take this test</h1>
           <p className="text-xs sm:text-sm text-slate-500">You can retake it in the other mode at any time.</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <section className="rounded-2xl border border-sky-200 dark:border-sky-900/60 bg-white dark:bg-zinc-900 p-5 space-y-4 flex flex-col">
-            <div className="flex items-center gap-2 text-sky-600 dark:text-sky-400 text-xs font-black uppercase tracking-wider">
+          <section className="rounded-xl border border-sky-200 dark:border-sky-900/60 bg-white dark:bg-zinc-900 p-5 space-y-4 flex flex-col">
+            <div className="flex items-center gap-2 text-sky-600 dark:text-sky-400 text-xs font-bold">
               <GraduationCap className="w-4 h-4" /> Practice
             </div>
-            <h2 className="text-lg font-black text-slate-900 dark:text-white">Practice mode</h2>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Practice mode</h2>
             <p className="text-xs text-slate-500">Learn the method with guided help while you work.</p>
             <ul className="space-y-2 text-xs text-slate-700 dark:text-slate-300 flex-1">
               <li className="flex items-center gap-2"><Clock className="w-3.5 h-3.5 text-sky-500" /> No countdown timer</li>
@@ -61,11 +61,11 @@ export const ExamModeSelect: React.FC<ExamModeSelectProps> = ({ title, subtitle,
             </button>
           </section>
 
-          <section className="rounded-2xl border border-emerald-200 dark:border-emerald-900/60 bg-white dark:bg-zinc-900 p-5 space-y-4 flex flex-col">
-            <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-xs font-black uppercase tracking-wider">
+          <section className="rounded-xl border border-emerald-200 dark:border-emerald-900/60 bg-white dark:bg-zinc-900 p-5 space-y-4 flex flex-col">
+            <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-xs font-bold">
               <ShieldCheck className="w-4 h-4" /> Real exam
             </div>
-            <h2 className="text-lg font-black text-slate-900 dark:text-white">Real exam mode</h2>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Real exam mode</h2>
             <p className="text-xs text-slate-500">Test yourself under official conditions.</p>
             <ul className="space-y-2 text-xs text-slate-700 dark:text-slate-300 flex-1">
               <li className="flex items-center gap-2"><Clock className="w-3.5 h-3.5 text-emerald-500" /> Official countdown timer{examNote ? ` · ${examNote}` : ''}</li>

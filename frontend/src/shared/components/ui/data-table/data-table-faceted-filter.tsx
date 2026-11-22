@@ -56,7 +56,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                 {selectedValues.size > 2 ? (
                   <Badge
                     variant="secondary"
-                    className="rounded-sm px-1.5 font-bold text-[10px]"
+                    className="rounded-sm px-1.5 font-bold text-xs"
                   >
                     {selectedValues.size} selected
                   </Badge>
@@ -67,7 +67,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                       <Badge
                         variant="secondary"
                         key={option.value}
-                        className="rounded-sm px-1.5 font-bold text-[10px]"
+                        className="rounded-sm px-1.5 font-bold text-xs"
                       >
                         {option.label}
                       </Badge>
@@ -78,7 +78,7 @@ export function DataTableFacetedFilter<TData, TValue>({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0 z-50 rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 shadow-xl" align="start">
+      <PopoverContent className="w-[200px] p-0 z-50 rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 shadow-md" align="start">
         <Command>
           <CommandInput placeholder={title} />
           <CommandList>
@@ -116,7 +116,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     )}
                     <span>{option.label}</span>
                     {facets?.get(option.value) && (
-                      <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-[10px] text-zinc-400">
+                      <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs text-zinc-400">
                         {facets.get(option.value)}
                       </span>
                     )}

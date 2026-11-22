@@ -25,6 +25,7 @@ interface DataTableProps<TData, TValue> {
   difficultyOptions?: { label: string; value: string }[]
   sourceTypeOptions?: { label: string; value: string }[]
   loading?: boolean
+  hideToolbar?: boolean
 }
 
 export function DataTable<TData, TValue>({
@@ -35,6 +36,7 @@ export function DataTable<TData, TValue>({
   difficultyOptions,
   sourceTypeOptions,
   loading = false,
+  hideToolbar = false,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
@@ -68,17 +70,17 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-3.5">
-      <DataTableToolbar
+      {!hideToolbar && <DataTableToolbar
         table={table}
         searchColumnKey={searchColumnKey}
         searchPlaceholder={searchPlaceholder}
         difficultyOptions={difficultyOptions}
         sourceTypeOptions={sourceTypeOptions}
-      />
-      <div className="rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 overflow-hidden shadow-sm">
+      />}
+      <div className="rounded-2xl bg-white dark:bg-slate-900 overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-zinc-50 dark:bg-zinc-900/70 border-b border-zinc-200 dark:border-zinc-800 text-zinc-500">
+            <thead className="border-b border-slate-200 dark:border-slate-800 text-slate-500">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {

@@ -104,8 +104,8 @@ export const router = createBrowserRouter([
           {
             path: '/speaking',
             element: (
-              <div className="p-8 text-center bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800">
-                <h2 className="text-xl font-black text-zinc-950 dark:text-white">IELTS Speaking AI Examiner</h2>
+              <div className="p-8 text-center bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800">
+                <h2 className="text-xl font-bold text-zinc-950 dark:text-white">IELTS Speaking AI Examiner</h2>
                 <p className="text-sm text-zinc-500 mt-2">Real-time Voice Recognition & Fluency Analysis</p>
               </div>
             )
@@ -113,8 +113,8 @@ export const router = createBrowserRouter([
           {
             path: '/vocabulary',
             element: (
-              <div className="p-8 text-center bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800">
-                <h2 className="text-xl font-black text-zinc-950 dark:text-white">Academic Vocabulary Decks</h2>
+              <div className="p-8 text-center bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800">
+                <h2 className="text-xl font-bold text-zinc-950 dark:text-white">Academic Vocabulary Decks</h2>
                 <p className="text-sm text-zinc-500 mt-2">Spaced Repetition Flashcards & Active Retention</p>
               </div>
             )
@@ -122,8 +122,8 @@ export const router = createBrowserRouter([
           {
             path: '/mock-test',
             element: (
-              <div className="p-8 text-center bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800">
-                <h2 className="text-xl font-black text-zinc-950 dark:text-white">Full Mock Test Simulation</h2>
+              <div className="p-8 text-center bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800">
+                <h2 className="text-xl font-bold text-zinc-950 dark:text-white">Full Mock Test Simulation</h2>
                 <p className="text-sm text-zinc-500 mt-2">Full Cambridge Timed Exam Simulation (180 minutes)</p>
               </div>
             )
@@ -131,8 +131,8 @@ export const router = createBrowserRouter([
           {
             path: '/ai-tutor',
             element: (
-              <div className="p-8 text-center bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800">
-                <h2 className="text-xl font-black text-zinc-950 dark:text-white">24/7 IELTS AI Reading Coach</h2>
+              <div className="p-8 text-center bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800">
+                <h2 className="text-xl font-bold text-zinc-950 dark:text-white">24/7 IELTS AI Reading Coach</h2>
                 <p className="text-sm text-zinc-500 mt-2">Socratic Hints, Passage Context Analysis & Strategy Guidance</p>
               </div>
             )
