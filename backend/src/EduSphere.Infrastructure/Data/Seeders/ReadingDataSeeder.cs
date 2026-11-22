@@ -152,6 +152,60 @@ In a typical entangled photon protocol, any eavesdropping attempt inevitably col
             context.ReadingPassages.Add(p4);
         }
 
+        if (!existingPassages.Any(p => p.Title.Contains("Waggle Dance")))
+        {
+            var p5 = new ReadingPassage(
+                title: "The Waggle Dance of Honey Bees",
+                topic: "Biology & Animal Behaviour",
+                difficulty: DifficultyLevel.Medium,
+                content: @"### Paragraph A
+Honey bees communicate the location of food through a remarkable figure-of-eight movement known as the waggle dance. When a forager returns to the hive after discovering a rich patch of flowers, she climbs onto the vertical comb and begins to dance while surrounded by her nestmates.
+
+### Paragraph B
+The angle of the straight central run of the dance, measured against the vertical, corresponds to the angle between the sun and the food source. The duration of the run signals distance: roughly one second of waggling indicates a source about a kilometre away.
+
+### Paragraph C
+Karl von Frisch, an Austrian ethologist, decoded the dance during the 1940s and shared a Nobel Prize in 1973 for his work. Critics initially doubted that insects could transmit such abstract information, and it took decades of experiments, including the use of robotic bees, to convince them.
+
+### Paragraph D
+Recent research shows that bees also adjust the dance to the quality of the resource. Foragers that find sweeter nectar dance for longer, recruiting more followers. Colonies therefore allocate workers efficiently without any central control.
+
+### Paragraph E
+Not every species relies on the dance. Some stingless bees leave scent trails instead, and bumblebees alert nestmates by buzzing but cannot indicate direction. Scientists believe the waggle dance evolved gradually from simpler ancestral signals.",
+                estimatedTimeMinutes: 15,
+                sourceType: PassageSourceType.OfficialCambridge,
+                collectionName: "EduSphere Question-Type Lab",
+                targetBandTier: TargetBandTier.Band6_0_6_5);
+
+            var letters = JsonSerializer.Serialize(new[] { "A", "B", "C", "D", "E" });
+
+            p5.AddQuestion(new ReadingQuestion(p5.Id, 1, QuestionType.MatchingInformation,
+                "a reference to how the dance changes with the quality of food",
+                letters, "D", "Paragraph D: foragers that find sweeter nectar dance for longer."));
+            p5.AddQuestion(new ReadingQuestion(p5.Id, 2, QuestionType.MatchingInformation,
+                "a mention of a prize awarded for decoding the dance",
+                letters, "C", "Paragraph C: von Frisch shared a Nobel Prize in 1973."));
+            p5.AddQuestion(new ReadingQuestion(p5.Id, 3, QuestionType.MatchingInformation,
+                "an account of species that use other methods to communicate",
+                letters, "E", "Paragraph E: stingless bees use scent trails; bumblebees buzz."));
+            p5.AddQuestion(new ReadingQuestion(p5.Id, 4, QuestionType.MultipleChoiceMulti,
+                "Choose TWO letters. Which TWO things does the waggle dance communicate?",
+                JsonSerializer.Serialize(new[] { "A) the direction of the food", "B) the type of flower", "C) the distance to the food", "D) the age of the forager", "E) the weather forecast" }),
+                "A,C", "Paragraph B: the angle shows direction and the duration of the run shows distance."));
+            p5.AddQuestion(new ReadingQuestion(p5.Id, 5, QuestionType.ShortAnswer,
+                "Who decoded the waggle dance in the 1940s? (NO MORE THAN TWO WORDS)",
+                "[]", "Karl von Frisch / von Frisch", "Paragraph C names Karl von Frisch."));
+            p5.AddQuestion(new ReadingQuestion(p5.Id, 6, QuestionType.ShortAnswer,
+                "What kind of bees leave scent trails instead of dancing? (NO MORE THAN TWO WORDS)",
+                "[]", "stingless bees / stingless", "Paragraph E: some stingless bees leave scent trails."));
+            p5.AddQuestion(new ReadingQuestion(p5.Id, 7, QuestionType.TrueFalseNotGiven,
+                "A central authority in the colony decides how many workers visit each flower patch.",
+                JsonSerializer.Serialize(new[] { "TRUE", "FALSE", "NOT GIVEN" }),
+                "FALSE", "Paragraph D: colonies allocate workers without any central control."));
+
+            context.ReadingPassages.Add(p5);
+        }
+
         await context.SaveChangesAsync();
 
         // =========================================================================

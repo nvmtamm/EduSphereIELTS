@@ -12,6 +12,11 @@ import { ListeningListPage } from '@/features/listening/pages/ListeningListPage'
 import { ListeningExamPage } from '@/features/listening/pages/ListeningExamPage'
 import { ListeningResultPage } from '@/features/listening/pages/ListeningResultPage'
 import { ListeningDictationPage } from '@/features/listening/pages/ListeningDictationPage'
+import { LearningPathPage } from '@/features/learningpath/pages/LearningPathPage'
+import { LessonPage } from '@/features/learningpath/pages/LessonPage'
+import { WritingHubPage } from '@/features/writing/pages/WritingHubPage'
+import { WritingWorkspacePage } from '@/features/writing/pages/WritingWorkspacePage'
+import { WritingResultPage } from '@/features/writing/pages/WritingResultPage'
 import { Layout } from '@/shared/components/Layout'
 import { ProtectedRoute } from '@/shared/components/ProtectedRoute'
 
@@ -44,6 +49,10 @@ export const router = createBrowserRouter([
         element: <ReadingExamPage />
       },
       {
+        path: '/writing/write/:id',
+        element: <WritingWorkspacePage />
+      },
+      {
         path: '/listening/exam/:id',
         element: <ListeningExamPage />
       },
@@ -55,6 +64,14 @@ export const router = createBrowserRouter([
           {
             path: '/dashboard',
             element: <DashboardPage />
+          },
+          {
+            path: '/learning-path',
+            element: <LearningPathPage />
+          },
+          {
+            path: '/learning-path/:code',
+            element: <LessonPage />
           },
           {
             path: '/reading',
@@ -78,12 +95,11 @@ export const router = createBrowserRouter([
           },
           {
             path: '/writing',
-            element: (
-              <div className="p-8 text-center bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800">
-                <h2 className="text-xl font-black text-zinc-950 dark:text-white">IELTS Writing AI Evaluator</h2>
-                <p className="text-sm text-zinc-500 mt-2">Automated Band Scoring & Detailed Criterion Feedback</p>
-              </div>
-            )
+            element: <WritingHubPage />
+          },
+          {
+            path: '/writing/result/:id',
+            element: <WritingResultPage />
           },
           {
             path: '/speaking',

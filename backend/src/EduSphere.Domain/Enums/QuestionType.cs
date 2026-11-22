@@ -17,5 +17,9 @@ public enum QuestionType
     Matching,
     MapLabelling,
     DiagramLabelling,
-    MultipleChoiceMulti
+    MultipleChoiceMulti,
+
+    // Reading Types added in Sprint 3.9 (stored as strings, safe to append)
+    MatchingInformation,
+    ShortAnswer
 }

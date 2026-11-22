@@ -32,6 +32,23 @@ export const ReadingListPage: React.FC = () => {
   const [selectedBandFilter, setSelectedBandFilter] = useState<string>('all')
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState<string>('')
+  const [selectedQuestionType, setSelectedQuestionType] = useState<string>('all')
+  const [selectedStatus, setSelectedStatus] = useState<'all' | 'todo' | 'done'>('all')
+  const [completedIds] = useState<Set<string>>(() => {
+    try {
+      return new Set<string>(JSON.parse(localStorage.getItem('reading.completedPassages') ?? '[]'))
+    } catch {
+      return new Set<string>()
+    }
+  })
+
+  const questionTypeOptions = Array.from(new Set(passages.flatMap((p) => p.questionTypes))).sort()
+  const visiblePassages = passages.filter((p) => {
+    if (selectedQuestionType !== 'all' && !p.questionTypes.includes(selectedQuestionType as never)) return false
+    if (selectedStatus === 'done' && !completedIds.has(p.id)) return false
+    if (selectedStatus === 'todo' && completedIds.has(p.id)) return false
+    return true
+  })
 
   const sourceTabs = [
     { key: 'all', label: 'All Collections' },
@@ -260,9 +277,37 @@ export const ReadingListPage: React.FC = () => {
             </div>
           </div>
 
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <select
+              value={selectedQuestionType}
+              onChange={(e) => setSelectedQuestionType(e.target.value)}
+              className="p-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white"
+            >
+              <option value="all">All Question Types</option>
+              {questionTypeOptions.map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
+            {(['all', 'todo', 'done'] as const).map((st) => (
+              <button
+                key={st}
+                type="button"
+                onClick={() => setSelectedStatus(st)}
+                className={`px-3 py-1.5 rounded-xl border font-bold cursor-pointer ${
+                  selectedStatus === st
+                    ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-900 dark:border-white'
+                    : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200/80 dark:border-slate-800'
+                }`}
+              >
+                {st === 'all' ? 'All' : st === 'todo' ? 'Not completed' : 'Completed'}
+              </button>
+            ))}
+            <span className="text-slate-400 font-medium ml-auto">{visiblePassages.length} of {passages.length} tests</span>
+          </div>
+
           {vaultViewMode === 'table' ? (
             /* Enterprise TanStack Data Table View */
-            <ExamTable data={passages} loading={loadingPassages} />
+            <ExamTable data={visiblePassages} loading={loadingPassages} />
           ) : (
             /* Cards Grid View */
             <div className="space-y-6">
@@ -271,7 +316,7 @@ export const ReadingListPage: React.FC = () => {
                   <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
                   <p className="text-sm font-medium">Loading authentic IELTS Reading tests...</p>
                 </div>
-              ) : passages.length === 0 ? (
+              ) : visiblePassages.length === 0 ? (
                 <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-8">
                   <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-40 text-slate-400" />
                   <p className="text-base font-bold text-slate-900 dark:text-white">No matching exams found in this vault</p>
@@ -279,7 +324,7 @@ export const ReadingListPage: React.FC = () => {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {passages.map((item) => {
+                  {visiblePassages.map((item) => {
                     const cleanTitle = item.title.startsWith('tiến hành dựa') 
                       ? 'Custom Uploaded Exam Practice' 
                       : item.title === '[Page 1]' 

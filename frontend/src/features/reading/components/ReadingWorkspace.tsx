@@ -8,6 +8,10 @@ import { TrueFalseNotGivenRenderer } from './renderers/TrueFalseNotGivenRenderer
 import { MatchingHeadingsRenderer } from './renderers/MatchingHeadingsRenderer'
 import { MultipleChoiceRenderer } from './renderers/MultipleChoiceRenderer'
 import { SummaryCompletionRenderer } from './renderers/SummaryCompletionRenderer'
+import { MatchingInformationRenderer } from './renderers/MatchingInformationRenderer'
+import { MultipleSelectRenderer } from './renderers/MultipleSelectRenderer'
+import { HintLadderPanel } from './HintLadderPanel'
+import type { ExamMode } from '@/shared/components/examMode'
 
 interface ReadingWorkspaceProps {
   passage: ReadingPassageDetail
@@ -15,6 +19,8 @@ interface ReadingWorkspaceProps {
   onAnswerChange: (questionId: string, value: string) => void
   onSubmitExam: () => void
   isSubmitting: boolean
+  /** practice = hints available, exam = no assistance. Defaults to exam. */
+  mode?: ExamMode
 }
 
 export const ReadingWorkspace: React.FC<ReadingWorkspaceProps> = ({
@@ -22,7 +28,8 @@ export const ReadingWorkspace: React.FC<ReadingWorkspaceProps> = ({
   answers,
   onAnswerChange,
   onSubmitExam,
-  isSubmitting
+  isSubmitting,
+  mode = 'exam'
 }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0)
   const [flaggedQuestions, setFlaggedQuestions] = useState<Set<number>>(new Set())
@@ -133,6 +140,23 @@ export const ReadingWorkspace: React.FC<ReadingWorkspaceProps> = ({
             onChange={(newVal) => onAnswerChange(currentQuestion.id, newVal)}
           />
         )
+      case 'MatchingInformation':
+        return (
+          <MatchingInformationRenderer
+            question={currentQuestion}
+            value={val}
+            onChange={(newVal) => onAnswerChange(currentQuestion.id, newVal)}
+          />
+        )
+      case 'MultipleChoiceMulti':
+        return (
+          <MultipleSelectRenderer
+            question={currentQuestion}
+            value={val}
+            onChange={(newVal) => onAnswerChange(currentQuestion.id, newVal)}
+          />
+        )
+      case 'ShortAnswer':
       case 'SummaryCompletion':
       case 'SentenceCompletion':
       default:
@@ -246,6 +270,14 @@ export const ReadingWorkspace: React.FC<ReadingWorkspaceProps> = ({
             <div className="flex-1 overflow-y-auto p-6 md:p-8">
               <div className="max-w-xl mx-auto space-y-6">
                 {renderCurrentQuestion()}
+                {mode === 'practice' && currentQuestion && (
+                  <HintLadderPanel
+                    key={currentQuestion.id}
+                    passageId={passage.id}
+                    questionId={currentQuestion.id}
+                    questionNumber={currentQuestion.questionNumber}
+                  />
+                )}
               </div>
             </div>
 

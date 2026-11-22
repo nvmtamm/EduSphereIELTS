@@ -1,15 +1,37 @@
 import React, { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, Loader2, BookOpen, Bot, Sparkles } from 'lucide-react'
 import { readingApi } from '../api/readingApi'
 import type { ReadingPassageDetail, UserAnswerInput } from '../types/reading.types'
 import { ExamTimer } from '../components/ExamTimer'
 import { ReadingWorkspace } from '../components/ReadingWorkspace'
 import { ReadingAITutorSidebar } from '../components/ReadingAITutorSidebar'
+import { ExamModeSelect } from '@/shared/components/ExamModeSelect'
+import { parseExamMode } from '@/shared/components/examMode'
+import type { ExamMode } from '@/shared/components/examMode'
+
+/** Count-up clock for Practice mode (no countdown, no auto-submit). */
+const PracticeStopwatch: React.FC<{ onTick: (seconds: number) => void }> = ({ onTick }) => {
+  const [seconds, setSeconds] = useState(0)
+  useEffect(() => {
+    const t = setInterval(() => setSeconds((s) => s + 1), 1000)
+    return () => clearInterval(t)
+  }, [])
+  useEffect(() => onTick(seconds), [seconds, onTick])
+  const mm = String(Math.floor(seconds / 60)).padStart(2, '0')
+  const ss = String(seconds % 60).padStart(2, '0')
+  return (
+    <div className="px-3.5 py-1.5 rounded-xl border bg-zinc-900 border-zinc-800 text-white font-mono font-bold text-sm tracking-wider" title="Time spent (practice mode has no time limit)">
+      {mm}:{ss}
+    </div>
+  )
+}
 
 export const ReadingExamPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const mode: ExamMode | null = parseExamMode(searchParams.get('mode'))
 
   const [passage, setPassage] = useState<ReadingPassageDetail | null>(null)
   const [loading, setLoading] = useState(true)
@@ -78,6 +100,18 @@ export const ReadingExamPage: React.FC = () => {
     }
   }
 
+  if (!mode) {
+    return (
+      <ExamModeSelect
+        title={passage?.title ?? 'IELTS Reading'}
+        subtitle={passage ? `${passage.collectionName} · ${passage.estimatedTimeMinutes} min` : undefined}
+        examNote={`${passage?.estimatedTimeMinutes ?? 20} minutes`}
+        onSelect={(m) => setSearchParams({ mode: m }, { replace: true })}
+        onBack={() => navigate('/reading')}
+      />
+    )
+  }
+
   if (loading) {
     return (
       <div className="h-[calc(100vh-8rem)] flex flex-col items-center justify-center space-y-3">
@@ -130,7 +164,8 @@ export const ReadingExamPage: React.FC = () => {
 
         {/* Header Right Actions */}
         <div className="flex items-center gap-3">
-          {/* AI Tutor Toggle Button */}
+          {/* AI Tutor Toggle Button (Practice mode only) */}
+          {mode === 'practice' && (
           <button
             type="button"
             onClick={() => setIsAITutorOpen(!isAITutorOpen)}
@@ -144,13 +179,18 @@ export const ReadingExamPage: React.FC = () => {
             <span>AI Tutor</span>
             <Sparkles className="w-3 h-3 text-amber-400" />
           </button>
+          )}
 
           {/* Timer */}
-          <ExamTimer
-            initialSeconds={initialTimeSeconds}
-            onTimeUp={handleSubmitExam}
-            onTick={(left) => setSecondsSpent(initialTimeSeconds - left)}
-          />
+          {mode === 'exam' ? (
+            <ExamTimer
+              initialSeconds={initialTimeSeconds}
+              onTimeUp={handleSubmitExam}
+              onTick={(left) => setSecondsSpent(initialTimeSeconds - left)}
+            />
+          ) : (
+            <PracticeStopwatch onTick={setSecondsSpent} />
+          )}
         </div>
       </header>
 
@@ -161,11 +201,12 @@ export const ReadingExamPage: React.FC = () => {
         onAnswerChange={handleAnswerChange}
         onSubmitExam={handleSubmitExam}
         isSubmitting={submitting}
+        mode={mode}
       />
 
       {/* Slide-over RAG AI Tutor */}
       <ReadingAITutorSidebar
-        isOpen={isAITutorOpen}
+        isOpen={mode === 'practice' && isAITutorOpen}
         onClose={() => setIsAITutorOpen(false)}
         passageId={passage.id}
         passageTitle={passage.title}

@@ -1,14 +1,34 @@
-import React from 'react'
-import { X, CheckCircle2, XCircle, BookOpen, Lightbulb } from 'lucide-react'
-import type { ReadingAnswerResult } from '../types/reading.types'
+import React, { useEffect, useState } from 'react'
+import { X, CheckCircle2, XCircle, Lightbulb, Loader2 } from 'lucide-react'
+import { readingApi } from '../api/readingApi'
+import type { ReadingAnswerResult, ReadingHint } from '../types/reading.types'
 
 interface ExplanationModalProps {
   answer: ReadingAnswerResult | null
+  passageId?: string
   onClose: () => void
 }
 
-export const ExplanationModal: React.FC<ExplanationModalProps> = ({ answer, onClose }) => {
+export const ExplanationModal: React.FC<ExplanationModalProps> = ({ answer, passageId, onClose }) => {
+  const [steps, setSteps] = useState<ReadingHint[]>([])
+  const [loadingSteps, setLoadingSteps] = useState(false)
+  const [activeStep, setActiveStep] = useState(1)
+  const questionId = answer?.questionId
+
+  useEffect(() => {
+    if (!questionId || !passageId) return
+    let cancelled = false
+    setLoadingSteps(true)
+    setActiveStep(1)
+    Promise.all([1, 2, 3, 4].map((n) => readingApi.getHint(passageId, questionId, n)))
+      .then((r) => { if (!cancelled) setSteps(r) })
+      .catch(() => { if (!cancelled) setSteps([]) })
+      .finally(() => { if (!cancelled) setLoadingSteps(false) })
+    return () => { cancelled = true }
+  }, [questionId, passageId])
+
   if (!answer) return null
+  const current = steps.find((h) => h.step === activeStep)
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
@@ -92,6 +112,51 @@ export const ExplanationModal: React.FC<ExplanationModalProps> = ({ answer, onCl
             {answer.explanation || 'No additional explanation required for this question.'}
           </div>
         </div>
+
+        {/* Linear thinking: 4-step solution */}
+        {passageId && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-slate-300">
+              <span>Linear method — 4 steps</span>
+            </div>
+            <div className="grid grid-cols-4 gap-1.5">
+              {[1, 2, 3, 4].map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => setActiveStep(n)}
+                  className={`px-1 py-1.5 rounded-lg text-[11px] font-bold cursor-pointer ${
+                    activeStep === n ? 'bg-red-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
+                  }`}
+                >
+                  Step {n}
+                </button>
+              ))}
+            </div>
+            <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 text-xs min-h-16">
+              {loadingSteps ? (
+                <Loader2 className="w-4 h-4 animate-spin text-red-600" />
+              ) : current ? (
+                <>
+                  <p className="font-black text-slate-900 dark:text-white mb-1">{current.title}</p>
+                  <p className="text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">{current.content}</p>
+                  {current.keywords.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {current.keywords.map((k) => (
+                        <span key={k} className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold">{k}</span>
+                      ))}
+                    </div>
+                  )}
+                  {current.relevantParagraph && (
+                    <p className="mt-1.5 font-bold text-indigo-600">Look in: {current.relevantParagraph}</p>
+                  )}
+                </>
+              ) : (
+                <p className="text-slate-500">Step-by-step solution is unavailable.</p>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Close CTA */}
         <div className="flex justify-end pt-2">
