@@ -23,7 +23,7 @@ export const SummaryCompletionRenderer: React.FC<SummaryCompletionRendererProps>
           <p className="text-sm font-medium text-slate-800 dark:text-slate-200 leading-relaxed">
             {question.prompt}
           </p>
-          <span className="inline-block text-[11px] font-semibold text-rose-600 dark:text-rose-400">
+          <span className="inline-block text-xs font-semibold text-rose-600 dark:text-rose-400">
             Write NO MORE THAN TWO WORDS from the passage.
           </span>
         </div>

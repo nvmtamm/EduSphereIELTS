@@ -21,7 +21,7 @@ const PracticeStopwatch: React.FC<{ onTick: (seconds: number) => void }> = ({ on
   const mm = String(Math.floor(seconds / 60)).padStart(2, '0')
   const ss = String(seconds % 60).padStart(2, '0')
   return (
-    <div className="px-3.5 py-1.5 rounded-xl border bg-zinc-900 border-zinc-800 text-white font-mono font-bold text-sm tracking-wider" title="Time spent (practice mode has no time limit)">
+    <div className="px-3.5 py-1.5 rounded-xl border bg-zinc-900 border-zinc-800 text-white font-mono font-bold text-sm" title="Time spent (practice mode has no time limit)">
       {mm}:{ss}
     </div>
   )
@@ -153,10 +153,10 @@ export const ReadingExamPage: React.FC = () => {
             <div className="w-6 h-6 rounded-md bg-red-600 flex items-center justify-center text-white text-xs font-bold">
               <BookOpen className="w-3.5 h-3.5" />
             </div>
-            <span className="font-extrabold text-xs sm:text-sm truncate max-w-xs sm:max-w-md text-white">
+            <span className="font-bold text-xs sm:text-sm truncate max-w-xs sm:max-w-md text-white">
               {passage.title}
             </span>
-            <span className="hidden md:inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300 border border-zinc-700">
+            <span className="hidden md:inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300 border border-zinc-700">
               {passage.collectionName}
             </span>
           </div>
@@ -171,7 +171,7 @@ export const ReadingExamPage: React.FC = () => {
             onClick={() => setIsAITutorOpen(!isAITutorOpen)}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border ${
               isAITutorOpen
-                ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/30'
+                ? 'bg-indigo-600 text-white border-indigo-500'
                 : 'bg-zinc-900 hover:bg-zinc-800 text-indigo-300 border-zinc-800'
             }`}
           >

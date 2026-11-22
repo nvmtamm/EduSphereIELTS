@@ -48,12 +48,12 @@ export const QuestionPalette: React.FC<QuestionPaletteProps> = ({
         <div className="flex items-center gap-3 text-xs">
           <span className="font-bold text-slate-900 dark:text-white">
             {partRange ? `${partRange.name} (` : 'Questions: '}
-            <span className="text-red-600 dark:text-red-500 font-black">
+            <span className="text-red-600 dark:text-red-500 font-bold">
               {partRange ? `${partAnsweredCount}/${partIndices.length}` : `${answeredCount}/${totalQuestions}`}
             </span>
             {partRange ? ` Answered • Total: ${answeredCount}/${totalQuestions})` : ''}
           </span>
-          <div className="hidden sm:flex items-center gap-3 text-[11px] text-slate-500">
+          <div className="hidden sm:flex items-center gap-3 text-xs text-slate-500">
             <span className="flex items-center gap-1 font-semibold">
               <span className="w-2.5 h-2.5 rounded-full bg-red-600 inline-block" /> Answered
             </span>
@@ -94,7 +94,7 @@ export const QuestionPalette: React.FC<QuestionPaletteProps> = ({
               btnClass = 'bg-red-600 text-white border-red-600 shadow-xs font-bold'
             }
             if (isCurrent) {
-              btnClass += ' ring-2 ring-red-600 ring-offset-2 ring-offset-white dark:ring-offset-slate-950 font-black shadow-xs'
+              btnClass += ' ring-2 ring-red-600 ring-offset-2 ring-offset-white dark:ring-offset-slate-950 font-bold shadow-xs'
             }
 
             return (

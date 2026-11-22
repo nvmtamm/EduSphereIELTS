@@ -101,22 +101,22 @@ export const ReadingAITutorSidebar: React.FC<ReadingAITutorSidebarProps> = ({
         initial={{ opacity: 0, x: 300 }}
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: 300 }}
-        className="fixed top-0 right-0 bottom-0 z-50 w-full sm:w-[420px] bg-slate-900/95 border-l border-slate-700/80 shadow-2xl backdrop-blur-xl flex flex-col"
+        className="fixed top-0 right-0 bottom-0 z-50 w-full sm:w-[420px] bg-slate-900/95 border-l border-slate-700/80 shadow-md backdrop-blur-xl flex flex-col"
       >
         {/* Header */}
         <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/70">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+            <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100">
               <Bot className="w-5 h-5" />
             </div>
             <div>
               <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
                 RAG AI Reading Tutor
-                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-medium">
+                <span className="text-xs px-1.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-medium">
                   {isPostExamReview ? 'Review Mode' : 'Socratic Hint'}
                 </span>
               </h3>
-              <p className="text-[11px] text-slate-400 truncate max-w-[240px]">
+              <p className="text-xs text-slate-400 truncate max-w-[240px]">
                 {passageTitle}
               </p>
             </div>
@@ -132,7 +132,7 @@ export const ReadingAITutorSidebar: React.FC<ReadingAITutorSidebarProps> = ({
 
         {/* Quick Suggestion Pills */}
         <div className="p-3 border-b border-slate-800/80 bg-slate-900/50 space-y-1.5">
-          <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider flex items-center gap-1">
+          <div className="text-xs font-bold text-slate-400 flex items-center gap-1">
             <Lightbulb className="w-3 h-3 text-amber-400" />
             Suggested Questions
           </div>
@@ -142,7 +142,7 @@ export const ReadingAITutorSidebar: React.FC<ReadingAITutorSidebarProps> = ({
                 key={i}
                 onClick={() => handleSendMessage(prompt)}
                 disabled={isLoading}
-                className="text-left text-[11px] px-2.5 py-1.5 rounded-lg bg-slate-800/80 hover:bg-indigo-950/60 hover:text-indigo-200 text-slate-300 border border-slate-700/60 transition-all flex items-center justify-between group"
+                className="text-left text-xs px-2.5 py-1.5 rounded-lg bg-slate-800/80 hover:bg-indigo-950/60 hover:text-indigo-200 text-slate-300 border border-slate-700/60 transition-all flex items-center justify-between group"
               >
                 <span className="truncate">{prompt}</span>
                 <ChevronRight className="w-3 h-3 text-slate-500 group-hover:text-indigo-400 shrink-0" />
@@ -162,16 +162,16 @@ export const ReadingAITutorSidebar: React.FC<ReadingAITutorSidebarProps> = ({
                 className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}
               >
                 <div
-                  className={`max-w-[85%] p-3 rounded-2xl ${
+                  className={`max-w-[85%] p-3 rounded-xl ${
                     isUser
-                      ? 'bg-indigo-600 text-white rounded-br-none shadow-md shadow-indigo-600/20'
-                      : 'bg-slate-800/90 text-slate-200 border border-slate-700/80 rounded-bl-none shadow-lg'
+                      ? 'bg-indigo-600 text-white rounded-br-none'
+                      : 'bg-slate-800/90 text-slate-200 border border-slate-700/80 rounded-bl-none shadow-md'
                   }`}
                 >
                   <p className="whitespace-pre-line leading-relaxed">{msg.message}</p>
 
                   {msg.relevantParagraph && (
-                    <div className="mt-2 pt-2 border-t border-slate-700/60 flex items-center gap-1.5 text-[10px] text-indigo-300 font-semibold">
+                    <div className="mt-2 pt-2 border-t border-slate-700/60 flex items-center gap-1.5 text-xs text-indigo-300 font-semibold">
                       <BookOpen className="w-3 h-3" />
                       Referenced Section: {msg.relevantParagraph}
                     </div>

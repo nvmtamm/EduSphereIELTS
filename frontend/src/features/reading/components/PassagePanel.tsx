@@ -205,10 +205,10 @@ export const PassagePanel: React.FC<PassagePanelProps> = ({
       <div className="px-6 py-3.5 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-900/80">
         <div className="space-y-0.5 max-w-[60%]">
           <div className="flex items-center gap-2">
-            <span className="text-[11px] uppercase font-bold tracking-wider text-red-600">
+            <span className="text-xs font-bold text-red-600">
               {topic || 'Academic Reading'}
             </span>
-            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-red-50 dark:bg-red-950/60 text-red-600 border border-red-200">
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-red-50 dark:bg-red-950/60 text-red-600 border border-red-200">
               {partName} (Passage {partNumber})
             </span>
           </div>
@@ -258,7 +258,7 @@ export const PassagePanel: React.FC<PassagePanelProps> = ({
             }`}
           >
             <Highlighter className="w-3.5 h-3.5" />
-            <span className="text-[11px] hidden sm:inline">{highlightActive ? 'Active' : 'Highlight'}</span>
+            <span className="text-xs hidden sm:inline">{highlightActive ? 'Active' : 'Highlight'}</span>
           </button>
 
           <button
@@ -280,12 +280,12 @@ export const PassagePanel: React.FC<PassagePanelProps> = ({
       >
         <div className="max-w-3xl mx-auto space-y-6">
           {/* Cambridge Academic Reading Header Card */}
-          <div className="p-6 rounded-2xl bg-gradient-to-r from-red-50/90 to-slate-50 dark:from-red-950/40 dark:to-slate-900/60 border border-red-200/80 dark:border-red-900/60 shadow-xs mb-8">
-            <div className="flex items-center gap-2 text-red-600 dark:text-red-400 text-xs font-black uppercase tracking-wider mb-2">
+          <div className="p-6 rounded-xl bg-red-50 border border-red-200/80 dark:border-red-900/60 shadow-xs mb-8">
+            <div className="flex items-center gap-2 text-red-600 dark:text-red-400 text-xs font-bold mb-2">
               <BookOpen className="w-4 h-4" />
               <span>READING PASSAGE {partNumber}</span>
             </div>
-            <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-snug">
+            <h1 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white tracking-tight leading-snug">
               {displayTitle}
             </h1>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
@@ -298,7 +298,7 @@ export const PassagePanel: React.FC<PassagePanelProps> = ({
             sanitized.paragraphs.map((p, idx) => (
               <div key={idx} className="space-y-2.5">
                 {p.letter && (
-                  <span className="inline-block px-3 py-0.5 rounded-md bg-slate-900 dark:bg-slate-800 text-white font-black text-xs tracking-wider shadow-xs border border-slate-700">
+                  <span className="inline-block px-3 py-0.5 rounded-md bg-slate-900 dark:bg-slate-800 text-white font-bold text-xs shadow-xs border border-slate-700">
                     Paragraph {p.letter}
                   </span>
                 )}
@@ -317,10 +317,10 @@ export const PassagePanel: React.FC<PassagePanelProps> = ({
 
       {/* Notes list */}
       {notes.length > 0 && (
-        <div className="absolute bottom-3 left-3 w-64 max-h-40 overflow-y-auto rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-lg p-2 space-y-1.5 z-40">
-          <p className="text-[10px] font-black uppercase tracking-wider text-sky-600 px-1">My notes ({notes.length})</p>
+        <div className="absolute bottom-3 left-3 w-64 max-h-40 overflow-y-auto rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-md p-2 space-y-1.5 z-40">
+          <p className="text-xs font-bold text-sky-600 px-1">My notes ({notes.length})</p>
           {notes.map((n) => (
-            <div key={n.id} className="flex items-start gap-1.5 text-[11px] rounded-lg bg-sky-50 dark:bg-sky-950/40 p-1.5">
+            <div key={n.id} className="flex items-start gap-1.5 text-xs rounded-lg bg-sky-50 dark:bg-sky-950/40 p-1.5">
               <div className="flex-1 min-w-0">
                 <p className="italic text-slate-500 truncate">“{n.quote}”</p>
                 <p className="text-slate-800 dark:text-slate-100 font-medium">{n.note}</p>
@@ -335,9 +335,9 @@ export const PassagePanel: React.FC<PassagePanelProps> = ({
 
       {/* Dictionary lookup card */}
       {lookup && (
-        <div className="absolute top-20 right-4 w-72 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-xl p-3 z-50 text-xs">
+        <div className="absolute top-20 right-4 w-72 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-md p-3 z-50 text-xs">
           <div className="flex items-center justify-between mb-1.5">
-            <span className="font-black text-sm text-slate-900 dark:text-white">{lookup.word}</span>
+            <span className="font-bold text-sm text-slate-900 dark:text-white">{lookup.word}</span>
             <button type="button" onClick={() => setLookup(null)} className="text-slate-400 hover:text-slate-700 cursor-pointer" title="Close">
               <X className="w-3.5 h-3.5" />
             </button>
@@ -367,7 +367,7 @@ export const PassagePanel: React.FC<PassagePanelProps> = ({
           className="animate-in fade-in zoom-in-95 duration-150"
         >
           {noteDraft === null ? (
-            <div className="flex items-center gap-1 p-1 bg-slate-900 text-white rounded-xl shadow-xl">
+            <div className="flex items-center gap-1 p-1 bg-slate-900 text-white rounded-xl shadow-md">
               <button type="button" onClick={handleManualHighlight} className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold rounded-lg hover:bg-amber-500 cursor-pointer">
                 <Highlighter className="w-3 h-3 text-amber-300" /> Highlight
               </button>
@@ -379,7 +379,7 @@ export const PassagePanel: React.FC<PassagePanelProps> = ({
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-1 p-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl">
+            <div className="flex items-center gap-1 p-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-md">
               <input
                 autoFocus
                 value={noteDraft}

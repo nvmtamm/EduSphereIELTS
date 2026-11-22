@@ -49,7 +49,7 @@ export const ReadingRoadmapHub: React.FC<ReadingRoadmapHubProps> = ({ roadmaps, 
   return (
     <div className="space-y-8">
       {/* 1. Segmented Control Band Tier Selector Bar with Subtle Red Dot */}
-      <div className="p-2 bg-slate-100 dark:bg-slate-900/90 rounded-2xl border border-slate-200/80 dark:border-slate-800 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+      <div className="p-2 bg-slate-100 dark:bg-slate-900/90 rounded-xl border border-slate-200/80 dark:border-slate-800 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
         {bandTiersConfig.map((tier) => {
           const isSelected = selectedBandTier === tier.key
           return (
@@ -58,7 +58,7 @@ export const ReadingRoadmapHub: React.FC<ReadingRoadmapHubProps> = ({ roadmaps, 
               onClick={() => setSelectedBandTier(tier.key)}
               className={`p-3.5 rounded-xl transition-all flex flex-col items-center text-center gap-1.5 cursor-pointer relative ${
                 isSelected
-                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm border border-slate-200/80 dark:border-slate-700 font-black'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm border border-slate-200/80 dark:border-slate-700 font-bold'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-semibold hover:bg-slate-200/50 dark:hover:bg-slate-800/50'
               }`}
             >
@@ -84,7 +84,7 @@ export const ReadingRoadmapHub: React.FC<ReadingRoadmapHubProps> = ({ roadmaps, 
 
       {/* 2. Active Roadmap Header Summary - Spacious & Airy Typography */}
       {activeRoadmap && (
-        <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-7 md:p-9 shadow-xs">
+        <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-7 md:p-9 shadow-xs">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
             <div className="space-y-4 max-w-2xl">
               <div className="flex items-center gap-2">
@@ -94,7 +94,7 @@ export const ReadingRoadmapHub: React.FC<ReadingRoadmapHubProps> = ({ roadmaps, 
                 </span>
               </div>
 
-              <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-snug">
+              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight leading-snug">
                 {activeRoadmap.title}
               </h2>
 
@@ -103,7 +103,7 @@ export const ReadingRoadmapHub: React.FC<ReadingRoadmapHubProps> = ({ roadmaps, 
               </p>
 
               <div className="flex items-center gap-2.5 pt-1 flex-wrap">
-                <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Core Focus:</span>
+                <span className="text-xs text-slate-400 font-bold">Core Focus:</span>
                 <span className="text-[13.5px] px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold border border-slate-200/80 dark:border-slate-700">
                   {activeRoadmap.targetSkillsSummary}
                 </span>
@@ -115,14 +115,14 @@ export const ReadingRoadmapHub: React.FC<ReadingRoadmapHubProps> = ({ roadmaps, 
               {/* Dedicated Vocabulary Deck Button */}
               <button
                 onClick={() => setIsVocabModalOpen(true)}
-                className="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100/80 dark:bg-slate-850 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800 text-left transition-all flex items-center justify-between group cursor-pointer shadow-xs"
+                className="p-4 rounded-xl bg-slate-50 hover:bg-slate-100/80 dark:bg-slate-850 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800 text-left transition-all flex items-center justify-between group cursor-pointer shadow-xs"
               >
                 <div className="flex items-center gap-3.5">
-                  <div className="p-3 rounded-xl bg-amber-500 text-white shadow-xs group-hover:scale-105 transition-transform">
+                  <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100">
                     <BookOpen className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="text-[14px] font-black text-slate-900 dark:text-white flex items-center gap-1">
+                    <div className="text-[14px] font-bold text-slate-900 dark:text-white flex items-center gap-1">
                       Band Vocabulary Deck
                       <Sparkles className="w-3.5 h-3.5 text-amber-500" />
                     </div>
@@ -135,14 +135,14 @@ export const ReadingRoadmapHub: React.FC<ReadingRoadmapHubProps> = ({ roadmaps, 
               </button>
 
               {/* Progress Summary */}
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-850 border border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
                 <div>
-                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Roadmap Progress</span>
-                  <div className="text-lg font-black text-slate-900 dark:text-white mt-0.5">
+                  <span className="text-xs font-bold text-slate-400">Roadmap Progress</span>
+                  <div className="text-lg font-bold text-slate-900 dark:text-white mt-0.5">
                     {Math.round(activeRoadmap.userMasteryPercentage)}% Complete
                   </div>
                 </div>
-                <div className="w-11 h-11 rounded-xl bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900 flex items-center justify-center text-red-600 dark:text-red-400 font-black text-[13px]">
+                <div className="w-11 h-11 rounded-xl bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900 flex items-center justify-center text-red-600 dark:text-red-400 font-bold text-[13px]">
                   {activeRoadmap.currentUserStep}/{activeRoadmap.totalMilestones}
                 </div>
               </div>
@@ -155,7 +155,7 @@ export const ReadingRoadmapHub: React.FC<ReadingRoadmapHubProps> = ({ roadmaps, 
       {activeRoadmap && (
         <div className="space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <Target className="w-5 h-5 text-red-600" />
               Milestone Challenge Stages
             </h3>
@@ -176,7 +176,7 @@ export const ReadingRoadmapHub: React.FC<ReadingRoadmapHubProps> = ({ roadmaps, 
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
-                  className={`p-6 rounded-2xl border transition-all flex flex-col justify-between relative overflow-hidden ${
+                  className={`p-6 rounded-xl border transition-all flex flex-col justify-between relative overflow-hidden ${
                     isCompleted
                       ? 'bg-emerald-50/60 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800/60 shadow-xs'
                       : isCurrent
@@ -186,7 +186,7 @@ export const ReadingRoadmapHub: React.FC<ReadingRoadmapHubProps> = ({ roadmaps, 
                 >
                   {/* Status Tag */}
                   <div className="flex items-center justify-between gap-2 mb-3.5">
-                    <span className="text-[12px] font-mono font-black px-2.5 py-1 rounded-md bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                    <span className="text-[12px] font-mono font-bold px-2.5 py-1 rounded-md bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                       STAGE 0{milestone.stepNumber}
                     </span>
 
@@ -210,7 +210,7 @@ export const ReadingRoadmapHub: React.FC<ReadingRoadmapHubProps> = ({ roadmaps, 
 
                   {/* Card Title and Target Skill */}
                   <div className="space-y-2 mb-5">
-                    <h4 className={`text-[16px] font-black leading-snug ${isCurrent ? 'text-slate-900 dark:text-white' : 'text-slate-800 dark:text-slate-200'}`}>
+                    <h4 className={`text-[16px] font-bold leading-snug ${isCurrent ? 'text-slate-900 dark:text-white' : 'text-slate-800 dark:text-slate-200'}`}>
                       {milestone.title}
                     </h4>
                     <p className="text-[13.5px] text-slate-600 dark:text-slate-300 leading-relaxed font-normal">

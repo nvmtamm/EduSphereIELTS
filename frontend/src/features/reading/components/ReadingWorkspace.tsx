@@ -191,14 +191,14 @@ export const ReadingWorkspace: React.FC<ReadingWorkspaceProps> = ({
                     key={p.name}
                     type="button"
                     onClick={() => setCurrentQuestionIndex(p.startIndex)}
-                    className={`px-4 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
+                    className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
                       isActive
                         ? 'bg-red-600 text-white shadow-xs'
                         : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                     }`}
                   >
                     <span>{p.name} ({p.range})</span>
-                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                    <span className={`text-xs px-1.5 py-0.2 rounded-full font-bold ${
                       isActive ? 'bg-red-700 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
                     }`}>
                       {pAnswered}/{pTotal}
@@ -242,7 +242,7 @@ export const ReadingWorkspace: React.FC<ReadingWorkspaceProps> = ({
             {/* Top Bar for Quiz */}
             <div className="px-6 py-3.5 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-900/80">
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-1 rounded-lg bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-black text-xs">
+                <span className="px-2.5 py-1 rounded-lg bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs">
                   Question {currentQuestion?.questionNumber || currentQuestionIndex + 1} of {totalQuestions}
                 </span>
                 {activePart && (
@@ -259,7 +259,7 @@ export const ReadingWorkspace: React.FC<ReadingWorkspaceProps> = ({
                 type="button"
                 onClick={() => setShowConfirmModal(true)}
                 disabled={isSubmitting}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-md shadow-red-600/25 transition-all cursor-pointer disabled:opacity-50"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs transition-all cursor-pointer disabled:opacity-50"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>Submit Test</span>
@@ -297,7 +297,7 @@ export const ReadingWorkspace: React.FC<ReadingWorkspaceProps> = ({
                 type="button"
                 disabled={currentQuestionIndex === totalQuestions - 1}
                 onClick={() => setCurrentQuestionIndex((prev) => Math.min(prev + 1, totalQuestions - 1))}
-                className="flex items-center gap-1 px-4 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-md shadow-red-600/20 disabled:opacity-30 cursor-pointer"
+                className="flex items-center gap-1 px-4 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold disabled:opacity-30 cursor-pointer"
               >
                 <span>Next</span>
                 <ChevronRight className="w-4 h-4" />
@@ -322,7 +322,7 @@ export const ReadingWorkspace: React.FC<ReadingWorkspaceProps> = ({
       {/* Submit Confirmation Modal */}
       {showConfirmModal && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-6 shadow-2xl space-y-4">
+          <div className="w-full max-w-md rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-6 shadow-md space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center">
                 <HelpCircle className="w-5 h-5" />
@@ -368,7 +368,7 @@ export const ReadingWorkspace: React.FC<ReadingWorkspaceProps> = ({
                   onSubmitExam()
                 }}
                 disabled={isSubmitting}
-                className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-md shadow-red-600/30 cursor-pointer disabled:opacity-50"
+                className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer disabled:opacity-50"
               >
                 {isSubmitting ? 'Grading...' : 'Yes, Submit Now'}
               </button>

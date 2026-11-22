@@ -41,7 +41,7 @@ export const MultipleSelectRenderer: React.FC<MultipleSelectRendererProps> = ({
         </span>
         <div>
           <p className="text-sm font-medium text-slate-800 dark:text-slate-200 leading-relaxed">{question.prompt}</p>
-          <p className="text-[11px] font-semibold text-slate-500 mt-1">
+          <p className="text-xs font-semibold text-slate-500 mt-1">
             Choose {maxSelections} answers · {selected.size}/{maxSelections} selected
           </p>
         </div>
@@ -65,7 +65,7 @@ export const MultipleSelectRenderer: React.FC<MultipleSelectRendererProps> = ({
               }`}
             >
               <span
-                className={`w-5 h-5 rounded-md font-bold text-[11px] flex items-center justify-center shrink-0 ${
+                className={`w-5 h-5 rounded-md font-bold text-xs flex items-center justify-center shrink-0 ${
                   isSelected ? 'bg-emerald-600 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
                 }`}
               >

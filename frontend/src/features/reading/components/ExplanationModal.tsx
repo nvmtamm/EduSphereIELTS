@@ -32,7 +32,7 @@ export const ExplanationModal: React.FC<ExplanationModalProps> = ({ answer, pass
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 shadow-2xl space-y-5 animate-in fade-in-0 zoom-in-95">
+      <div className="w-full max-w-lg rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 shadow-md space-y-5 animate-in fade-in-0 zoom-in-95">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
           <div className="flex items-center gap-2.5">
@@ -47,7 +47,7 @@ export const ExplanationModal: React.FC<ExplanationModalProps> = ({ answer, pass
               <h3 className="font-bold text-slate-800 dark:text-slate-100 text-sm">
                 Question Breakdown & Solution
               </h3>
-              <span className="text-[11px] text-slate-400 font-medium">
+              <span className="text-xs text-slate-400 font-medium">
                 {answer.questionType}
               </span>
             </div>
@@ -74,7 +74,7 @@ export const ExplanationModal: React.FC<ExplanationModalProps> = ({ answer, pass
               ? 'bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800'
               : 'bg-rose-50/60 dark:bg-rose-950/30 border-rose-200 dark:border-rose-800'
           }`}>
-            <span className="text-[10px] uppercase font-bold text-slate-400 flex items-center gap-1">
+            <span className="text-xs font-bold text-slate-400 flex items-center gap-1">
               {answer.isCorrect ? (
                 <CheckCircle2 className="w-3 h-3 text-emerald-600" />
               ) : (
@@ -92,7 +92,7 @@ export const ExplanationModal: React.FC<ExplanationModalProps> = ({ answer, pass
           </div>
 
           <div className="p-3 rounded-xl border bg-blue-50/60 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800 text-xs space-y-1">
-            <span className="text-[10px] uppercase font-bold text-blue-500 flex items-center gap-1">
+            <span className="text-xs font-bold text-blue-500 flex items-center gap-1">
               <CheckCircle2 className="w-3 h-3 text-blue-600" />
               Correct Answer
             </span>
@@ -125,7 +125,7 @@ export const ExplanationModal: React.FC<ExplanationModalProps> = ({ answer, pass
                   key={n}
                   type="button"
                   onClick={() => setActiveStep(n)}
-                  className={`px-1 py-1.5 rounded-lg text-[11px] font-bold cursor-pointer ${
+                  className={`px-1 py-1.5 rounded-lg text-xs font-bold cursor-pointer ${
                     activeStep === n ? 'bg-red-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
                   }`}
                 >
@@ -138,12 +138,12 @@ export const ExplanationModal: React.FC<ExplanationModalProps> = ({ answer, pass
                 <Loader2 className="w-4 h-4 animate-spin text-red-600" />
               ) : current ? (
                 <>
-                  <p className="font-black text-slate-900 dark:text-white mb-1">{current.title}</p>
+                  <p className="font-bold text-slate-900 dark:text-white mb-1">{current.title}</p>
                   <p className="text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">{current.content}</p>
                   {current.keywords.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-2">
                       {current.keywords.map((k) => (
-                        <span key={k} className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold">{k}</span>
+                        <span key={k} className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">{k}</span>
                       ))}
                     </div>
                   )}

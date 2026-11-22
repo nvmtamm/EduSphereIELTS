@@ -37,7 +37,7 @@ export const MultipleChoiceRenderer: React.FC<MultipleChoiceRendererProps> = ({
                   : 'bg-slate-50/80 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-emerald-400 dark:hover:border-emerald-500'
                 }`}
             >
-              <span className={`w-5 h-5 rounded-md font-bold text-[11px] flex items-center justify-center shrink-0 transition-colors ${isSelected
+              <span className={`w-5 h-5 rounded-md font-bold text-xs flex items-center justify-center shrink-0 transition-colors ${isSelected
                   ? 'bg-emerald-600 text-white'
                   : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
                 }`}>

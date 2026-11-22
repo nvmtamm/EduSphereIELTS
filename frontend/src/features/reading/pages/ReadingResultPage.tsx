@@ -96,7 +96,7 @@ export const ReadingResultPage: React.FC = () => {
         <button
           type="button"
           onClick={() => setIsAITutorOpen(true)}
-          className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 flex items-center gap-1.5 transition-all"
+          className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 transition-all"
         >
           <Bot className="w-4 h-4" />
           <span>Diagnostic AI Tutor</span>
@@ -105,14 +105,14 @@ export const ReadingResultPage: React.FC = () => {
       </div>
 
       {/* Band Score Hero Card - Luxury Black Card */}
-      <div className="relative overflow-hidden rounded-3xl bg-zinc-950 border border-zinc-800 p-8 shadow-2xl">
+      <div className="relative overflow-hidden rounded-2xl bg-zinc-950 border border-zinc-800 p-8 shadow-md">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-600/20 text-red-500 border border-red-500/30 text-xs font-bold">
               <Trophy className="w-3.5 h-3.5" />
               <span>Official Band Score Estimate</span>
             </div>
-            <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">
+            <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
               {result.passageTitle}
             </h1>
             <p className="text-zinc-400 text-xs font-medium">
@@ -121,32 +121,32 @@ export const ReadingResultPage: React.FC = () => {
           </div>
 
           {/* Big Score Badge */}
-          <div className="flex flex-col items-center justify-center p-5 rounded-2xl bg-red-600 text-white shadow-xl shadow-red-600/30 shrink-0 min-w-[140px]">
-            <span className="text-xs uppercase font-extrabold tracking-widest text-red-100">Estimated</span>
-            <div className="text-4xl md:text-5xl font-black tracking-tight my-0.5">
+          <div className="flex flex-col items-center justify-center p-5 rounded-xl bg-red-600 text-white shrink-0 min-w-[140px]">
+            <span className="text-xs font-bold text-red-100">Estimated</span>
+            <div className="text-4xl md:text-5xl font-bold tracking-tight my-0.5">
               {result.bandScore.toFixed(1)}
             </div>
-            <span className="text-[11px] font-bold text-red-100">IELTS Academic Band</span>
+            <span className="text-xs font-bold text-red-100">IELTS Academic Band</span>
           </div>
         </div>
 
         {/* 3 Metrics */}
         <div className="relative z-10 grid grid-cols-3 gap-3 mt-8 pt-6 border-t border-zinc-800 text-center">
           <div>
-            <span className="text-[11px] text-zinc-400 uppercase font-bold tracking-wider">Raw Score</span>
-            <p className="text-lg font-black text-white mt-0.5">
+            <span className="text-xs text-zinc-400 font-bold">Raw Score</span>
+            <p className="text-lg font-bold text-white mt-0.5">
               {result.rawScore} / {result.totalQuestions}
             </p>
           </div>
           <div>
-            <span className="text-[11px] text-zinc-400 uppercase font-bold tracking-wider">Accuracy</span>
-            <p className="text-lg font-black text-white mt-0.5">
+            <span className="text-xs text-zinc-400 font-bold">Accuracy</span>
+            <p className="text-lg font-bold text-white mt-0.5">
               {result.accuracyPercentage}%
             </p>
           </div>
           <div>
-            <span className="text-[11px] text-zinc-400 uppercase font-bold tracking-wider">Time Spent</span>
-            <p className="text-lg font-black text-white mt-0.5 flex items-center justify-center gap-1">
+            <span className="text-xs text-zinc-400 font-bold">Time Spent</span>
+            <p className="text-lg font-bold text-white mt-0.5 flex items-center justify-center gap-1">
               <Clock className="w-3.5 h-3.5 text-red-500" />
               <span>{timeFormatted}</span>
             </p>
@@ -160,7 +160,7 @@ export const ReadingResultPage: React.FC = () => {
       {/* Question-by-Question Diagnostic List */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-black text-zinc-950 dark:text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-zinc-950 dark:text-white flex items-center gap-2">
             <BookOpen className="w-4 h-4 text-red-600" />
             <span>Question Breakdown & Solutions</span>
           </h2>
@@ -174,7 +174,7 @@ export const ReadingResultPage: React.FC = () => {
             <div
               key={ans.questionId}
               onClick={() => setSelectedAnswerForModal(ans)}
-              className={`p-4 rounded-2xl border transition-all cursor-pointer hover:shadow-md ${
+              className={`p-4 rounded-xl border transition-all cursor-pointer hover:shadow-md ${
                 ans.isCorrect
                   ? 'bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 hover:border-zinc-400'
                   : 'bg-red-50/50 dark:bg-red-950/20 border-red-200 dark:border-red-900/60 hover:border-red-500'
@@ -182,7 +182,7 @@ export const ReadingResultPage: React.FC = () => {
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3">
-                  <div className={`w-7 h-7 rounded-xl text-xs font-black flex items-center justify-center shrink-0 ${
+                  <div className={`w-7 h-7 rounded-xl text-xs font-bold flex items-center justify-center shrink-0 ${
                     ans.isCorrect
                       ? 'bg-zinc-950 dark:bg-white text-white dark:text-zinc-950'
                       : 'bg-red-600 text-white'
@@ -190,7 +190,7 @@ export const ReadingResultPage: React.FC = () => {
                     {ans.questionNumber}
                   </div>
                   <div className="space-y-1">
-                    <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
+                    <span className="text-xs font-bold text-zinc-400">
                       {ans.questionType}
                     </span>
                     <p className="text-xs font-bold text-zinc-950 dark:text-white">
@@ -226,7 +226,7 @@ export const ReadingResultPage: React.FC = () => {
       <div className="flex items-center justify-center gap-3 pt-4">
         <Link
           to={`/reading/exam/${result.passageId}`}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-md shadow-red-600/30 transition-all"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs transition-all"
         >
           <RotateCcw className="w-4 h-4" />
           <span>Retake This Exam</span>

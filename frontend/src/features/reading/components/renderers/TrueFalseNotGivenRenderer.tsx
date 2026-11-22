@@ -44,8 +44,8 @@ export const TrueFalseNotGivenRenderer: React.FC<TrueFalseNotGivenRendererProps>
               key={opt}
               type="button"
               onClick={() => onChange(opt)}
-              className={`py-2.5 px-3 rounded-xl border text-xs font-bold tracking-wide transition-all cursor-pointer text-center ${isSelected
-                  ? 'bg-red-600 border-red-600 text-white shadow-md shadow-red-500/25 ring-2 ring-red-400/40'
+              className={`py-2.5 px-3 rounded-xl border text-xs font-bold transition-all cursor-pointer text-center ${isSelected
+                  ? 'bg-red-600 border-red-600 text-white ring-2 ring-red-400/40'
                   : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-red-400 dark:hover:border-red-500'
                 }`}
             >

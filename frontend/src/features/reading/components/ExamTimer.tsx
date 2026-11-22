@@ -56,7 +56,7 @@ export const ExamTimer: React.FC<ExamTimerProps> = ({ initialSeconds, onTimeUp, 
       ) : (
         <Clock className="w-4 h-4 text-red-600" />
       )}
-      <span className="font-mono font-bold text-sm tracking-wider">{formattedTime}</span>
+      <span className="font-mono font-bold text-sm">{formattedTime}</span>
       <button
         type="button"
         onClick={() => setIsPaused(!isPaused)}

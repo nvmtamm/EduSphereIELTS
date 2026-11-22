@@ -113,18 +113,18 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl shadow-2xl overflow-hidden"
+          className="relative w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl shadow-md overflow-hidden"
         >
           {/* Modal Header */}
           <div className="flex items-center justify-between px-6 py-4.5 border-b border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/60">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-2xl bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400">
+              <div className="p-2.5 rounded-xl bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400">
                 <Sparkles className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+                <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                   Smart IELTS Exam Digitizer
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900 font-bold">
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900 font-bold">
                     AI Converter
                   </span>
                 </h2>
@@ -147,7 +147,7 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
           {isProcessing ? (
             <div className="p-8 space-y-6">
               <div className="text-center space-y-2">
-                <div className="w-12 h-12 mx-auto rounded-2xl bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900 flex items-center justify-center text-red-600 dark:text-red-400 animate-pulse">
+                <div className="w-12 h-12 mx-auto rounded-xl bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900 flex items-center justify-center text-red-600 dark:text-red-400 animate-pulse">
                   <Bot className="w-6 h-6" />
                 </div>
                 <h3 className="text-base font-bold text-slate-900 dark:text-white">AI Engine is Processing Your Exam Paper</h3>
@@ -165,7 +165,7 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
                   return (
                     <div
                       key={idx}
-                      className={`p-3.5 rounded-2xl border flex items-center justify-between transition-all ${
+                      className={`p-3.5 rounded-xl border flex items-center justify-between transition-all ${
                         isDone
                           ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300'
                           : isCurrent
@@ -179,7 +179,7 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
                         </div>
                         <div>
                           <div className="text-xs font-bold">{step.title}</div>
-                          <div className="text-[11px] opacity-80">{step.desc}</div>
+                          <div className="text-xs opacity-80">{step.desc}</div>
                         </div>
                       </div>
 
@@ -188,7 +188,7 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
                       ) : isCurrent ? (
                         <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
                       ) : (
-                        <span className="text-[10px] uppercase font-mono tracking-wider opacity-60 font-semibold">Pending</span>
+                        <span className="text-xs font-mono opacity-60 font-semibold">Pending</span>
                       )}
                     </div>
                   )
@@ -198,14 +198,14 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
           ) : (
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               {error && (
-                <div className="p-3 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 rounded-2xl flex items-center gap-2 text-xs text-rose-700 dark:text-rose-300 font-medium">
+                <div className="p-3 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 rounded-xl flex items-center gap-2 text-xs text-rose-700 dark:text-rose-300 font-medium">
                   <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
                   <span>{error}</span>
                 </div>
               )}
 
               {/* File Drag and Drop Zone */}
-              <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-red-500 rounded-2xl p-5 text-center transition-colors bg-slate-50/60 dark:bg-slate-950/40">
+              <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-red-500 rounded-xl p-5 text-center transition-colors bg-slate-50/60 dark:bg-slate-950/40">
                 <input
                   type="file"
                   id="exam-file-input"
@@ -221,7 +221,7 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
                   <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                     {fileName ? `Selected: ${fileName}` : 'Click to upload .txt, .docx, or .pdf'}
                   </span>
-                  <span className="text-[11px] text-slate-400">or paste passage text directly below</span>
+                  <span className="text-xs text-slate-400">or paste passage text directly below</span>
                 </label>
               </div>
 
@@ -235,7 +235,7 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
                   value={rawText}
                   onChange={(e) => setRawText(e.target.value)}
                   placeholder="Paste your raw reading passage paragraphs [A], [B], [C] and questions here..."
-                  className="w-full p-3.5 bg-slate-50/70 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-700 rounded-2xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 font-mono leading-relaxed"
+                  className="w-full p-3.5 bg-slate-50/70 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 font-mono leading-relaxed"
                   required
                 />
               </div>
@@ -298,7 +298,7 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl shadow-xs flex items-center gap-2 transition-all cursor-pointer hover:scale-[1.02]"
+                  className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl shadow-xs flex items-center gap-2 transition-all cursor-pointer"
                 >
                   <Play className="w-3.5 h-3.5 fill-current" />
                   <span>Convert & Start Practice</span>
