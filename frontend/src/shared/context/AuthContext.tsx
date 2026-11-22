@@ -41,7 +41,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const initAuth = async () => {
-      const token = localStorage.getItem('edusphere_access_token')
+      let token = localStorage.getItem('edusphere_access_token')
+
+      // Development-only shortcut: sign in automatically with a local dev account (never in production builds).
+      if (!token && import.meta.env.DEV && import.meta.env.VITE_DEV_AUTO_LOGIN === 'true') {
+        const dev = { email: 'dev@edusphere.local', password: 'Dev@12345678' }
+        try {
+          let res
+          try {
+            res = await authApi.login(dev)
+          } catch {
+            res = await authApi.register({ fullName: 'Dev Student', ...dev, targetBandScore: 7.0 })
+          }
+          localStorage.setItem('edusphere_access_token', res.accessToken)
+          localStorage.setItem('edusphere_refresh_token', res.refreshToken)
+          localStorage.setItem('edusphere_user', JSON.stringify(res.user))
+          setUser(res.user)
+          token = res.accessToken
+        } catch (e) {
+          console.warn('Dev auto-login failed (is the API running?)', e)
+        }
+      }
+
       if (token) {
         try {
           const profile = await authApi.getProfile()
